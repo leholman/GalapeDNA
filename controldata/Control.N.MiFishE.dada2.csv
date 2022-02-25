@@ -1,0 +1,53 @@
+"","C2","C3","C4","C5","C6","CDOU.C","CHAM.C","CMAR.C","CORA.C","CUEV.C","DAPH.C","EGAS.C","ELI.C","GARD.C","PCAL.C","PCR1.NTC.1","PCR1.NTC.2","PESP.C","PIN.C","PLAZ.C","PMAN.C","PMOR.C","PROJ.C","PVIC.C","RED.C","SOMB.C","STAFE.C","SUAR.C","TOR.C","OTU","assignmentQual","taxID","superkingdom","phylum","class","order","family","genus","species"
+"ASV_4",44,7714,6,606,108,502,94,310,6,63,174,7,206,181,0,21,0,440,50,192,154,626,1323,143,479,647,0,1102,860,"ASV_4","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_5",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,98,0,0,0,0,0,0,0,0,0,"ASV_5","High-MH","None","Eukaryota","Chordata","Mammalia","Carnivora","Otariidae","Arctocephalus",NA
+"ASV_7",0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_7","High","357811","Eukaryota","Chordata","Actinopteri","Kurtiformes","Apogonidae","Apogon","Apogon imberbis"
+"ASV_12",0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_12","High-MH","None","Eukaryota","Chordata","Actinopteri","Labriformes","Labridae","Scarus",NA
+"ASV_18",0,0,0,0,0,0,0,0,0,309,0,0,0,494,0,0,0,0,0,698,24,93,0,0,0,0,0,223,0,"ASV_18","High-MH","None","Eukaryota","Chordata","Aves","Galliformes","Phasianidae",NA,NA
+"ASV_85",0,0,0,0,0,0,0,242,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_85","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_99",0,0,0,0,0,0,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_99","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_113",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,0,0,0,0,0,0,0,0,0,0,"ASV_113","High-MH","None","Eukaryota","Chordata","Mammalia","Artiodactyla","Suidae","Sus",NA
+"ASV_127",50,241,0,0,0,0,3,0,0,0,0,0,0,10,0,0,0,61,8,0,0,117,0,0,0,0,0,6,0,"ASV_127","High-MH","None","Eukaryota","Chordata","Mammalia","Primates","Hominidae",NA,NA
+"ASV_129",0,462,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26,0,23,0,0,0,13,0,"ASV_129","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_268",0,0,0,0,0,0,0,0,0,0,0,0,0,427,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_268","High-MH","None","Eukaryota","Chordata","Mammalia","Artiodactyla","Suidae","Sus",NA
+"ASV_279",9,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,72,0,"ASV_279","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_302",0,456,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_302","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_319",0,423,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_319","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_372",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24,0,24,3,0,0,0,0,6,0,"ASV_372","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_451",0,0,0,0,0,0,0,0,224,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_451","High","13677","Eukaryota","Chordata","Actinopteri","Scombriformes","Scombridae","Scomber","Scomber scombrus"
+"ASV_481",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,110,0,0,0,0,0,0,"ASV_481","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_503",0,177,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_503","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_579",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,"ASV_579","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_623",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,122,0,0,0,0,"ASV_623","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_643",0,116,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_643","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_692",0,96,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_692","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_708",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_726",0,47,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_726","High-MH","None","Eukaryota","Chordata","Mammalia","Primates","Hominidae",NA,NA
+"ASV_740",0,0,0,0,84,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_740","High-MH","None","Eukaryota","Chordata","Actinopteri","Cypriniformes","Cyprinidae",NA,NA
+"ASV_801",0,70,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_801","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_802",0,0,0,0,70,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_881",0,52,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_881","High-MH","None","Eukaryota","Chordata","Mammalia","Primates","Hominidae",NA,NA
+"ASV_931",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,44,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1022",0,29,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1022","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_1035",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,27,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1052",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24,0,0,0,0,"ASV_1052","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1065",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,"ASV_1065","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_1069",0,0,0,0,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1069","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1074",0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1074","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1082",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,"ASV_1082","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1124",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1128",0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1128","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1135",0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1135","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1150",0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1150","High-MH","None","Eukaryota","Chordata","Actinopteri","Perciformes","Cottidae",NA,NA
+"ASV_1157",0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1157","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1172",0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1172","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1182",0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1182","None","None",NA,NA,NA,NA,NA,NA,NA
+"ASV_1206",0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1206","High","180282","Bacteria","Proteobacteria","Betaproteobacteria","Burkholderiales","Comamonadaceae","Delftia","Delftia tsuruhatensis"
+"ASV_1213",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,"ASV_1213","High-MH","None","Bacteria","Proteobacteria","Betaproteobacteria","Burkholderiales","Comamonadaceae","Delftia",NA
+"ASV_1214",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1223",0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1235",0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1239",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1242",2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1243",0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"ASV_1250",0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1250","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"

@@ -1,0 +1,16 @@
+"","C2","C3","C4","C6","CDOU.C","CHAM.C","CMAR.C","CORA.C","CUEV.C","DAPH.C","EGAS.C","ELI.C","GARD.C","PCAL.C","PCR1.NTC.1","PCR1.NTC.2","PESP.C","PIN.C","PLAZ.C","PMAN.C","PMOR.C","PROJ.C","PVIC.C","RED.C","SOMB.C","SUAR.C","OTU","assignmentQual","taxID","superkingdom","phylum","class","order","family","genus","species"
+"ASV_1",0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1","Low","334913","Eukaryota","Chordata","Actinopteri","Perciformes","Serranidae","Cephalopholis","Cephalopholis sexmaculata"
+"ASV_118",0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_118","High","880958","Eukaryota","Chordata","Actinopteri","Myctophiformes","Myctophidae","Diogenichthys","Diogenichthys laternatus"
+"ASV_1284",0,0,0,0,28,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1284","High-MH","None","Eukaryota","Chordata","Actinopteri","Gadiformes","Gadidae",NA,NA
+"ASV_13",0,0,0,0,0,0,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_13","High","317475","Eukaryota","Chordata","Actinopteri","Labriformes","Labridae","Halichoeres","Halichoeres dispilus"
+"ASV_1363",0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1363","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_1390",0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_1390","High-MH","None","Eukaryota","Chordata","Mammalia","Artiodactyla","Bovidae","Ovis",NA
+"ASV_252",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,"ASV_252","High","9704","Eukaryota","Chordata","Mammalia","Carnivora","Otariidae","Zalophus","Zalophus californianus"
+"ASV_40",7,122,0,0,0,0,0,0,0,0,0,5,0,2,0,0,0,0,0,0,4,22,22,0,23,19,"ASV_40","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_491",0,0,0,0,0,0,49,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_491","High-MH","None","Eukaryota","Chordata","Actinopteri","Scombriformes","Centrolophidae",NA,NA
+"ASV_512",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,59,0,0,0,0,53,0,"ASV_512","High","1347777","Eukaryota","Chordata","Actinopteri","Cypriniformes","Leuciscidae","Phoxinus","Phoxinus phoxinus"
+"ASV_518",0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_518","High-MH","None","Eukaryota","Chordata","Mammalia","Primates","Hominidae",NA,NA
+"ASV_681",0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_681","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_705",0,0,0,0,0,0,0,0,0,0,0,0,59,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_705","High-MH","None","Eukaryota","Chordata","Mammalia","Artiodactyla","Suidae","Sus",NA
+"ASV_870",0,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_870","High","9606","Eukaryota","Chordata","Mammalia","Primates","Hominidae","Homo","Homo sapiens"
+"ASV_9",0,0,0,0,0,66,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ASV_9","Low","1738800","Eukaryota","Chordata","Actinopteri","Stomiiformes","Phosichthyidae","Vinciguerria","Vinciguerria sp. CBM:ZF:14736"

@@ -1,0 +1,103 @@
+﻿SiteID,SiteType,Depth,Location,island
+BAR.1,sample,D,Barahona Beach,Isabela
+BAR.2,sample,D,Barahona Beach,Isabela
+BAR.3,sample,S,Barahona Beach,Isabela
+BAR.C,control.N,,Barahona Beach,Isabela
+C.C,control.P,,,
+C.D,control.P,,,
+C2,control.N,,,
+C3,control.N,,,
+C4,control.N,,,
+C5,control.N,,,
+C6,control.N,,,
+CDOU.1,sample,D,Cabo Douglas,Fernandina
+CDOU1.REDO.U,sample,D,Cabo Douglas,Fernandina
+CDOU.2,sample,D,Cabo Douglas,Fernandina
+CDOU.3,sample,S,Cabo Douglas,Fernandina
+CDOU.C,control.N,,Cabo Douglas,Fernandina
+CHAM.1,sample,D,Cabo Hammond,Fernandina
+CHAM.2,sample,D,Cabo Hammond,Fernandina
+CHAM.3,sample,S,Cabo Hammond,Fernandina
+CHAM.C,control.N,,Cabo Hammond,Fernandina
+CMAR.1,sample,D,Cabo Marshall,Isabela
+CMAR.2,sample,D,Cabo Marshall,Isabela
+CMAR.3,sample,S,Cabo Marshall,Isabela
+CMAR.C,control.N,,Cabo Marshall,Isabela
+CORA.1,sample,D,Salvaje de Corazón,Genovesa
+CORA.2,sample,D,Salvaje de Corazón,Genovesa
+CORA.3,sample,S,Salvaje de Corazón,Genovesa
+CORA.C,control.N,,Salvaje de Corazón,Genovesa
+CUEV.1,sample,D,Las Cuevas,Floreana
+CUEV.2,sample,D,Las Cuevas,Floreana
+CUEV.3,sample,S,Las Cuevas,Floreana
+CUEV.C,control.N,,Las Cuevas,Floreana
+DAPH.1,sample,D,Daphne Mayor,Seymour
+DAPH.2,sample,D,Daphne Mayor,Seymour
+DAPH.3,sample,S,Daphne Mayor,Seymour
+DAPH.C,control.N,,Daphne Mayor,Seymour
+EGAS.1,sample,D,Cerca a Puerto Egas,Santiago
+EGAS.2,sample,D,Cerca a Puerto Egas,Santiago
+EGAS.3,sample,S,Cerca a Puerto Egas,Santiago
+EGAS.C,control.N,,Cerca a Puerto Egas,Santiago
+ELI.1,sample,D,Marielas-Bahia Elizabeth,Isabela
+ELI.2,sample,D,Marielas-Bahia Elizabeth,Isabela
+ELI.3,sample,S,Marielas-Bahia Elizabeth,Isabela
+ELI.C,control.N,,Marielas-Bahia Elizabeth,Isabela
+GARD.1,sample,D,Bahía Gardner,Española
+GARD.2,sample,D,Bahía Gardner,Española
+GARD.3,sample,S,Bahía Gardner,Española
+GARD.C,control.N,,Bahía Gardner,Española
+PCAL.1,sample,D,Punta Calle,Marchena
+PCAL.2,sample,D,Punta Calle,Marchena
+PCAL.3,sample,S,Punta Calle,Marchena
+PCAL.C,control.N,,Punta Calle,Marchena
+PCR1.NTC.1,control.N,,,
+PCR1.NTC.2,control.N,,,
+PESP.1,sample,D,Punta Espinosa,Fernandina
+PESP.2,sample,D,Punta Espinosa,Fernandina
+PESP.3,sample,S,Punta Espinosa,Fernandina
+PESP.C,control.N,,Punta Espinosa,Fernandina
+PIN.1,sample,D,Cabo Ibbetson,Pinta
+PIN.2,sample,D,Cabo Ibbetson,Pinta
+PIN.3,sample,S,Cabo Ibbetson,Pinta
+PIN.C,control.N,,Cabo Ibbetson,Pinta
+PLAZ.1,sample,D,Islas Plaza,Santa Cruz
+PLAZ.2,sample,D,Islas Plaza,Santa Cruz
+PLAZ.3,sample,S,Islas Plaza,Santa Cruz
+PLAZ.C,control.N,,Islas Plaza,Santa Cruz
+PMAN.1,sample,D,Punta Mangle,Fernandina
+PMAN.2,sample,D,Punta Mangle,Fernandina
+PMAN.3,sample,S,Punta Mangle,Fernandina
+PMAN.C,control.N,,Punta Mangle,Fernandina
+PMOR.1,sample,D,Punta Moreno,Isabela
+PMOR.2,sample,D,Punta Moreno,Isabela
+PMOR.3,sample,S,Punta Moreno,Isabela
+PMOR.C,control.N,,Punta Moreno,Isabela
+PROJ.1,sample,D,Playa Roja,Rábida
+PROJ.2,sample,D,Playa Roja,Rábida
+PROJ.3,sample,S,Playa Roja,Rábida
+PROJ.C,control.N,,Playa Roja,Rábida
+PVIC.1,sample,D,Punta Vicente Roca,Isabela
+PVIC.2,sample,D,Punta Vicente Roca,Isabela
+PVIC.3,sample,S,Punta Vicente Roca,Isabela
+PVIC.C,control.N,,Punta Vicente Roca,Isabela
+RED.1,sample,D,Roca Redonda,Isabela
+RED.2,sample,D,Roca Redonda,Isabela
+RED.3,sample,S,Roca Redonda,Isabela
+RED.C,control.N,,Roca Redonda,Isabela
+SOMB.1,sample,D,Sombrero Chino,Santiago
+SOMB.2,sample,D,Sombrero Chino,Santiago
+SOMB.3,sample,S,Sombrero Chino,Santiago
+SOMB.C,control.N,,Sombrero Chino,Santiago
+STAFE.1,sample,D,Bahía Santa fe,Santa Fe
+STAFE.2,sample,D,Bahía Santa fe,Santa Fe
+STAFE.3,sample,S,Bahía Santa fe,Santa Fe
+STAFE.C,control.N,,Bahía Santa fe,Santa Fe
+SUAR.1,sample,D,Punta Suárez,Española
+SUAR.2,sample,D,Punta Suárez,Española
+SUAR.3,sample,S,Punta Suárez,Española
+SUAR.C,control.N,,Punta Suárez,Española
+TOR.1,sample,D,Isla Tortuga,Isabela
+TOR.2,sample,D,Isla Tortuga,Isabela
+TOR.3,sample,S,Isla Tortuga,Isabela
+TOR.C,control.N,,Isla Tortuga,Isabela
