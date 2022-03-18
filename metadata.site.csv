@@ -1,24 +1,24 @@
-﻿SiteID,Location,island
-BAR,Barahona Beach,Isabela
-CDOU,Cabo Douglas,Fernandina
-CHAM,Cabo Hammond,Fernandina
-CMAR,Cabo Marshall,Isabela
-CORA,Salvaje de Corazón,Genovesa
-CUEV,Las Cuevas,Floreana
-DAPH,Daphne Mayor,Seymour
-EGAS,Cerca a Puerto Egas,Santiago
-ELI,Marielas-Bahia Elizabeth,Isabela
-GARD,Bahía Gardner,Española
-PCAL,Punta Calle,Marchena
-PESP,Punta Espinosa,Fernandina
-PIN,Cabo Ibbetson,Pinta
-PLAZ,Islas Plaza,Santa Cruz
-PMAN,Punta Mangle,Fernandina
-PMOR,Punta Moreno,Isabela
-PROJ,Playa Roja,Rábida
-PVIC,Punta Vicente Roca,Isabela
-RED,Roca Redonda,Isabela
-SOMB,Sombrero Chino,Santiago
-STAFE,Bahía Santa fe,Santa Fe
-SUAR,Punta Suárez,Española
-TOR,Isla Tortuga,Isabela
+﻿SiteID,Location,island,latitude,longitude
+BAR,Barahona Beach,Isabela,"S 01º02,325´","W 091º 09,382´"
+CDOU,Cabo Douglas,Fernandina,"S 00º18,169´","W 091º 39,104´"
+CHAM,Cabo Hammond,Fernandina,"S 00º28,175´","W 091º 36,671´"
+CMAR,Cabo Marshall,Isabela,"S 00º00,080´","W 091º 13,431´"
+CORA,Salvaje de Corazón,Genovesa,"S 00º18,679´","W 089º 58,509´"
+CUEV,Las Cuevas,Floreana,"S 01º15,201´","W 090º 22,446´"
+DAPH,Daphne Mayor,Seymour,"S 00º25,548´","W 090º 22,327´"
+EGAS,Cerca a Puerto Egas,Santiago,"S 00º15,576´","W 090º 52,127´"
+ELI,Marielas-Bahia Elizabeth,Isabela,"S 00º35,703´","W 091º 05,154´"
+GARD,Bahía Gardner,Española,"S 01º21,928´","W 089º 38,359´"
+PCAL,Punta Calle,Marchena,"S 00º17,186´","W 090º 30,109´"
+PESP,Punta Espinosa,Fernandina,"S 00º16,337´","W 091º 26,123´"
+PIN,Cabo Ibbetson,Pinta,"S 00º36,233´","W 090º 47,390´"
+PLAZ,Islas Plaza,Santa Cruz,"S 00º34,054´","W 090º 10,417´"
+PMAN,Punta Mangle,Fernandina,"S 00º27,514´","W 091º 23,450´"
+PMOR,Punta Moreno,Isabela,"S 00º43,338´","W 091º 20,704´"
+PROJ,Playa Roja,Rábida,"S 00º24,537´","W 090º 42,932´"
+PVIC,Punta Vicente Roca,Isabela,"S 00º02,722´","W 091º 32,581´"
+RED,Roca Redonda,Isabela,"S 00º16,236´","W 091º 37,589´"
+SOMB,Sombrero Chino,Santiago,"S 00º21,049´","W 090º 34,110´"
+STAFE,Bahía Santa fe,Santa Fe,"S 00º47,969´","W 090º 02,847´"
+SUAR,Punta Suárez,Española,"S 01º21,034´","W 089º 42,626´"
+TOR,Isla Tortuga,Isabela,"S 01º00,703´","W 090º 52,602´"

@@ -12,6 +12,7 @@ library("vegan")
 library("Biostrings")
 library("RColorBrewer")
 library("seqinr")
+library("sp")
 
 #### Settings and Setup####
 ##Get metadata
@@ -25,6 +26,20 @@ items <- NULL
 #Set the seed 
 set.seed("123456")
 palette(brewer.pal(12, "Set3"))
+
+#Change the location to sensible numbers
+
+metadat.site$lat2 <- as.numeric(paste0("-",substr(metadat.site$latitude,3,4),".",substr(as.character(as.numeric(paste0(substr(metadat.site$latitude,6,7),".",substr(metadat.site$latitude,9,11)))/60),3,20)))
+metadat.site$lon2 <- as.numeric(paste0("-",substr(metadat.site$longitude,4,5),".",substr(as.character(as.numeric(paste0(substr(metadat.site$longitude,8,9),".",substr(metadat.site$longitude,11,13)))/60),3,20)))
+
+#Lets look at the particle tracking data 
+#all dat
+p.data <- read.csv("/Users/gwm297/GitHubRepos/GalapeDNA/ParticleTracking/AlexData010420.21/1km_new_stats.csv")
+#day 3 
+p.data2 <- p.data[p.data$day=="-3",]
+plot(p.data2$area..km.,p.data2$ave_dist)
+plot(lm(p.data2$area..km.~p.data2$ave_dist))
+summary(lm(p.data2$area..km.~p.data2$ave_dist))
 
 ####====2.0 Taxonomy ====####
 

@@ -30,7 +30,7 @@
 
   # call to coastline
     galcosta <-
-      paste0(data_locale, "galcosta.shp") %>%
+      paste0(data_locale,"galcosta.shp") %>%
       st_read()
       # shapefile()
 
@@ -149,3 +149,12 @@
     distance_m <-
       sapply(coastal_path %>% slot("lines"), function(x) LinesLength(x))
 
+
+    test <- metadat.site
+coordinates(test) <- ~lon2+lat2
+    
+
+mp <- st_multipoint(paste(metadat.site$lat2,metadat.site$lon2))
+    
+    
+    
