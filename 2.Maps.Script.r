@@ -12,10 +12,10 @@ library(raster)
 
 ##Lots of lines hashed out here, original file is 10GB+ so only subset used ;) 
 #load GEBCO_2022 netcdf downloaded on 110822 - https://www.gebco.net/data_and_products/gridded_bathymetry_data/
-#gebco <- raster("mapBuilding/gebco_2022_sub_ice_topo/GEBCO_2022_sub_ice_topo.nc")
+#gebco <- raster("mapBuilding/GEBCO_2022_sub_ice_topo.nc")
 
 # Create extent (our map area)
-#galap.ex <- extent(-92, -89, -1.55, 0.5)
+#galap.ex <- extent(-92, -89, -1.55, 0.68)
 
 # Create a crop of the bathymetric data
 #gebco.crop <- crop(gebco, galap.ex)
@@ -65,3 +65,4 @@ points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=1)
 points(metadata$lon2,metadata$lat2,pch=16, col='white',cex=0.5)
 
 dev.off()
+

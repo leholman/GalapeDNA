@@ -29,8 +29,11 @@ palette(brewer.pal(12, "Set3"))
 
 #Change the location to sensible numbers
 
-metadat.site$lat2 <- as.numeric(paste0("-",substr(metadat.site$latitude,3,4),".",substr(as.character(as.numeric(paste0(substr(metadat.site$latitude,6,7),".",substr(metadat.site$latitude,9,11)))/60),3,20)))
-metadat.site$lon2 <- as.numeric(paste0("-",substr(metadat.site$longitude,4,5),".",substr(as.character(as.numeric(paste0(substr(metadat.site$longitude,8,9),".",substr(metadat.site$longitude,11,13)))/60),3,20)))
+metadat.site$lat2 <- as.numeric(paste0(ifelse(substr(metadat.site$latitude,1,1)=="S","-",""),substr(metadat.site$latitude,3,4),".",substr(as.character(as.numeric(paste0(substr(metadat.site$latitude,6,7),".",substr(metadat.site$latitude,9,11)))/60),3,20)))
+metadat.site$lon2 <- as.numeric(paste0(ifelse(substr(metadat.site$longitude,1,1)=="W","-",""),substr(metadat.site$longitude,4,5),".",substr(as.character(as.numeric(paste0(substr(metadat.site$longitude,8,9),".",substr(metadat.site$longitude,11,13)))/60),3,20)))
+
+write.csv(metadat.site,file = "metadata.site.out.csv")
+
 
 #Lets look at the particle tracking data 
 #all dat
@@ -190,6 +193,23 @@ eASVs <- eASVs[match(rownames(rMiFishE),names(eASVs))]
 #combine
 
 write.csv(cbind("ASV_seq"=unlist(getSequence(eASVs,as.string = T)),MiEassigntrunc,rMiFishE),"cleandata/Cleaned.MiFish_E.dada2.lulu.rarefied.tax.csv")
+
+
+
+##SOME taxonomic filters to implement
+
+#Get rid of error seqs
+
+#get rid of the below domestic animals & humans
+
+domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens")
+
+#combine identical or subset seqs (https://rdrr.io/github/benjjneb/dada2/man/collapseNoMismatch.html)
+
+#combine all 'good' species IDs
+
+#subset non-fish taxa into birds / mammals / other (reptiles)
+
 
 
 
