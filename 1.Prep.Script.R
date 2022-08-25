@@ -13,6 +13,7 @@ library("Biostrings")
 library("RColorBrewer")
 library("seqinr")
 library("sp")
+library("dada2")
 
 #### Settings and Setup####
 ##Get metadata
@@ -45,9 +46,9 @@ plot(lm(p.data2$area..km.~p.data2$ave_dist))
 summary(lm(p.data2$area..km.~p.data2$ave_dist))
 
 
-####====2.0 Taxonomy ====####
+####====2.0 Basic Taxonomy ====####
 
-##Processing the taxonomy 
+##Processing the taxonomy according to a simple blast script 
 #We need to add the header
 Tax.MiFish.E <- read.table(file = "taxonomy/MiFishErawtaxonomy.txt",sep="\t")
 names(Tax.MiFish.E) <- c("OTUID","qlen","slen","qcov","qcovhsp","sseqid","bitscore","score","evalue","pctid","qstart","qend","start","send","staxid","sscinames")
@@ -61,8 +62,9 @@ MiUassignments <- ParseTaxonomy(blastoutput = "taxonomy/MiFishU.assignment.H.txt
 
 MiEassignments <- ParseTaxonomy(blastoutput = "taxonomy/MiFishE.assignment.H.txt",lineages = "taxonomy/ncbi_lineages_2021-01-27.csv.gz",lwrcovpct=90)
 
-####====3.0 DataSet Selection & Cleaning ====####
 
+
+####====3.0 DataSet Initial Cleaning ====####
 
 
 #DataClean
@@ -124,76 +126,43 @@ for (file in  files){
   write.csv(controls,file=newname.control)
 }
 
+##All ASVs were then checked by hand to produce the following master taxonomic list 
 
-##Prep MiFish U inital
+masterTAX <- read.csv("taxonomy/MasterAssignments.csv")
 
-MiFishU <- read.csv("cleandata/Cleaned.MiFish_U.dada2.lulu.csv",row.names = 1) 
-MiUassigntrunc <- data.frame(matrix(nrow= dim(MiFishU)[1],ncol=10))
-rownames(MiUassigntrunc) <- rownames(MiFishU)
-colnames(MiUassigntrunc) <- colnames(MiUassignments)
-for (row in 1:dim(MiFishU)[1]){
-  if(!rownames(MiFishU)[row] %in% MiUassignments$OTU){
-    next()}
-  MiUassigntrunc[rownames(MiFishU)[row],] <- MiUassignments[rownames(MiFishU)[row]==MiUassignments$OTU,]
-}
+#combine identical or subset seqs 
 
-##QC steps
-#rename redo
-colnames(MiFishU)[grep("CDOU1.REDO.U",colnames(MiFishU))] <- "CDOU.1"
+#Here we are first reassembling the datasets so they have the ASV seq as the row name
+U_fishdat <- read.csv("cleandata/Cleaned.MiFish_U.dada2.lulu.csv",row.names = 1)
+U_masterTAX <-masterTAX[substr(masterTAX$Index,1,1)=="U",]  
+U_ASVs <- U_masterTAX$Sequence[match(row.names(U_fishdat),U_masterTAX$ID)]
+rownames(U_fishdat) <- U_ASVs
 
-#Check rarefaction
-rarecurve(t(MiFishU),step=1000)
+E_fishdat <- read.csv("cleandata/Cleaned.MiFish_E.dada2.lulu.csv",row.names = 1)
+E_masterTAX <-masterTAX[substr(masterTAX$Index,1,1)=="E",]  
+E_ASVs <- E_masterTAX$Sequence[match(row.names(E_fishdat),E_masterTAX$ID)]
+rownames(E_fishdat) <- E_ASVs
 
-#rarefy
-rMiFishU <- as.data.frame(t(rrarefy(t(MiFishU[rowSums(MiFishU)>0,]),min(colSums(MiFishU[rowSums(MiFishU)>0,])))))
+#Now as the samples have different numbers of reads between each marker we switch to relative abundance and then pretend each sample has 1 billion reads to persuade a dada2 function to work
 
-#organise assignments
-MiUassigntrunc <- MiUassigntrunc[match(rownames(rMiFishU),rownames(MiUassigntrunc)),]
+#first we make a relative abundance data (p) 
+U_fishdat_p <-prop.table(as.matrix(U_fishdat[,match(colnames(E_fishdat),colnames(U_fishdat))]),2)
+E_fishdat_p <-prop.table(as.matrix(E_fishdat),2)
 
-#pull in ASVs
-uASVs <- read.fasta("taxonomy/OTUs/MiFish_U_dada2.ASVs.fasta")
-uASVs <- uASVs[match(rownames(rMiFishU),names(uASVs))]
-
-#combine
-
-write.csv(cbind("ASV_seq"=unlist(getSequence(uASVs,as.string = T)),MiUassigntrunc,rMiFishU),"cleandata/Cleaned.MiFish_U.dada2.lulu.rarefied.tax.csv")
+#lets check!
+colSums(E_fishdat_p)
+colSums(U_fishdat_p)
 
 
+fishdat_p <- cbind(t(U_fishdat_p),t(E_fishdat_p))
 
+fishdat_p_collapsed <- t(collapseNoMismatch(fishdat_p))
 
-##Prep MiFish E inital
+fishdat_collapsed <- fishdat_p_collapsed/2
 
-MiFishE <- read.csv("cleandata/Cleaned.MiFish_E.dada2.lulu.csv",row.names = 1) 
-MiEassigntrunc <- data.frame(matrix(nrow= dim(MiFishE)[1],ncol=10))
-rownames(MiEassigntrunc) <- rownames(MiFishE)
-colnames(MiEassigntrunc) <- colnames(MiEassignments)
-for (row in 1:dim(MiFishE)[1]){
-  if(!rownames(MiFishE)[row] %in% MiEassignments$OTU){
-    next()}
-  MiEassigntrunc[rownames(MiFishE)[row],] <- MiEassignments[rownames(MiFishE)[row]==MiEassignments$OTU,]
-}
+colSums(fishdat_collapsed)
 
-##QC steps
-rarecurve(t(MiFishE),step=1000)
-
-#Check rarefaction
-test <- MiFishE[,-match(c("RED.2","DAPH.1","PMAN.2"),colnames(MiFishE)),]
-rarecurve(t(test),step=1000)
-
-#rarefy
-rMiFishE <- as.data.frame(t(rrarefy(t(MiFishE[rowSums(MiFishE)>0,]),15000)))
-
-#organise assignments
-MiEassigntrunc <- MiEassigntrunc[match(rownames(rMiFishE),rownames(MiEassigntrunc)),]
-
-#pull in ASVs
-eASVs <- read.fasta("taxonomy/OTUs/MiFish_E_dada2.ASVs.fasta")
-eASVs <- eASVs[match(rownames(rMiFishE),names(eASVs))]
-
-#combine
-
-write.csv(cbind("ASV_seq"=unlist(getSequence(eASVs,as.string = T)),MiEassigntrunc,rMiFishE),"cleandata/Cleaned.MiFish_E.dada2.lulu.rarefied.tax.csv")
-
+## Now let's match up the taxonomy
 
 
 ##SOME taxonomic filters to implement
@@ -204,7 +173,6 @@ write.csv(cbind("ASV_seq"=unlist(getSequence(eASVs,as.string = T)),MiEassigntrun
 
 domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens")
 
-#combine identical or subset seqs (https://rdrr.io/github/benjjneb/dada2/man/collapseNoMismatch.html)
 
 #combine all 'good' species IDs
 
