@@ -143,7 +143,7 @@ E_masterTAX <-masterTAX[substr(masterTAX$Index,1,1)=="E",]
 E_ASVs <- E_masterTAX$Sequence[match(row.names(E_fishdat),E_masterTAX$ID)]
 rownames(E_fishdat) <- E_ASVs
 
-#Now as the samples have different numbers of reads between each marker we switch to relative abundance and then pretend each sample has 1 billion reads to persuade a dada2 function to work
+#Now as the samples have different numbers of reads between each marker we switch to relative abundance and use the dada2 function collapse no mismatch
 
 #first we make a relative abundance data (p) 
 U_fishdat_p <-prop.table(as.matrix(U_fishdat[,match(colnames(E_fishdat),colnames(U_fishdat))]),2)
@@ -164,21 +164,51 @@ colSums(fishdat_collapsed)
 
 ## Now let's match up the taxonomy
 
+rownames(fishdat_collapsed)
 
-##SOME taxonomic filters to implement
+masterTAX_merged <- masterTAX[match(rownames(fishdat_collapsed),masterTAX$Sequence),]
+fishdat_p_collapsed_wTAX_raw <- cbind(as.data.frame(fishdat_p_collapsed),masterTAX_merged)
+
+##Time to filter the taxonomy
+
 
 #Get rid of error seqs
 
+fishdat_p_collapsed_wTAX_1 <- fishdat_p_collapsed_wTAX_raw[fishdat_p_collapsed_wTAX_raw$Assign.Category!="E",] 
+
 #get rid of the below domestic animals & humans
 
-domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens")
+domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Gallus gallus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens")
 
+fishdat_p_collapsed_wTAX_2 <- fishdat_p_collapsed_wTAX_1[!(fishdat_p_collapsed_wTAX_1$Assign.Assigment %in% domestics),]
 
 #combine all 'good' species IDs
+
+fishdat_p_collapsed_wTAX_3 <- fishdat_p_collapsed_wTAX_2
+
+#this code sums the incidence data for good quality hits to the same species
+for (name in unique(fishdat_p_collapsed_wTAX_3$Assign.Assigment[fishdat_p_collapsed_wTAX_3$Assign.Category=="G"])){
+  collapseOTUs <- rownames(fishdat_p_collapsed_wTAX_3[fishdat_p_collapsed_wTAX_3$Assign.Assigment==name & fishdat_p_collapsed_wTAX_3$Assign.Category=="G",])
+  if(length(collapseOTUs)==1){next}else{
+  MotherOTU <- names(sort(rowSums(fishdat_p_collapsed_wTAX_3[collapseOTUs,1:69]),decreasing = TRUE))[1]
+  collapseOTUs <- collapseOTUs[-grep(MotherOTU,collapseOTUs)]
+  fishdat_p_collapsed_wTAX_3[MotherOTU,1:69] <- fishdat_p_collapsed_wTAX_3[MotherOTU,1:69] + colSums(fishdat_p_collapsed_wTAX_3[collapseOTUs,1:69])
+  fishdat_p_collapsed_wTAX_3 <- fishdat_p_collapsed_wTAX_3[-match(collapseOTUs,rownames(fishdat_p_collapsed_wTAX_3)),]
+  }
+}
 
 #subset non-fish taxa into birds / mammals / other (reptiles)
 
 
+
+#####****THIS DOESNT WORK ____ WE ARE HERE 13092022
+
+
+test <- fishdat_p_collapsed_wTAX_3[fishdat_p_collapsed_wTAX_3$B.class=="" |
+                                   fishdat_p_collapsed_wTAX_3$B.class=="Actinopteri" |
+                                   fishdat_p_collapsed_wTAX_3$B.class=="Chondrichthyes", ]
+                         
+write.csv(fishdat_p_collapsed_wTAX_3$B.phylum[])
 
 
 
