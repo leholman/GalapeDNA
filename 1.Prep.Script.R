@@ -178,7 +178,7 @@ fishdat_p_collapsed_wTAX_1 <- fishdat_p_collapsed_wTAX_raw[fishdat_p_collapsed_w
 
 #get rid of the below domestic animals & humans
 
-domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Gallus gallus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens")
+domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Felis catus","Gallus gallus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens")
 
 fishdat_p_collapsed_wTAX_2 <- fishdat_p_collapsed_wTAX_1[!(fishdat_p_collapsed_wTAX_1$Assign.Assigment %in% domestics),]
 
@@ -197,8 +197,33 @@ for (name in unique(fishdat_p_collapsed_wTAX_3$Assign.Assigment[fishdat_p_collap
   }
 }
 
+##Output a dataset with everything 
+
+write.csv(fishdat_p_collapsed_wTAX_3,"cleandata/Cleaned_Master_wTAX.csv")
+
 #subset non-fish taxa into birds / mammals / other (reptiles)
 
+
+##FISH
+FishOut <- fishdat_p_collapsed_wTAX_3[!(fishdat_p_collapsed_wTAX_3$B.class%in%c("Mammalia","Aves","Lepidosauria","Mamiellophyceae","Demospongiae")),]
+#somehow green turtle escapes the non-fish purge
+FishOut <- FishOut[-match("Testudines",FishOut$B.order),]
+FishOut[is.na(FishOut)] <- ""
+write.csv(FishOut,"cleandata/Cleaned_Fish_wTAX.csv")
+
+##BIRDS
+BirdOut <- fishdat_p_collapsed_wTAX_3[fishdat_p_collapsed_wTAX_3$B.class=="Aves",]
+BirdOut  <- BirdOut[!is.na(BirdOut[,1]),]
+write.csv(BirdOut,"cleandata/Cleaned_Birds_wTAX.csv")
+
+##MAMMALS
+MammOut <- fishdat_p_collapsed_wTAX_3[fishdat_p_collapsed_wTAX_3$B.class=="Mammalia",]
+MammOut  <- MammOut[!is.na(MammOut[,1]),]
+write.csv(MammOut,"cleandata/Cleaned_Mammals_wTAX.csv")
+
+##OTHERS
+OtherOut <- fishdat_p_collapsed_wTAX_3[-match(c(rownames(FishOut),rownames(BirdOut),rownames(MammOut)),rownames(fishdat_p_collapsed_wTAX_3)),]
+write.csv(OtherOut,"cleandata/Cleaned_Others_wTAX.csv")
 
 
 #####****THIS DOESNT WORK ____ WE ARE HERE 13092022
