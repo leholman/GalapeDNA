@@ -6,50 +6,77 @@
 
 ####====0.0 Packages====####
 library(vegan)
+library("RColorBrewer")
+#Set the seed 
+set.seed("123456")
+palette(brewer.pal(12, "Set3"))
 
 ####====1.0 Pull in Data ====####
+#Fish first
+fishAll <- read.csv("cleandata/Cleaned_Fish_wTAX.csv",row.names=1)
+fishAssign <- fishAll[,70:86]
+fishdat <- fishAll[,1:69]
 
+#Pull out site information
+sites <- unlist(lapply(strsplit(colnames(fishdat),"\\."), `[[`, 1))
 
+#Get the metadata 
+metadat <- read.csv("metadata.csv")
+metadatSites <- read.csv("metadata.site.out.csv",row.names=1)
 
+#Make a dataset across sites with mean values 
 
-####====2.0 ====####
-####====3.0 ====####
+fishdatSite <- as.data.frame(matrix(ncol=length(unique(sites)),nrow=dim(fishdat[1])))
+colnames(fishdatSite) <- unique(sites)
+rownames(fishdatSite) <- rownames(fishdat)
+for (column in colnames(fishdatSite)){
+  running <- fishdat[,sites==column]
+  fishdatSite[,colnames(fishdatSite)==column] <- rowMeans(running) 
+}
 
+####====2.0 Plotting basic alpha/beta diversity metrics ====####
 
+fishdatB <- fishdatSite 
+fishdatB[fishdatB>0] <- 1
+fishAlpha <- data.frame("ID"=names(fishdatB),"Richness"= colSums(fishdatB))
 
-#spp richness per sample
-
-par(mfrow=c(1,2))
-temp <- rMiU.site
-temp[temp > 1] <- 1
-Coastal.alpha <- data.frame("ID"=names(temp),"MiFishU"= colSums(temp))
-
-plot(as.numeric(as.factor(metadat.site$island[match(as.character(Coastal.alpha$ID),metadat.site$SiteID)])),Coastal.alpha$MiFishU,
-     col=as.numeric(as.factor(metadat.site$island[match(as.character(Coastal.alpha$ID),metadat.site$SiteID)])),
+pdf("figures/FishRichness.pdf",height = 5,width = 6)
+par(mar=c(6.1, 4.1, 2.1, 2.1))
+plot(as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),fishAlpha$Richness,
+     col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),
      pch=16,
      cex=2.5,
-     ylab="OTUs",
+     ylab="ASV Richness",
      xlab="",
-     xaxt='n',
-     main="MiFishU OTU Richness"
+     xaxt='n'
 )
+axis(1,at=1:12,labels=levels(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2)
+dev.off()
 
-axis(1,at=1:12,labels=levels(metadat.site$island),cex=0.2,las=2)
 
-#cheeky little island OTU counter 
-test <- by( Coastal.alpha$MiFishU,as.factor(metadat.site$island[match(as.character(Coastal.alpha$ID),metadat.site$SiteID)]), mean )
-test2 <-test[1:12]
-names(test2) <- names(unlist(test))
+#Now a beta diversity plot
 
-#nMDS 
-
-nMDS <- metaMDS(t(rMiU.site),"bray")
+pdf("figures/FishBetaDiv.pdf",height = 5,width = 6)
+par(mar=c(2.1, 2.1, 2.1, 2.1))
+nMDS <- metaMDS(vegdist(t(fishdat),method="jaccard",binary=TRUE),trymax=500)
 
 plot(nMDS$points[,1],nMDS$points[,2],
      pch=16,
      cex=1.5,
-     col=metadat.site$island[match(as.character(Coastal.alpha$ID),metadat.site$SiteID)],
-     main="MiFishU Bray-Curtis nMDS")
+     col=as.numeric(as.factor(metadatSites$island[match(sites,metadatSites$SiteID)])),
+     main="",
+     ylab="",xlab="")
+
+ordihull(nMDS,groups = sites,col = "grey71",draw = "polygon",lty=0)
+points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
+       col=as.numeric(as.factor(metadatSites$island[match(sites,metadatSites$SiteID)])))
+
+dev.off()
+
+
+####====3.0 ====####
+
+
 
 
 ###Questions

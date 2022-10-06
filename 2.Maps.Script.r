@@ -57,7 +57,7 @@ blue.col <- colorRampPalette(c("darkblue", "lightblue"))
 
 #First plot
 
-pdf(width = 8,height=6.5,file="mapBuilding/test.pdf")
+pdf(width = 8,height=6.5,file="mapBuilding/test1.pdf")
 
 plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend = FALSE)
 #plot(eq, add=TRUE)
@@ -65,4 +65,18 @@ points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=1)
 points(metadata$lon2,metadata$lat2,pch=16, col='white',cex=0.5)
 
 dev.off()
+
+#Adding in colours per island
+cols <- c("#80B1D3","#FFFFB3","#FFFFB3","#80B1D3","#FB8072","#BEBADA","#FFED6F","#CCEBC5",
+          "#80B1D3","#8DD3C7","#FDB462","#FFFFB3","#B3DE69","gray85","#FFFFB3","#80B1D3",
+          "#FCCDE5","#80B1D3","#80B1D3","#CCEBC5","#BC80BD","#8DD3C7","#80B1D3")
+pdf(width = 8,height=6.5,file="mapBuilding/test2.pdf")
+
+plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend = FALSE)
+#plot(eq, add=TRUE)
+points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=3)
+points(metadata$lon2,metadata$lat2,pch=16, col=cols,cex=2)
+
+dev.off()
+
 
