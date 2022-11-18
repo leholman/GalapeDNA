@@ -80,3 +80,38 @@ points(metadata$lon2,metadata$lat2,pch=16, col=cols,cex=2)
 dev.off()
 
 
+#calculate some distances 'as-the-fish-swims' 
+library('gdistance')
+
+#Pull in galapagos
+gebco.crop <- readRDS("mapBuilding/GalapBathy.rds")
+gebco.crop2 <- gebco.crop
+
+#set land to zero, sea to 1
+gebco.crop2@data@values[gebco.crop2@data@values>-1] <-0
+gebco.crop2@data@values[gebco.crop2@data@values<0] <-1
+
+#Places
+places <- cbind(metadatSites$lon2,metadatSites$lat2)
+sitePairwiseDist <- expand.grid(Start=metadatSites$SiteID,
+                                End=metadatSites$SiteID)
+
+#
+tr1 <- transition(gebco.crop2, transitionFunction=mean, directions=16)
+tr2 <- geoCorrection(tr1, type="c", multpl=TRUE)
+
+sitePairwiseDist$Flat <- metadatSites$lat2[match(sitePairwiseDist$Start,metadatSites$SiteID)]
+sitePairwiseDist$Flon <- metadatSites$lon2[match(sitePairwiseDist$Start,metadatSites$SiteID)]
+sitePairwiseDist$Tlat <- metadatSites$lat2[match(sitePairwiseDist$End,metadatSites$SiteID)]
+sitePairwiseDist$Tlon <- metadatSites$lon2[match(sitePairwiseDist$End,metadatSites$SiteID)]
+sitePairwiseDist$Calcdistance <- rep(NA,length(sitePairwiseDist$End))
+
+for (row in 1:length(sitePairwiseDist$End)){
+  sitePairwiseDist$Calcdistance[row] <-  costDistance(tr2,c(sitePairwiseDist$Flon[row],
+                                                            sitePairwiseDist$Flat[row]),
+                                                      c(sitePairwiseDist$Tlon[row],
+                                                        sitePairwiseDist$Tlat[row]))
+  print(row)
+}
+
+write.csv(sitePairwiseDist,"SiteDistance.csv")
