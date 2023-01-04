@@ -125,7 +125,7 @@ plot(nMDS$points[,1],nMDS$points[,2],
      main="",
      col=as.numeric(as.factor(groups2)),
      ylab="",xlab="")
-
+you
 ordihull(nMDS,groups = sites,col = "grey71",draw = "polygon",lty=0)
 points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
        col=as.numeric(as.factor(groups2)))

@@ -1,0 +1,7 @@
+The results from the extended runs are now in. Attached should be two csv files one containing 'drift times' in days (sites_in_range.csv) and the other fraction of particles arriving (frac_in_range.csv).
+
+What the particle tracing has done is to mimic, using the model ocean velocity fields, what would happen to a particle (e.g. an empty beer can) if it was dropped into the ocean at a specific site. These runs were done in reverse so this estimates where a particle found at a specific site is likely to have come from.
+
+As an example if we look at row one of the sites_in_range.csv file, this can be interpreted as saying a particle dropped into the ocean at site 9 (first numeric entry in row - Punta Vicente Roca) would drift through site 1 (Isla Tortuga) after 29.8 days. The second file quantifies how likely the arrival of the particle is, for the example above if we dropped a large number of particles in at site 9 approx number_dropped x 7x10-7 of them will arrive at site 1.
+
+If there is no numeric value in the file this implies the prevailing currents will not permit a particle to drift between sites. It is still possible for two (or more) stage drifts - e.g. particle arrives at site 1 from site 9 in 29.8 days, and arrives at site 9 from site 2 in 10.8 days (row 9), which implies a particle dropped at site 2 could end up at site 1 in 40.6 days. However, given the small fraction of particles making any one step the fraction completing two or more steps becomes vanishingly small, in the case above it would be number_dropped x ~6x10-12.
