@@ -81,7 +81,8 @@ dev.off()
 
 
 #calculate some distances 'as-the-fish-swims' 
-library('gdistance')
+library('gdistance') 
+library('sf')
 
 #Pull in galapagos
 gebco.crop <- readRDS("mapBuilding/GalapBathy.rds")
@@ -89,16 +90,17 @@ gebco.crop2 <- gebco.crop
 
 #set land to zero, sea to 1
 gebco.crop2@data@values[gebco.crop2@data@values>-1] <-0
-gebco.crop2@data@values[gebco.crop2@data@values<0] <-1
+gebco.crop2@data@values[gebco.crop2@data@values<0] <-Inf
 
 #Places
+metadatSites <- read.csv("metadata.site.out.csv",row.names=1)
 places <- cbind(metadatSites$lon2,metadatSites$lat2)
 sitePairwiseDist <- expand.grid(Start=metadatSites$SiteID,
                                 End=metadatSites$SiteID)
 
 #
 tr1 <- transition(gebco.crop2, transitionFunction=mean, directions=16)
-tr2 <- geoCorrection(tr1, type="c", multpl=TRUE)
+tr2 <- geoCorrection(tr1, type="r", multpl=TRUE)
 
 sitePairwiseDist$Flat <- metadatSites$lat2[match(sitePairwiseDist$Start,metadatSites$SiteID)]
 sitePairwiseDist$Flon <- metadatSites$lon2[match(sitePairwiseDist$Start,metadatSites$SiteID)]
@@ -106,12 +108,42 @@ sitePairwiseDist$Tlat <- metadatSites$lat2[match(sitePairwiseDist$End,metadatSit
 sitePairwiseDist$Tlon <- metadatSites$lon2[match(sitePairwiseDist$End,metadatSites$SiteID)]
 sitePairwiseDist$Calcdistance <- rep(NA,length(sitePairwiseDist$End))
 
+
+#trying here to run the whole command sensibly by not looping but it doesnt currently work
+test <- costDistance(tr2,cbind(sitePairwiseDist$Flon,sitePairwiseDist$Flat),cbind(sitePairwiseDist$Tlon,sitePairwiseDist$Tlat))
+
+#this works but is stupid and slow
 for (row in 1:length(sitePairwiseDist$End)){
   sitePairwiseDist$Calcdistance[row] <-  costDistance(tr2,c(sitePairwiseDist$Flon[row],
                                                             sitePairwiseDist$Flat[row]),
                                                       c(sitePairwiseDist$Tlon[row],
-                                                        sitePairwiseDist$Tlat[row]))
+                                                        sitePairwiseDist$Tlat[row]),
+                                                      distfun = gdistance::distHaversine)
   print(row)
 }
 
 write.csv(sitePairwiseDist,"SiteDistance.csv")
+
+#Another solution
+
+for (row in 1:25){ 
+
+test <- shortestPath(tr2, c(sitePairwiseDist$Flon[row],
+                    sitePairwiseDist$Flat[row]),
+             c(sitePairwiseDist$Tlon[row],
+               sitePairwiseDist$Tlat[row]), output="SpatialLines")
+lines(test,col="blue")
+
+}
+
+row <- 4
+
+
+test <- shortestPath(tr2, c(sitePairwiseDist$Flon[row],
+                            sitePairwiseDist$Flat[row]),
+                     c(sitePairwiseDist$Tlon[row],
+                       sitePairwiseDist$Tlat[row]), output="SpatialLines")
+
+st_line_sample(test, 0.001, type = "regular")
+st_line_sample(st_transform(test, 3857), density = c(1/100))
+
