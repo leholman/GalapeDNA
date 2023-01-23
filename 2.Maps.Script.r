@@ -10,6 +10,7 @@
 library(ncdf4)
 library(raster)
 
+
 ##Lots of lines hashed out here, original file is 10GB+ so only subset used ;) 
 #load GEBCO_2022 netcdf downloaded on 110822 - https://www.gebco.net/data_and_products/gridded_bathymetry_data/
 #gebco <- raster("mapBuilding/GEBCO_2022_sub_ice_topo.nc")
@@ -83,6 +84,7 @@ dev.off()
 #calculate some distances 'as-the-fish-swims' 
 library('gdistance') 
 library('sf')
+library('geosphere')
 
 #Pull in galapagos
 gebco.crop <- readRDS("mapBuilding/GalapBathy.rds")
@@ -109,41 +111,47 @@ sitePairwiseDist$Tlon <- metadatSites$lon2[match(sitePairwiseDist$End,metadatSit
 sitePairwiseDist$Calcdistance <- rep(NA,length(sitePairwiseDist$End))
 
 
-#trying here to run the whole command sensibly by not looping but it doesnt currently work
-test <- costDistance(tr2,cbind(sitePairwiseDist$Flon,sitePairwiseDist$Flat),cbind(sitePairwiseDist$Tlon,sitePairwiseDist$Tlat))
 
-#this works but is stupid and slow
+#empty points table 
+
+pathPointsTable <- c()
+
+
+#Loop over site comparisons and output needed data
+
 for (row in 1:length(sitePairwiseDist$End)){
-  sitePairwiseDist$Calcdistance[row] <-  costDistance(tr2,c(sitePairwiseDist$Flon[row],
-                                                            sitePairwiseDist$Flat[row]),
-                                                      c(sitePairwiseDist$Tlon[row],
-                                                        sitePairwiseDist$Tlat[row]),
-                                                      distfun = gdistance::distHaversine)
+
+  
+#set dist to zero and skip loop for comparing a site to itself
+  if(sitePairwiseDist$Start[row]==sitePairwiseDist$End[row]){sitePairwiseDist$Calcdistance[row] <- 0
+    next()}
+  #get the shortest path 
+  loopPath <- shortestPath(tr2, c(sitePairwiseDist$Flon[row],
+                    sitePairwiseDist$Flat[row]),
+             c(sitePairwiseDist$Tlon[row],
+               sitePairwiseDist$Tlat[row]), output="SpatialLines")
+  #calculate the distance of the shortest path
+  looplen <- lengthLine(loopPath)
+  #sample points along the path every 1000 metres
+  loopPathpoints <- spsample(loopPath,looplen/1000,type="regular")
+  
+  #output lengths to dataframe
+  sitePairwiseDist$Calcdistance[row] <- looplen
+  
+  #create point output table 
+  loopPathPointsize <- length(loopPathpoints)
+  loopPointsTable <- data.frame("Order"=1:loopPathPointsize,
+                                "Start"=rep(sitePairwiseDist$Start[row],loopPathPointsize),
+                                "End"=rep(sitePairwiseDist$End[row],loopPathPointsize),
+                                "lon"=loopPathpoints@coords[,1],
+                                "lat"=loopPathpoints@coords[,2])
+  
+  
+  pathPointsTable <- rbind(pathPointsTable,loopPointsTable)
+  
   print(row)
 }
 
 write.csv(sitePairwiseDist,"SiteDistance.csv")
-
-#Another solution
-
-for (row in 1:25){ 
-
-test <- shortestPath(tr2, c(sitePairwiseDist$Flon[row],
-                    sitePairwiseDist$Flat[row]),
-             c(sitePairwiseDist$Tlon[row],
-               sitePairwiseDist$Tlat[row]), output="SpatialLines")
-lines(test,col="blue")
-
-}
-
-row <- 4
-
-
-test <- shortestPath(tr2, c(sitePairwiseDist$Flon[row],
-                            sitePairwiseDist$Flat[row]),
-                     c(sitePairwiseDist$Tlon[row],
-                       sitePairwiseDist$Tlat[row]), output="SpatialLines")
-
-st_line_sample(test, 0.001, type = "regular")
-st_line_sample(st_transform(test, 3857), density = c(1/100))
+write.csv(pathPointsTable,"pathPointsTable.csv")
 
