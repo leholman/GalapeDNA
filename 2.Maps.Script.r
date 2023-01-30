@@ -81,77 +81,23 @@ points(metadata$lon2,metadata$lat2,pch=16, col=cols,cex=2)
 dev.off()
 
 
-#calculate some distances 'as-the-fish-swims' 
-library('gdistance') 
-library('sf')
-library('geosphere')
 
-#Pull in galapagos
-gebco.crop <- readRDS("mapBuilding/GalapBathy.rds")
-gebco.crop2 <- gebco.crop
 
-#set land to zero, sea to 1
-gebco.crop2@data@values[gebco.crop2@data@values>-1] <-0
-gebco.crop2@data@values[gebco.crop2@data@values<0] <-Inf
+### playground basement
+plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend = FALSE)
+#plot(eq, add=TRUE)
+points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=1)
+points(metadata$lon2,metadata$lat2,pch=16, col='white',cex=0.5)
 
-#Places
-metadatSites <- read.csv("metadata.site.out.csv",row.names=1)
-places <- cbind(metadatSites$lon2,metadatSites$lat2)
-sitePairwiseDist <- expand.grid(Start=metadatSites$SiteID,
-                                End=metadatSites$SiteID)
+site <- "RED"
+site <- "SUAR"
 
-#
-tr1 <- transition(gebco.crop2, transitionFunction=mean, directions=16)
-tr2 <- geoCorrection(tr1, type="r", multpl=TRUE)
-
-sitePairwiseDist$Flat <- metadatSites$lat2[match(sitePairwiseDist$Start,metadatSites$SiteID)]
-sitePairwiseDist$Flon <- metadatSites$lon2[match(sitePairwiseDist$Start,metadatSites$SiteID)]
-sitePairwiseDist$Tlat <- metadatSites$lat2[match(sitePairwiseDist$End,metadatSites$SiteID)]
-sitePairwiseDist$Tlon <- metadatSites$lon2[match(sitePairwiseDist$End,metadatSites$SiteID)]
-sitePairwiseDist$Calcdistance <- rep(NA,length(sitePairwiseDist$End))
+points(pathPointsTable$lon[pathPointsTable$Start==site],
+       pathPointsTable$lat[pathPointsTable$Start==site],
+       col="lightgreen",
+       pch=16,
+       cex=0.2)
 
 
 
-#empty points table 
-
-pathPointsTable <- c()
-
-
-#Loop over site comparisons and output needed data
-
-for (row in 1:length(sitePairwiseDist$End)){
-
-  
-#set dist to zero and skip loop for comparing a site to itself
-  if(sitePairwiseDist$Start[row]==sitePairwiseDist$End[row]){sitePairwiseDist$Calcdistance[row] <- 0
-    next()}
-  #get the shortest path 
-  loopPath <- shortestPath(tr2, c(sitePairwiseDist$Flon[row],
-                    sitePairwiseDist$Flat[row]),
-             c(sitePairwiseDist$Tlon[row],
-               sitePairwiseDist$Tlat[row]), output="SpatialLines")
-  #calculate the distance of the shortest path
-  looplen <- lengthLine(loopPath)
-  #sample points along the path every 1000 metres
-  loopPathpoints <- spsample(loopPath,looplen/1000,type="regular")
-  
-  #output lengths to dataframe
-  sitePairwiseDist$Calcdistance[row] <- looplen
-  
-  #create point output table 
-  loopPathPointsize <- length(loopPathpoints)
-  loopPointsTable <- data.frame("Order"=1:loopPathPointsize,
-                                "Start"=rep(sitePairwiseDist$Start[row],loopPathPointsize),
-                                "End"=rep(sitePairwiseDist$End[row],loopPathPointsize),
-                                "lon"=loopPathpoints@coords[,1],
-                                "lat"=loopPathpoints@coords[,2])
-  
-  
-  pathPointsTable <- rbind(pathPointsTable,loopPointsTable)
-  
-  print(row)
-}
-
-write.csv(sitePairwiseDist,"SiteDistance.csv")
-write.csv(pathPointsTable,"pathPointsTable.csv")
 

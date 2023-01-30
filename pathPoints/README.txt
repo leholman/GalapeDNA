@@ -1,0 +1,1 @@
+Uvel is northwards velocity (positive going north) and Vvel is eastwards velocity (positive going east).  Each file contains the mean velocity at the point for the relevant month from the model surface velocity field. If a value is zero then the point is not in the model ocean - it's on land.
