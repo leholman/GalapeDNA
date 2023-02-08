@@ -96,36 +96,42 @@ modeldat <-read.csv("pathPoints/pathPointsTable_Sep.csv")
 modeldatLAND <- modeldat[modeldat$VVEL==0,]
 
 
-points(modeldatLAND$lon,modeldatLAND$lat,pch=16,col="red",cex=0.4)
+plot(modeldatLAND$lon,modeldatLAND$lat,pch=16,col="red",cex=0.4)
 
 ####====2.1 Calculate sum of vectors ====####
 
-VectorSum <- function(Northing,Easting){
-  if (Northing==0|Easting==0){stop("Northing or Easting is zero - land")} 
-  outputMagnitude <- sqrt(Northing^2 + Easting^2)
-  print(outputMagnitude)
-  
-  θ <- tan(Northing/Easting)*(180/pi)
 
-  
-  
-  
-  if (Northing>0 & Easting>0){
-    print(90-θ)
-    print("N+ E+")} else 
-      if (Northing<0 & Easting>0){
-        print(90+θ)
-        print("N- E+")} else 
-          if (Northing<0 & Easting<0){
-            print(270-θ)
-            print("N- E-")} else 
-              if (Northing>0 & Easting<0){
-                print(270+θ)
-                print("N+ E-")} 
-  
-  
-  print("Working")
+#First the angle
+vectorAngle <- function(Northing,Easting){
+  if(Northing == 0 & Easting == 0){return(NA)}
+resultant_angle <- atan2(sqrt(Northing^2),sqrt(Easting^2))
+resultant_angle_degrees <- (180/pi) * resultant_angle
+if(Northing>0 & Easting>0){return(90-resultant_angle_degrees)} else 
+  if(Northing<0 & Easting>0){return(90+resultant_angle_degrees)} else
+    if(Northing<0 & Easting<0){return(270-resultant_angle_degrees)} else
+      if(Northing>0 & Easting<0){return(270+resultant_angle_degrees)}
 }
+
+#resultant_angle_degrees <- ifelse(resultant_angle_degrees < 0, 360 + resultant_angle_degrees, resultant_angle_degrees)
+#return(resultant_angle_degrees)}
+
+vectorAngle(5,5)
+vectorAngle(-5,5)
+vectorAngle(-5,-5)
+vectorAngle(5,-5)
+
+Angles <- unlist(mapply(vectorAngle,modeldat$UVEL,modeldat$VVEL))
+hist(unlist(test),breaks=100)
+
+#Now the magnitude
+
+vectorSum <- function(Northing,Easting){
+  if(Northing == 0 & Easting == 0){return(NA)}
+  resultantMagnitude <- sqrt(Northing^2+Easting^2)
+  return(resultantMagnitude)}
+
+Magnitudes <- mapply(vectorSum,modeldat$UVEL,modeldat$VVEL)
+
 
 
 ####====2.2 Calculate angle between two lat lon points ====####
