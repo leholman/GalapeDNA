@@ -103,7 +103,9 @@ plot(modeldatLAND$lon,modeldatLAND$lat,pch=16,col="red",cex=0.4)
 
 #First the angle
 vectorAngle <- function(Northing,Easting){
-  if(Northing == 0 & Easting == 0){return(NA)}
+  if(Northing == 0 & Easting == 0){return(0)}
+  Northing=Northing+0.0000001
+  Easting=Easting+0.0000001
 resultant_angle <- atan2(sqrt(Northing^2),sqrt(Easting^2))
 resultant_angle_degrees <- (180/pi) * resultant_angle
 if(Northing>0 & Easting>0){return(90-resultant_angle_degrees)} else 
@@ -120,8 +122,9 @@ vectorAngle(-5,5)
 vectorAngle(-5,-5)
 vectorAngle(5,-5)
 
-Angles <- unlist(mapply(vectorAngle,modeldat$UVEL,modeldat$VVEL))
-hist(unlist(test),breaks=100)
+
+modeldat$resultantAngle <- unlist(mapply(vectorAngle,modeldat$UVEL,modeldat$VVEL))
+hist(unlist(Angles),breaks=100)
 
 #Now the magnitude
 
@@ -130,18 +133,74 @@ vectorSum <- function(Northing,Easting){
   resultantMagnitude <- sqrt(Northing^2+Easting^2)
   return(resultantMagnitude)}
 
-Magnitudes <- mapply(vectorSum,modeldat$UVEL,modeldat$VVEL)
+modeldat$magnitudes <- unlist(mapply(vectorSum,modeldat$UVEL,modeldat$VVEL))
 
 
 
 ####====2.2 Calculate angle between two lat lon points ====####
-##Maybe this https://www.omnicalculator.com/other/azimuth
+
+azimuth <- function(lat1, lon1, lat2, lon2) {
+  
+  # Convert decimal degrees to radians
+  lat1 <- lat1 * pi / 180
+  lon1 <- lon1 * pi / 180
+  lat2 <- lat2 * pi / 180
+  lon2 <- lon2 * pi / 180
+  
+  # Calculate the difference in longitude
+  delta_lon <- lon2 - lon1
+  
+  # Calculate the azimuth (bearing) using the Haversine formula
+  y <- sin(delta_lon) * cos(lat2)
+  x <- cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(delta_lon)
+  azimuth_rad <- atan2(y, x)
+  
+  # Convert radians to degrees
+  azimuth_deg <- azimuth_rad * 180 / pi
+  
+  # Make sure the result is in the range [0, 360)
+  if (azimuth_deg < 0) {
+    azimuth_deg <- azimuth_deg + 360
+  }
+  
+  return(azimuth_deg)
+}
+
+azimuth(55.693528318045544, 12.61700639326756,55.690141862839695, 12.571430301020584)
+
+
 
 ####====2.3 Calculate resistance vector  ====####
 
+exampleAngles <- seq(110,200,10)
+
+resistanceAngle <- modeldat$resultantAngle[1:10]
+resistanceMagnitude <- modeldat$magnitudes[1:10]
+
+((exampleAngles/360)-(resistanceAngle/360))*360
+
+
+#1 calculate difference in angle such that direction of travel is 0 
+
+angleCalc <- function(A,B){
+  input <- B - A
+  if (input > 0){
+    return(input)} else 
+      if (input < 0) {
+        return(input+360)} else
+          if (input == 0){return(0)}
+}
+
+#2 use cosin to turn this value such that 1 = same direction, -1 = opposite
+
+input <- 1:360
+
+output <- cos((input/360)*(2*pi))
+
+#3 create a resultant scaler based on this value, maybe direction * mangnitude?
 
 
 
-
+#4 sum all scalers to give oceanographic resistance?
 
 
