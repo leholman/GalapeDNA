@@ -136,7 +136,6 @@ vectorSum <- function(Northing,Easting){
 modeldat$magnitudes <- unlist(mapply(vectorSum,modeldat$UVEL,modeldat$VVEL))
 
 
-
 ####====2.2 Calculate angle between two lat lon points ====####
 
 azimuth <- function(lat1, lon1, lat2, lon2) {
