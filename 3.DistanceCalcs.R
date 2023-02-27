@@ -98,10 +98,14 @@ modeldatLAND <- modeldat[modeldat$VVEL==0,]
 
 plot(modeldatLAND$lon,modeldatLAND$lat,pch=16,col="red",cex=0.4)
 
-####====2.1 Calculate sum of vectors ====####
 
 
-#First the angle
+
+####====2.1 Functions for calculating distance ====####
+
+
+##Function 1 - calculate the resultant angle from a Northing and an Easting 
+
 vectorAngle <- function(Northing,Easting){
   if(Northing == 0 & Easting == 0){return(0)}
   Northing=Northing+0.0000001
@@ -117,16 +121,14 @@ if(Northing>0 & Easting>0){return(90-resultant_angle_degrees)} else
 #resultant_angle_degrees <- ifelse(resultant_angle_degrees < 0, 360 + resultant_angle_degrees, resultant_angle_degrees)
 #return(resultant_angle_degrees)}
 
+#testing
 vectorAngle(5,5)
 vectorAngle(-5,5)
 vectorAngle(-5,-5)
 vectorAngle(5,-5)
 
 
-modeldat$resultantAngle <- unlist(mapply(vectorAngle,modeldat$UVEL,modeldat$VVEL))
-hist(unlist(Angles),breaks=100)
-
-#Now the magnitude
+##Function 2 Calculate a resultant magnitude of the vector from a Northign and an Easting
 
 vectorSum <- function(Northing,Easting){
   if(Northing == 0 & Easting == 0){return(NA)}
@@ -136,7 +138,8 @@ vectorSum <- function(Northing,Easting){
 modeldat$magnitudes <- unlist(mapply(vectorSum,modeldat$UVEL,modeldat$VVEL))
 
 
-####====2.2 Calculate angle between two lat lon points ====####
+##Function 3 Calculate a the angle (azimuth) between two geographic points with lat lon 
+
 
 azimuth <- function(lat1, lon1, lat2, lon2) {
   
@@ -165,21 +168,11 @@ azimuth <- function(lat1, lon1, lat2, lon2) {
   return(azimuth_deg)
 }
 
-azimuth(55.693528318045544, 12.61700639326756,55.690141862839695, 12.571430301020584)
+#testing
+azimuth(55.68517608483797, 12.57629649327822,55.66184699523609, 12.57955805920173)
 
 
-
-####====2.3 Calculate resistance vector  ====####
-
-exampleAngles <- seq(110,200,10)
-
-resistanceAngle <- modeldat$resultantAngle[1:10]
-resistanceMagnitude <- modeldat$magnitudes[1:10]
-
-((exampleAngles/360)-(resistanceAngle/360))*360
-
-
-#1 calculate difference in angle such that direction of travel is 0 
+##Function 4 Calculate the azimuth difference from angle A to angle B
 
 angleCalc <- function(A,B){
   input <- B - A
@@ -190,16 +183,69 @@ angleCalc <- function(A,B){
           if (input == 0){return(0)}
 }
 
-#2 use cosin to turn this value such that 1 = same direction, -1 = opposite
+outputs <- c()
+for (loop in 1:10){
+outputs <- c(outputs,angleCalc(resistanceAngle[loop],exampleAngles[loop]))
+}
 
-input <- 1:360
+##Function 5 scale an azimuth angle into resistance with 1 being 0 degrees and -1 being 180 degrees 
 
-output <- cos((input/360)*(2*pi))
+cosTrans <- function(input){
+  return(cos((input/360)*(2*pi)))
+}
 
-#3 create a resultant scaler based on this value, maybe direction * mangnitude?
+
+
+####====2.2 Calculate distance on real data ====####
+
+
+## 1 Calculate angle and magnitude of each lat lon point along the path
+#angle
+modeldat$resultantAngle <- unlist(mapply(vectorAngle,modeldat$UVEL,modeldat$VVEL))
+hist(unlist(Angles),breaks=100)
+#magnitude 
+modeldat$magnitudes <- unlist(mapply(vectorSum,modeldat$UVEL,modeldat$VVEL))
+
+## 2 Create an output dataframe for each journey
+
+modeldat$journeyID <- paste(modeldat$Start,modeldat$End,sep="_")
+
+journeyOutput <- data.frame("journeyID"=unique(paste(modeldat$Start,modeldat$End,sep="_")),"OceanographicResistance"=rep(0,length(unique(paste(modeldat$Start,modeldat$End,sep="_")))))
+
+## 3 loop over each journey 
+
+for (journeyIndex in 1:length(journeyOutput$journeyID)){
+  
+ # journeyIndex <- 8
+  
+  loopJourney <- journeyOutput$journeyID[journeyIndex]
+  
+  loopData <- modeldat[modeldat$journeyID==loopJourney,]
+  
+  loopData$comparisonAngle <- NA
+  loopData$comparisonAngleDiff <- NA
+  loopData$comparisonAngleMetric <- NA
+  loopData$comparisonMetric <- NA
+  
+  for (loopLocation in 1:length(loopData$Order)){
+    if(loopData$Order[loopLocation]==max(loopData$Order)){next()}
+    index <- match(loopData$Order[loopLocation],loopData$Order)
+    index2 <- match(loopData$Order[loopLocation+1],loopData$Order)
+  
+  loopData$comparisonAngle[index] <- azimuth(loopData$lat[index],loopData$lon[index],loopData$lat[index2],loopData$lon[index2])
+
+  loopData$comparisonAngleDiff[index] <- angleCalc(loopData$comparisonAngle[index],loopData$resultantAngle[index])
+  
+  loopData$comparisonAngleMetric[index] <- cosTrans(loopData$comparisonAngleDiff[index])
+  
+  loopData$comparisonMetric[index] <- loopData$comparisonAngleMetric[index] * loopData$magnitudes[index]
+  
+  }
+  journeyOutput$OceanographicResistance[journeyIndex] <-mean(loopData$comparisonMetric,na.rm = T)
+  
+}
 
 
 
-#4 sum all scalers to give oceanographic resistance?
 
 
