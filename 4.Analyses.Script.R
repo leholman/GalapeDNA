@@ -176,10 +176,10 @@ plot(particle3o$ave_dist,
 dev.off()
 
 
-#Is there a correlation between biodiversity measure distance & oceanographic distance after geogrphic distance is accounted for?
+#Is there a correlation between biodiversity measure distance & oceanographic distance after geographic distance is accounted for?
 
 
-
+#What is the taxonomic diversity of species across the archipelago???
 
 
 

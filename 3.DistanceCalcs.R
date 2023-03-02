@@ -183,10 +183,7 @@ angleCalc <- function(A,B){
           if (input == 0){return(0)}
 }
 
-outputs <- c()
-for (loop in 1:10){
-outputs <- c(outputs,angleCalc(resistanceAngle[loop],exampleAngles[loop]))
-}
+
 
 ##Function 5 scale an azimuth angle into resistance with 1 being 0 degrees and -1 being 180 degrees 
 
@@ -202,7 +199,6 @@ cosTrans <- function(input){
 ## 1 Calculate angle and magnitude of each lat lon point along the path
 #angle
 modeldat$resultantAngle <- unlist(mapply(vectorAngle,modeldat$UVEL,modeldat$VVEL))
-hist(unlist(Angles),breaks=100)
 #magnitude 
 modeldat$magnitudes <- unlist(mapply(vectorSum,modeldat$UVEL,modeldat$VVEL))
 
@@ -210,7 +206,7 @@ modeldat$magnitudes <- unlist(mapply(vectorSum,modeldat$UVEL,modeldat$VVEL))
 
 modeldat$journeyID <- paste(modeldat$Start,modeldat$End,sep="_")
 
-journeyOutput <- data.frame("journeyID"=unique(paste(modeldat$Start,modeldat$End,sep="_")),"OceanographicResistance"=rep(0,length(unique(paste(modeldat$Start,modeldat$End,sep="_")))))
+journeyOutput <- data.frame("journeyID"=unique(paste(modeldat$Start,modeldat$End,sep="_")),"OceanographicResistance"=rep(0,length(unique(paste(modeldat$Start,modeldat$End,sep="_")))),"OceanographicResistanceSD"=rep(0,length(unique(paste(modeldat$Start,modeldat$End,sep="_")))))
 
 ## 3 loop over each journey 
 
@@ -242,10 +238,40 @@ for (journeyIndex in 1:length(journeyOutput$journeyID)){
   
   }
   journeyOutput$OceanographicResistance[journeyIndex] <-mean(loopData$comparisonMetric,na.rm = T)
-  
+  journeyOutput$OceanographicResistanceSD[journeyIndex] <-sd(loopData$comparisonMetric,na.rm = T)
 }
 
 
+#Now lets transform and output the data 
+library("maditr")
 
+
+
+journeyOutput$start <- sapply(strsplit(journeyOutput$journeyID,split = "_"),'[', 1)
+
+journeyOutput$end <- sapply(strsplit(journeyOutput$journeyID,split = "_"),'[', 2)
+
+JourneyMatrix <- dcast(journeyOutput,start~end,value.var = "OceanographicResistance")
+JourneyMatrix2 <- as.matrix(JourneyMatrix[,2:24])
+rownames(JourneyMatrix2) <- JourneyMatrix$start
+
+
+write.csv(JourneyMatrix2,"OceanogrphicResistanceMatrix.csv")
+write.csv(journeyOutput,"OceanogrphicResistancePairwise.csv")
+
+
+
+##Code basement 
+
+# CORA to SUAR journey 
+
+loopJourney <- "CHAM_PMOR"
+checkdat <- modeldat[modeldat$journeyID==loopJourney,]
+hist(checkdat$resultantAngle,breaks=180)
+hist(checkdat$magnitudes,breaks=180)
+hist(loopData$comparisonAngle)
+
+
+points(loopData$lon,loopData$lat,cex=0.5,lty=16,col="red")
 
 
