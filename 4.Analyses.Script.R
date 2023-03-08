@@ -34,6 +34,11 @@ for (column in colnames(fishdatSite)){
   fishdatSite[,colnames(fishdatSite)==column] <- rowMeans(running) 
 }
 
+## pull in oceanographic dist 
+
+
+
+
 
 ####====2.0 Plotting basic alpha /beta metrics ====####
 
@@ -179,8 +184,19 @@ dev.off()
 #Is there a correlation between biodiversity measure distance & oceanographic distance after geographic distance is accounted for?
 
 
-#What is the taxonomic diversity of species across the archipelago???
+library(vegan)
+testdist <- read.csv("OceanogrphicResistanceMatrix.csv",row.names = 1)
+testdist.m <- as.matrix(testdist)
+testdist.d <- as.dist(testdist.m)
 
+nMDS <- metaMDS(testdist.d)
+
+plot(nMDS,type = "t")
+
+
+
+
+#What is the taxonomic diversity of species across the archipelago???
 
 
 

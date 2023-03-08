@@ -89,6 +89,9 @@ plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), bre
 points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=1)
 points(metadata$lon2,metadata$lat2,pch=16, col='white',cex=0.5)
 
+text(metadata$lon2,metadata$lat2+0.08,labels=metadata$SiteID,cex=0.5,col="green")
+
+
 site <- "RED"
 site <- "SUAR"
 

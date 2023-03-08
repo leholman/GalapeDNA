@@ -12,6 +12,7 @@
 library('gdistance') 
 library('sf')
 library('geosphere')
+library("maditr")
 
 ####====1.0 As-the-fish-swims Distance & Points  ====####
 
@@ -83,16 +84,20 @@ for (row in 1:length(sitePairwiseDist$End)){
 }
 
 
+sitePairwiseDist.d <- dcast(sitePairwiseDist,Start~End,value.var = "Calcdistance")
+sitePairwiseDist.d.out <- as.matrix(sitePairwiseDist.d[,2:24])
+rownames(sitePairwiseDist.d.out) <- sitePairwiseDist.d$Start
 
-write.csv(sitePairwiseDist,"SiteDistance.csv")
-write.csv(pathPointsTable,"pathPointsTable.csv")
+write.csv(sitePairwiseDist.d.out,"distanceData/SiteDistanceMatrix.csv")
+write.csv(sitePairwiseDist,"distanceData/SiteDistance.csv")
+write.csv(pathPointsTable,"distanceData/pathPointsTable.csv")
 
 ## Now these lat long points are used to pull the model data in 
 
 
 ####====2.0 Oceanographic Distance  ====####
 
-modeldat <-read.csv("pathPoints/pathPointsTable_Sep.csv")
+modeldat <-read.csv("distanceData/pathPoints/pathPointsTable_Sep.csv")
 modeldatLAND <- modeldat[modeldat$VVEL==0,]
 
 
@@ -243,7 +248,7 @@ for (journeyIndex in 1:length(journeyOutput$journeyID)){
 
 
 #Now lets transform and output the data 
-library("maditr")
+
 
 
 
@@ -256,10 +261,8 @@ JourneyMatrix2 <- as.matrix(JourneyMatrix[,2:24])
 rownames(JourneyMatrix2) <- JourneyMatrix$start
 
 
-write.csv(JourneyMatrix2,"OceanogrphicResistanceMatrix.csv")
-write.csv(journeyOutput,"OceanogrphicResistancePairwise.csv")
-
-
+write.csv(JourneyMatrix2,"distanceData/OceanogrphicResistanceMatrix.csv")
+write.csv(journeyOutput,"distanceData/OceanogrphicResistancePairwise.csv")
 
 ##Code basement 
 
