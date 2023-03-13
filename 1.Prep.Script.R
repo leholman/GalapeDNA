@@ -181,7 +181,7 @@ fishdat_p_collapsed_wTAX_1 <- fishdat_p_collapsed_wTAX_raw[fishdat_p_collapsed_w
 domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Felis catus","Gallus gallus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens")
 
 fishdat_p_collapsed_wTAX_2 <- fishdat_p_collapsed_wTAX_1[!(fishdat_p_collapsed_wTAX_1$Assign.Assigment %in% domestics),]
-
+fishdat_p_collapsed_wTAX_2.dom <- fishdat_p_collapsed_wTAX_1[(fishdat_p_collapsed_wTAX_1$Assign.Assigment %in% domestics),]
 #combine all 'good' species IDs
 
 fishdat_p_collapsed_wTAX_3 <- fishdat_p_collapsed_wTAX_2
@@ -209,6 +209,8 @@ FishOut <- fishdat_p_collapsed_wTAX_3[!(fishdat_p_collapsed_wTAX_3$B.class%in%c(
 #somehow green turtle escapes the non-fish purge
 FishOut <- FishOut[-match("Testudines",FishOut$B.order),]
 FishOut[is.na(FishOut)] <- ""
+#this is how you would renorm
+#FishOut2 <- cbind(prop.table(as.matrix(FishOut[,1:69]),2),FishOut[,70:86])
 write.csv(FishOut,"cleandata/Cleaned_Fish_wTAX.csv")
 
 ##BIRDS

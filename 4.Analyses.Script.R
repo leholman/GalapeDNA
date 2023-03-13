@@ -6,7 +6,9 @@
 
 ####====0.0 Packages====####
 library("vegan")
+library("ade4")
 library("RColorBrewer")
+library("reshape2")
 #Set the seed 
 set.seed("123456")
 palette(brewer.pal(12, "Set3"))
@@ -31,17 +33,23 @@ colnames(fishdatSite) <- unique(sites)
 rownames(fishdatSite) <- rownames(fishdat)
 for (column in colnames(fishdatSite)){
   running <- fishdat[,sites==column]
-  fishdatSite[,colnames(fishdatSite)==column] <- rowMeans(running) 
+  fishdatSite[,colnames(fishdatSite)==column] <- rowSums(running)/3 
 }
 
-## pull in oceanographic dist 
+## pull in distance measures
+
+siteDist <- as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1))
+oceanResistance <- as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1))
 
 
+# pull the data in 
 
+particle <- read.csv("ParticleTracking/TrialStats.csv")
 
 
 ####====2.0 Plotting basic alpha /beta metrics ====####
 
+# by isalnds
 fishdatB <- fishdatSite 
 fishdatB[fishdatB>0] <- 1
 fishAlpha <- data.frame("ID"=names(fishdatB),"Richness"= colSums(fishdatB))
@@ -57,6 +65,22 @@ plot(as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$Si
      xaxt='n'
 )
 axis(1,at=1:12,labels=levels(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2)
+dev.off()
+
+
+#by ecoregion
+
+pdf("figures/FishRichness.ecoregion.pdf",height = 5,width = 6)
+par(mar=c(6.1, 4.1, 2.1, 2.1))
+plot(as.numeric(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),fishAlpha$Richness,
+     col=as.numeric(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),
+     pch=16,
+     cex=2.5,
+     ylab="ASV Richness",
+     xlab="",
+     xaxt='n'
+)
+axis(1,at=1:4,labels=levels(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2)
 dev.off()
 
 
@@ -82,7 +106,7 @@ dev.off()
 
 pdf("figures/FishBetaDivEcoRegions1.pdf",height = 5,width = 6)
 par(mar=c(2.1, 2.1, 2.1, 2.1))
-nMDS <- metaMDS(vegdist(t(fishdat),method="jaccard",binary=TRUE),trymax=500)
+nMDS <- metaMDS(vegdist(t(fishdat),method="jaccard",binary=TRUE),trymax=500,k=2)
 
 plot(nMDS$points[,1],nMDS$points[,2],
      pch=16,
@@ -130,7 +154,6 @@ plot(nMDS$points[,1],nMDS$points[,2],
      main="",
      col=as.numeric(as.factor(groups2)),
      ylab="",xlab="")
-you
 ordihull(nMDS,groups = sites,col = "grey71",draw = "polygon",lty=0)
 points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
        col=as.numeric(as.factor(groups2)))
@@ -142,12 +165,14 @@ dev.off()
 
 ####====3.0 ====####
 
-##Can we link richness patterns to oceanographic distance?
-particle <- read.csv("ParticleTracking/TrialStats.csv")
+## 3.1 Can we link biodiversity patterns to particle release parameters?
+
+# Make some data
 
 particle3 <- particle[particle$day=="-3",]
 particle3o <- particle3[match(fishAlpha$ID,particle3$site),]
 
+# Let's start with alpha diversity 
 
 pdf("figures/FishRichnessToOceanography.pdf",width =9,height=7)
 par(mfrow=c(2,2))
@@ -180,20 +205,92 @@ plot(particle3o$ave_dist,
 
 dev.off()
 
+#stats (none sig)
+summary(lm(fishAlpha$Richness~particle3o$mean_spread))
+summary(lm(fishAlpha$Richness~particle3o$ave_dist))
+summary(lm(fishAlpha$Richness~particle3o$area..km.))
+summary(lm(fishAlpha$Richness~particle3o$mean_dist))
+
+# Now beta diversity with a distance based redundancy analysis 
+
+m1 <- dbrda(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)~particle3o$mean_spread+
+              particle3o$ave_dist+
+              particle3o$area..km.+
+              particle3o$mean_dist)
+
+plot(m1)
+anova(m1,permutations = 10000)
+anova(m1,by="margin",permutations = 10000)
+RsquareAdj(m1)
+
+
+# Overall little to no variation in fish communities can be explained by particle spread statistics 
+
+## 3.2 Can we link beta diversity to distance 
 
 #Is there a correlation between biodiversity measure distance & oceanographic distance after geographic distance is accounted for?
 
+# First let's look at the data 
 
-library(vegan)
-testdist <- read.csv("OceanogrphicResistanceMatrix.csv",row.names = 1)
-testdist.m <- as.matrix(testdist)
-testdist.d <- as.dist(testdist.m)
+geographicDistance <- as.dist(as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)))
+oceanResistance <- as.dist(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)))
 
-nMDS <- metaMDS(testdist.d)
+nMDS.eDNA <- metaMDS(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),trymax=500)
+nMDS.dist <- metaMDS(geographicDistance,trymax=500)
+nMDS.resist <- metaMDS(oceanResistance,trymax=500)
 
-plot(nMDS,type = "t")
+par(mfrow=c(1,3))
+plot(nMDS.eDNA,type = "t",main="eDNA")
+plot(nMDS.dist,type = "t",main="Distance")
+plot(nMDS.resist,type = "t",main="Resistance")
 
 
+# mantel
+mantel.rtest(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),geographicDistance, nrepet = 9999)
+
+# Partial mantel
+mantel.partial(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),oceanResistance,geographicDistance, permutations = 999999,parallel = 8)
+
+
+########### check out melted distance matrix comparisons
+
+geographicDistance.pair <- melt(as.matrix(geographicDistance),varnames = c("Start","End"))
+oceanResistance.pair <- melt(as.matrix(oceanResistance),varnames = c("Start","End"))
+eDNAdistance.pair <- melt(as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)),varnames = c("Start","End"))
+
+
+#Check the values using this plot - are they in the right order?
+plot(1:529,match(paste(eDNAdistance.pair$Start,eDNAdistance.pair$End),
+      paste(oceanResistance.pair$Start,oceanResistance.pair$End)))
+
+par(mfrow=c(1,3))
+plot(geographicDistance.pair$value,oceanResistance.pair$value)
+plot(geographicDistance.pair$value,eDNAdistance.pair$value)
+plot(oceanResistance.pair$value,eDNAdistance.pair$value)
+
+compDat <- data.frame("eDNA"=eDNAdistance.pair$value,"GeoDist"=geographicDistance.pair$value,"OceanResist"=oceanResistance.pair$value)
+
+test <- compDat[!compDat$eDNA==0,]
+
+par(mfrow=c(1,3))
+plot(test$GeoDist,test$OceanResist)
+plot(test$GeoDist,test$eDNA)
+plot(test$OceanResist,test$eDNA)
+
+
+summary(lm(test$eDNA~test$GeoDist+test$OceanResist,))
+
+# Now a little epxeriment to look at the visuals of the difference
+my_palette <- colorRampPalette(colors = c("blue", "white","red"))
+my_colours <- my_palette(100)
+plot(test$eDNA~test$GeoDist,pch=16, cex=0.95)
+points(test$GeoDist,test$eDNA,pch=16,cex=0.8,col=my_colours[findInterval(test$OceanResist, seq(-0.38, 0.38, length.out = 100))])
+
+ggplot(test, aes(x = GeoDist, y = eDNA, z = OceanResist)) +
+  geom_contour()
+
+
+###########. PCA -> distance matrix of community data rerun stats  
 
 
 #What is the taxonomic diversity of species across the archipelago???
