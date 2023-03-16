@@ -259,6 +259,58 @@ oceanResistance.pair <- melt(as.matrix(oceanResistance),varnames = c("Start","En
 eDNAdistance.pair <- melt(as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)),varnames = c("Start","End"))
 
 
+
+##### Experiment with Shyam
+
+geographicDistance.pair.No0 <- geographicDistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
+oceanResistance.pair.No0 <- oceanResistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
+
+
+which(eDNAdistance.pair.mod$value == 0)
+
+myjac = function (datamat) {
+  datamat = datamat>0
+  mj = apply(datamat, 2, function(x) {
+    apply(datamat, 2, function(y) {
+      return(sum(x&y)/sum(x|y))
+    })
+  })
+  return(1-mj)
+}
+
+myjac_mod = function (datamat) {
+  datamat = datamat>0
+  mj = apply(datamat, 2, function(x) {
+    apply(datamat, 2, function(y) {
+      return(sum(x&y)/sum(x))
+    })
+  })
+  return(1-mj)
+}
+
+
+eDNAdistance.pair.mod = melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
+eDNAdistance.pair.mod.no0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
+
+plot(oceanResistance.pair.No0$value,eDNAdistance.pair.mod.no0$value)
+model1 = lm (eDNAdistance.pair.mod.no0$value~geographicDistance.pair.No0$value)
+model2 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
+abline(model, col="firebrick", lwd=2)
+summary(model1)
+
+summary(model2)
+
+#### Q1 How does this model change as we input different lengths and period of time into the Oceanographic Resistance measure?
+#### Q2 How does oceanographic resistance change in special years?
+#### Q3 How might this change into the future as currents alter?
+
+
+
+
+
+
+
+
 #Check the values using this plot - are they in the right order?
 plot(1:529,match(paste(eDNAdistance.pair$Start,eDNAdistance.pair$End),
       paste(oceanResistance.pair$Start,oceanResistance.pair$End)))
