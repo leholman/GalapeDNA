@@ -13,6 +13,34 @@ library("reshape2")
 set.seed("123456")
 palette(brewer.pal(12, "Set3"))
 
+
+####====0.1 Functions====####
+
+## A couple of ways to calculate jaccard (the second assymetrically)
+
+myjac = function (datamat) {
+  datamat = datamat>0
+  mj = apply(datamat, 2, function(x) {
+    apply(datamat, 2, function(y) {
+      return(sum(x&y)/sum(x|y))
+    })
+  })
+  return(1-mj)
+}
+
+myjac_mod = function (datamat) {
+  datamat = datamat>0
+  mj = apply(datamat, 2, function(x) {
+    apply(datamat, 2, function(y) {
+      return(sum(x&y)/sum(x))
+    })
+  })
+  return(1-mj)
+}
+
+
+
+
 ####====1.0 Pull in Data ====####
 #Fish first
 fishAll <- read.csv("cleandata/Cleaned_Fish_wTAX.csv",row.names=1)
@@ -232,8 +260,8 @@ RsquareAdj(m1)
 
 # First let's look at the data 
 
-geographicDistance <- as.dist(as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)))
-oceanResistance <- as.dist(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)))
+geographicDistance <- as.dist(as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),upper = T)
+oceanResistance <- as.dist(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),upper = T)
 
 nMDS.eDNA <- metaMDS(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),trymax=500)
 nMDS.dist <- metaMDS(geographicDistance,trymax=500)
@@ -244,12 +272,40 @@ plot(nMDS.eDNA,type = "t",main="eDNA")
 plot(nMDS.dist,type = "t",main="Distance")
 plot(nMDS.resist,type = "t",main="Resistance")
 
+par(mfrow=c(2,2))
+
+plot(geographicDistance,vegdist(t(fishdatSite),method="jaccard",binary=TRUE),pch=16,ylim=c(0,1))
+plot(oceanResistance,vegdist(t(fishdatSite),method="jaccard",binary=TRUE),pch=16)
+
+
+test <- myjac_mod(fishdatSite)
+test[test==0] <- NA
+
+plot(as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),test,ylim=c(0,1),pch=16)
+plot(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),test,pch=16)
+
+
+plot(test,as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)))
+
 
 # mantel
 mantel.rtest(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),geographicDistance, nrepet = 9999)
 
 # Partial mantel
 mantel.partial(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),oceanResistance,geographicDistance, permutations = 999999,parallel = 8)
+
+mantel.partial(as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)),
+               as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),
+               as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),
+               permutations = 999999,parallel = 8)
+
+test[is.na(test)] <- 0
+
+mantel.partial(test,
+               as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),
+               as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),
+               permutations = 999999,parallel = 8)
+
 
 
 ########### check out melted distance matrix comparisons
@@ -261,12 +317,11 @@ eDNAdistance.pair <- melt(as.matrix(vegdist(t(fishdatSite),method="jaccard",bina
 
 
 ##### Experiment with Shyam
-
+eDNAdistance.pair.No0 <- eDNAdistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
 geographicDistance.pair.No0 <- geographicDistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
 oceanResistance.pair.No0 <- oceanResistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
 
 
-which(eDNAdistance.pair.mod$value == 0)
 
 myjac = function (datamat) {
   datamat = datamat>0
@@ -290,15 +345,43 @@ myjac_mod = function (datamat) {
 
 
 eDNAdistance.pair.mod = melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
-eDNAdistance.pair.mod.no0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
+eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
 
-plot(oceanResistance.pair.No0$value,eDNAdistance.pair.mod.no0$value)
-model1 = lm (eDNAdistance.pair.mod.no0$value~geographicDistance.pair.No0$value)
+plot(eDNAdistance.pair.mod.No0$value,eDNAdistance.pair.No0$value)
+model1 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value)
 model2 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
-abline(model, col="firebrick", lwd=2)
-summary(model1)
+model3 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
+abline(model1, col="firebrick", lwd=2)
 
+summary(model1)
 summary(model2)
+summary(model3)
+
+#Plot this model
+
+my_palette <- colorRampPalette(colors = c("blue", "white","red"))
+my_colours <- my_palette(100)
+
+plot(geographicDistance.pair.No0$value,
+     eDNAdistance.pair.mod.No0$value,
+     pch=16, cex=0.95)
+
+points(geographicDistance.pair.No0$value,
+       eDNAdistance.pair.mod.No0$value,
+       col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],
+       pch=16,cex=0.8)
+
+## Jaccard partial - not sure why this returns a different result to the symmetrical jaccard....
+
+
+
+mantel.partial(myjac_mod(fishdatSite),
+               as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),
+               as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),
+               permutations = 999999,parallel = 8)
+
+plot(myjac_mod(fishdatSite),as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)))
+
 
 #### Q1 How does this model change as we input different lengths and period of time into the Oceanographic Resistance measure?
 #### Q2 How does oceanographic resistance change in special years?
