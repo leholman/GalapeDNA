@@ -317,6 +317,9 @@ eDNAdistance.pair <- melt(as.matrix(vegdist(t(fishdatSite),method="jaccard",bina
 
 
 ##### Experiment with Shyam
+
+eDNAdistance.pair.mod = melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
+eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
 eDNAdistance.pair.No0 <- eDNAdistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
 geographicDistance.pair.No0 <- geographicDistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
 oceanResistance.pair.No0 <- oceanResistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
@@ -344,8 +347,6 @@ myjac_mod = function (datamat) {
 }
 
 
-eDNAdistance.pair.mod = melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
-eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
 
 plot(eDNAdistance.pair.mod.No0$value,eDNAdistance.pair.No0$value)
 model1 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value)
@@ -380,6 +381,14 @@ mantel.partial(myjac_mod(fishdatSite),
                as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),
                permutations = 999999,parallel = 8)
 
+
+mantel.partial(myjac(fishdatSite),
+               as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),
+               as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),
+               permutations = 999999,parallel = 8)
+
+
+
 plot(myjac_mod(fishdatSite),as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)))
 
 
@@ -403,7 +412,7 @@ plot(geographicDistance.pair$value,oceanResistance.pair$value)
 plot(geographicDistance.pair$value,eDNAdistance.pair$value)
 plot(oceanResistance.pair$value,eDNAdistance.pair$value)
 
-compDat <- data.frame("eDNA"=eDNAdistance.pair$value,"GeoDist"=geographicDistance.pair$value,"OceanResist"=oceanResistance.pair$value)
+compDat <- data.frame("eDNA"=eDNAdistance.pair$value,"eDNA.mod"=eDNAdistance.pair.mod,"GeoDist"=geographicDistance.pair$value,"OceanResist"=oceanResistance.pair$value)
 
 test <- compDat[!compDat$eDNA==0,]
 
@@ -412,13 +421,13 @@ plot(test$GeoDist,test$OceanResist)
 plot(test$GeoDist,test$eDNA)
 plot(test$OceanResist,test$eDNA)
 
-
 summary(lm(test$eDNA~test$GeoDist+test$OceanResist,))
+summary(lm(test$eDNA.mod.value~test$GeoDist+test$OceanResist,))
 
 # Now a little epxeriment to look at the visuals of the difference
 my_palette <- colorRampPalette(colors = c("blue", "white","red"))
 my_colours <- my_palette(100)
-plot(test$eDNA~test$GeoDist,pch=16, cex=0.95)
+plot(test$eDNA~test$GeoDist,pch=16, cex=0.95,ylim=c(0,0.8))
 points(test$GeoDist,test$eDNA,pch=16,cex=0.8,col=my_colours[findInterval(test$OceanResist, seq(-0.38, 0.38, length.out = 100))])
 
 ggplot(test, aes(x = GeoDist, y = eDNA, z = OceanResist)) +
