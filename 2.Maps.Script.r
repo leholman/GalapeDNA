@@ -60,7 +60,17 @@ blue.col <- colorRampPalette(c("darkblue", "lightblue"))
 
 pdf(width = 8,height=6.5,file="mapBuilding/test1.pdf")
 
-plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend = FALSE)
+plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend=F)
+
+#-92, -89, -1.55, 0.68)
+axis(1,
+     at=pretty(c(-92, -89)),
+     labels = parse(text=degreeLabelsEW(pretty(c(-92, -89)))))
+axis(2,
+     at=pretty(c(-1.55, 0.68)),
+     labels = parse(text=degreeLabelsNS(pretty(c(-1.55, 0.68)))),las=TRUE)
+
+
 #plot(eq, add=TRUE)
 points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=1)
 points(metadata$lon2,metadata$lat2,pch=16, col='white',cex=0.5)
@@ -71,14 +81,49 @@ dev.off()
 cols <- c("#80B1D3","#FFFFB3","#FFFFB3","#80B1D3","#FB8072","#BEBADA","#FFED6F","#CCEBC5",
           "#80B1D3","#8DD3C7","#FDB462","#FFFFB3","#B3DE69","gray85","#FFFFB3","#80B1D3",
           "#FCCDE5","#80B1D3","#80B1D3","#CCEBC5","#BC80BD","#8DD3C7","#80B1D3")
-pdf(width = 8,height=6.5,file="mapBuilding/test2.pdf")
 
-plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend = FALSE)
+
+
+##Make a colour index so each ecoregion-island has a different colour
+
+SEasternCols <- colorRampPalette(c("#D55E00","#E69F00","#faf6c1"))
+#NorthernCols <-colorRampPalette(c("#0072B2","#56B4E9"))
+NorthernCols <-colorRampPalette(c("#003e60","#56B4E9"))
+
+ElizCols <- colorRampPalette(c("#CC79A7","#762d55"))
+WesternCols <- colorRampPalette(c("#009E73","#004935"))
+
+AllCols <- c(SEasternCols(8),ElizCols(2),NorthernCols(4),WesternCols(2))
+ColIndex <- data.frame("EcoIsland"=sort(unique(paste0(metadat.site$EcoRegion,"-",metadat.site$island))),
+                       "Colour"=AllCols)
+
+ColIndex$Colour[match(paste0(metadat.site$EcoRegion,"-",metadat.site$island),ColIndex$EcoIsland)]
+
+
+
+pdf(width = 8,height=6.35,file="mapBuilding/mapV1.pdf")
+
+plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend=F)
 #plot(eq, add=TRUE)
 points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=3)
-points(metadata$lon2,metadata$lat2,pch=16, col=cols,cex=2)
+points(metadata$lon2,metadata$lat2,pch=16, col=ColIndex$Colour[match(paste0(metadat.site$EcoRegion,"-",metadat.site$island),ColIndex$EcoIsland)]
+,cex=2)
+
+axis(1,
+     at=pretty(c(-92, -89)),
+     labels = parse(text=degreeLabelsEW(pretty(c(-92, -89)))),lwd = 0, lwd.ticks = 1)
+axis(2,
+     at=pretty(c(-1.55, 0.68)),
+     labels = parse(text=degreeLabelsNS(pretty(c(-1.55, 0.68)))),las=TRUE,lwd = 0, lwd.ticks = 1)
+
+
+plot(gebco.crop, legend.only=TRUE, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])),breaks=galap.br[[3]],
+     legend.width=1, legend.shrink=0.75,font=2, line=2.5, cex=0.8,
+     axis.args=list( at=pretty(galap.br[[3]][1:43]), labels=pretty(galap.br[[3]][1:43])))
+
 
 dev.off()
+
 
 
 
