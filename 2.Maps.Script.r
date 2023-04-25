@@ -94,10 +94,10 @@ ElizCols <- colorRampPalette(c("#CC79A7","#762d55"))
 WesternCols <- colorRampPalette(c("#009E73","#004935"))
 
 AllCols <- c(SEasternCols(8),ElizCols(2),NorthernCols(4),WesternCols(2))
-ColIndex <- data.frame("EcoIsland"=sort(unique(paste0(metadat.site$EcoRegion,"-",metadat.site$island))),
+ColIndex <- data.frame("EcoIsland"=sort(unique(paste0(metadata$EcoRegion,"-",metadata$island))),
                        "Colour"=AllCols)
 
-ColIndex$Colour[match(paste0(metadat.site$EcoRegion,"-",metadat.site$island),ColIndex$EcoIsland)]
+ColIndex$Colour[match(paste0(metadata$EcoRegion,"-",metadata$island),ColIndex$EcoIsland)]
 
 
 
@@ -105,8 +105,8 @@ pdf(width = 8,height=6.35,file="mapBuilding/mapV1.pdf")
 
 plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend=F)
 #plot(eq, add=TRUE)
-points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=3)
-points(metadata$lon2,metadata$lat2,pch=16, col=ColIndex$Colour[match(paste0(metadat.site$EcoRegion,"-",metadat.site$island),ColIndex$EcoIsland)]
+points(metadata$lon2,metadata$lat2,pch=16, col='white',cex=2.5)
+points(metadata$lon2,metadata$lat2,pch=16, col=ColIndex$Colour[match(paste0(metadata$EcoRegion,"-",metadata$island),ColIndex$EcoIsland)]
 ,cex=2)
 
 axis(1,
@@ -116,13 +116,18 @@ axis(2,
      at=pretty(c(-1.55, 0.68)),
      labels = parse(text=degreeLabelsNS(pretty(c(-1.55, 0.68)))),las=TRUE,lwd = 0, lwd.ticks = 1)
 
-
-plot(gebco.crop, legend.only=TRUE, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])),breaks=galap.br[[3]],
+#The legend editing for raster layers sucks, the below is a very hacky stupid way to get things to look right, buyer beware.
+gebco.crop.mod <- gebco.crop
+gebco.crop.mod@data@max<- 1
+gebco.crop.mod@data@values[gebco.crop.mod@data@values>0] <- 1
+plot(gebco.crop.mod, legend.only=TRUE, col=c(blue.col(galap.br[[1]]+1), grey.colors(galap.br[[2]])),breaks=c(galap.br[[3]][1:43],1),
      legend.width=1, legend.shrink=0.75,font=2, line=2.5, cex=0.8,
-     axis.args=list( at=pretty(galap.br[[3]][1:43]), labels=pretty(galap.br[[3]][1:43])))
+     axis.args=list( at=pretty(c(galap.br[[3]][1:43],1)), labels=pretty(c(galap.br[[3]][1:43],1))))
 
 
 dev.off()
+
+
 
 
 

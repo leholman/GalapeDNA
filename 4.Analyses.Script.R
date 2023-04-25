@@ -74,6 +74,20 @@ oceanResistance <- as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix
 
 particle <- read.csv("ParticleTracking/TrialStats.csv")
 
+# make the colour index
+
+SEasternCols <- colorRampPalette(c("#D55E00","#E69F00","#faf6c1"))
+NorthernCols <-colorRampPalette(c("#003e60","#56B4E9"))
+ElizCols <- colorRampPalette(c("#CC79A7","#762d55"))
+WesternCols <- colorRampPalette(c("#009E73","#004935"))
+
+AllCols <- c(SEasternCols(8),ElizCols(2),NorthernCols(4),WesternCols(2))
+ColIndex <- data.frame("EcoIsland"=sort(unique(paste0(metadatSites$EcoRegion,"-",metadatSites$island))),
+                       "Colour"=AllCols)
+metadatSites$col <- ColIndex$Colour[match(paste0(metadatSites$EcoRegion,"-",metadatSites$island),ColIndex$EcoIsland)]
+
+
+
 
 ####====2.0 Plotting basic alpha /beta metrics ====####
 
@@ -85,7 +99,7 @@ fishAlpha <- data.frame("ID"=names(fishdatB),"Richness"= colSums(fishdatB))
 pdf("figures/FishRichness.pdf",height = 5,width = 6)
 par(mar=c(6.1, 4.1, 2.1, 2.1))
 plot(as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),fishAlpha$Richness,
-     col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),
+     col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],
      pch=16,
      cex=2.5,
      ylab="ASV Richness",
@@ -98,19 +112,25 @@ dev.off()
 
 #by ecoregion
 
-pdf("figures/FishRichness.ecoregion.pdf",height = 5,width = 6)
-par(mar=c(6.1, 4.1, 2.1, 2.1))
+pdf("figures/FishRichness.ecoregion.pdf",height = 5,width = 3)
+par(mar=c(7.1, 5.1, 2.1, 2.1))
 plot(as.numeric(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),fishAlpha$Richness,
-     col=as.numeric(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),
+     col=adjustcolor(metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],alpha.f = 0.5),
      pch=16,
-     cex=2.5,
+     cex=1.5,
      ylab="ASV Richness",
      xlab="",
-     xaxt='n'
-)
+     xaxt='n',xlim=c(0,5),
+     )
+points(1:4,unlist(by(fishAlpha$Richness,as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)]),FUN=mean)),
+       col=c(SEasternCols(3)[1],
+              ElizCols(3)[1],
+              NorthernCols(3)[1],
+              WesternCols(3)[1]),pch="-",cex=3)
 axis(1,at=1:4,labels=levels(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2)
 dev.off()
 
+unlist(by(fishAlpha$Richness,as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)]),FUN=mean))
 
 #Now a beta diversity plot
 
@@ -121,13 +141,13 @@ nMDS <- metaMDS(vegdist(t(fishdat),method="jaccard",binary=TRUE),trymax=500)
 plot(nMDS$points[,1],nMDS$points[,2],
      pch=16,
      cex=1.5,
-     col=as.numeric(as.factor(metadatSites$island[match(sites,metadatSites$SiteID)])),
+     col=metadatSites$col[match(sites,metadatSites$SiteID)],
      main="",
      ylab="",xlab="")
 
 ordihull(nMDS,groups = sites,col = "grey71",draw = "polygon",lty=0)
 points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
-       col=as.numeric(as.factor(metadatSites$island[match(sites,metadatSites$SiteID)])))
+       col=metadatSites$col[match(sites,metadatSites$SiteID)])
 
 dev.off()
 
@@ -292,6 +312,9 @@ plot(test,as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)))
 mantel.rtest(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),geographicDistance, nrepet = 9999)
 
 # Partial mantel
+
+test2 <- as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE))
+test2[test2==0] <- NA
 mantel.partial(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),oceanResistance,geographicDistance, permutations = 999999,parallel = 8)
 
 mantel.partial(as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)),
@@ -299,26 +322,29 @@ mantel.partial(as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)),
                as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),
                permutations = 999999,parallel = 8)
 
-test[is.na(test)] <- 0
 
 mantel.partial(test,
                as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),
                as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),
                permutations = 999999,parallel = 8)
 
+mantel.partial(test2,
+               as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),
+               as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),
+               permutations = 999999,parallel = 8)
 
 
 ########### check out melted distance matrix comparisons
 
-geographicDistance.pair <- melt(as.matrix(geographicDistance),varnames = c("Start","End"))
-oceanResistance.pair <- melt(as.matrix(oceanResistance),varnames = c("Start","End"))
-eDNAdistance.pair <- melt(as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)),varnames = c("Start","End"))
+geographicDistance.pair <- reshape2::melt(as.matrix(geographicDistance),varnames = c("Start","End"))
+oceanResistance.pair <- reshape2::melt(as.matrix(oceanResistance),varnames = c("Start","End"))
+eDNAdistance.pair <-reshape2::melt(as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)),varnames = c("Start","End"))
 
 
 
 ##### Experiment with Shyam
 
-eDNAdistance.pair.mod = melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
+eDNAdistance.pair.mod = reshape2::melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
 eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
 eDNAdistance.pair.No0 <- eDNAdistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
 geographicDistance.pair.No0 <- geographicDistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
@@ -349,18 +375,29 @@ myjac_mod = function (datamat) {
 
 
 plot(eDNAdistance.pair.mod.No0$value,eDNAdistance.pair.No0$value)
+
+plot(eDNAdistance.pair.mod.No0$value,geographicDistance.pair.No0$value)
+plot(eDNAdistance.pair.No0$value,geographicDistance.pair.No0$value)
+
 model1 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value)
 model2 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
 model3 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
+model4 = lm (eDNAdistance.pair.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
+
+
 abline(model1, col="firebrick", lwd=2)
 
 summary(model1)
 summary(model2)
 summary(model3)
+summary(model4)
+
+
 
 #Plot this model
 
-my_palette <- colorRampPalette(colors = c("blue", "white","red"))
+#RED = negative BLUE = positive 
+my_palette <- colorRampPalette(colors = c("red", "white","blue"))
 my_colours <- my_palette(100)
 
 plot(geographicDistance.pair.No0$value,
@@ -371,6 +408,31 @@ points(geographicDistance.pair.No0$value,
        eDNAdistance.pair.mod.No0$value,
        col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],
        pch=16,cex=0.8)
+
+pdf("figures/DistDecayV1.pdf",width = 7,height = 5)
+par(mar=c(4.1, 4.1, 2.1, 6.1))
+
+plot((geographicDistance.pair.No0$value)/1000,
+     eDNAdistance.pair.No0$value,
+     pch=16, cex=0.95,
+     xlab="Geographic Distance (km)",
+     ylab="Jaccard Dissimilarity")
+
+
+points((geographicDistance.pair.No0$value)/1000,
+       eDNAdistance.pair.No0$value,
+       col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],
+       pch=16,cex=0.8)
+
+legend_image <- as.raster(matrix(my_palette(100), ncol=1))
+rasterImage(legend_image, 350, 0.60, 360,0.75,xpd=T)
+text(x=353, y = seq(0.6,0.75,l=5), labels = paste0("-  ",seq(-0.38,0.38,l=5)),xpd=T,pos = 4,cex=0.7)
+
+dev.off()
+
+legend_image <- as.raster(matrix(my_palette(100), ncol=1))
+rasterImage(legend_image, 0, 0, 1,1,add=TRUE,xpd=T)
+
 
 ## Jaccard partial - not sure why this returns a different result to the symmetrical jaccard....
 

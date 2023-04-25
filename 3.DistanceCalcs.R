@@ -97,7 +97,7 @@ write.csv(pathPointsTable,"distanceData/pathPointsTable.csv")
 
 ####====2.0 Oceanographic Distance  ====####
 
-modeldat <-read.csv("distanceData/pathPoints/pathPointsTable_Sep.csv")
+modeldat <-read.csv("distanceData/pathPoints/pathPointsTable_Oct.csv")
 modeldatLAND <- modeldat[modeldat$VVEL==0,]
 
 
@@ -249,9 +249,6 @@ for (journeyIndex in 1:length(journeyOutput$journeyID)){
 
 #Now lets transform and output the data 
 
-
-
-
 journeyOutput$start <- sapply(strsplit(journeyOutput$journeyID,split = "_"),'[', 1)
 
 journeyOutput$end <- sapply(strsplit(journeyOutput$journeyID,split = "_"),'[', 2)
@@ -263,6 +260,108 @@ rownames(JourneyMatrix2) <- JourneyMatrix$start
 
 write.csv(JourneyMatrix2,"distanceData/OceanogrphicResistanceMatrix.csv")
 write.csv(journeyOutput,"distanceData/OceanogrphicResistancePairwise.csv")
+
+## what about doing a distance measure over every month??
+
+for (month in list.files(pattern=".*.csv","distanceData/pathPoints")){
+  #month <- "pathPointsTable_Apr.csv"
+  monthText <- gsub(".csv","",gsub("pathPointsTable_","",month))
+  print(monthText)
+  
+  modeldat <-read.csv(paste0("distanceData/pathPoints/pathPointsTable_",monthText,".csv"))
+  
+  ## 1 Calculate angle and magnitude of each lat lon point along the path
+  #angle
+  modeldat$resultantAngle <- unlist(mapply(vectorAngle,modeldat$UVEL,modeldat$VVEL))
+  #magnitude 
+  modeldat$magnitudes <- unlist(mapply(vectorSum,modeldat$UVEL,modeldat$VVEL))
+  
+  ## 2 Create an output dataframe for each journey
+  
+  modeldat$journeyID <- paste(modeldat$Start,modeldat$End,sep="_")
+  
+  journeyOutput <- data.frame("journeyID"=unique(paste(modeldat$Start,modeldat$End,sep="_")),"OceanographicResistance"=rep(0,length(unique(paste(modeldat$Start,modeldat$End,sep="_")))),"OceanographicResistanceSD"=rep(0,length(unique(paste(modeldat$Start,modeldat$End,sep="_")))))
+  
+  ## 3 loop over each journey 
+  
+  for (journeyIndex in 1:length(journeyOutput$journeyID)){
+    
+    # journeyIndex <- 8
+    
+    loopJourney <- journeyOutput$journeyID[journeyIndex]
+    
+    loopData <- modeldat[modeldat$journeyID==loopJourney,]
+    
+    loopData$comparisonAngle <- NA
+    loopData$comparisonAngleDiff <- NA
+    loopData$comparisonAngleMetric <- NA
+    loopData$comparisonMetric <- NA
+    
+    for (loopLocation in 1:length(loopData$Order)){
+      if(loopData$Order[loopLocation]==max(loopData$Order)){next()}
+      index <- match(loopData$Order[loopLocation],loopData$Order)
+      index2 <- match(loopData$Order[loopLocation+1],loopData$Order)
+      
+      loopData$comparisonAngle[index] <- azimuth(loopData$lat[index],loopData$lon[index],loopData$lat[index2],loopData$lon[index2])
+      
+      loopData$comparisonAngleDiff[index] <- angleCalc(loopData$comparisonAngle[index],loopData$resultantAngle[index])
+      
+      loopData$comparisonAngleMetric[index] <- cosTrans(loopData$comparisonAngleDiff[index])
+      
+      loopData$comparisonMetric[index] <- loopData$comparisonAngleMetric[index] * loopData$magnitudes[index]
+      
+    }
+    journeyOutput$OceanographicResistance[journeyIndex] <-mean(loopData$comparisonMetric,na.rm = T)
+    journeyOutput$OceanographicResistanceSD[journeyIndex] <-sd(loopData$comparisonMetric,na.rm = T)
+  }
+  
+  
+  #Now lets transform and output the data 
+  
+  journeyOutput$start <- sapply(strsplit(journeyOutput$journeyID,split = "_"),'[', 1)
+  
+  journeyOutput$end <- sapply(strsplit(journeyOutput$journeyID,split = "_"),'[', 2)
+  
+  JourneyMatrix <- dcast(journeyOutput,start~end,value.var = "OceanographicResistance")
+  JourneyMatrix2 <- as.matrix(JourneyMatrix[,2:24])
+  rownames(JourneyMatrix2) <- JourneyMatrix$start
+  
+  
+  write.csv(JourneyMatrix2,paste0("distanceData/monthlyResistance/OceanogrphicResistanceMatrix_",monthText,".csv"))
+  write.csv(journeyOutput,paste0("distanceData/monthlyResistance/OceanogrphicResistancePairwise_",monthText,".csv"))
+  
+}
+
+
+## A little plot to visualise 
+par(mfrow=c(4,3))
+
+ResistanceMonths <- as.list(c())
+
+for (month in list.files(pattern="OceanogrphicResistanceMatrix.*","distanceData/monthlyResistance/")){
+
+
+oceanResistance <- as.dist(as.matrix(read.csv(paste0("distanceData/monthlyResistance/",month),row.names = 1)))
+#nMDS.resist <- metaMDS(oceanResistance,trymax=500)
+#plot(nMDS.resist,type = "t",main="Resistance")
+
+ResistanceMonths <- append(ResistanceMonths,list(as.matrix(oceanResistance)))
+
+}
+
+shuffled <- as.matrix(read.csv("distanceData/monthlyResistance/OceanogrphicResistanceMatrix_Jun.csv",row.names = 1))
+
+shuffled <- names(shuffled)[sample(1:23)]
+
+mantel.rtest(as.dist(as.matrix(read.csv("distanceData/monthlyResistance/OceanogrphicResistanceMatrix_Jan.csv",row.names = 1))),
+             as.dist(test),nrepet = 9999)
+
+
+
+
+
+
+
 
 ##Code basement 
 
