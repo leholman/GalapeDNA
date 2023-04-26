@@ -337,8 +337,11 @@ mantel.partial(test2,
 ########### check out melted distance matrix comparisons
 
 geographicDistance.pair <- reshape2::melt(as.matrix(geographicDistance),varnames = c("Start","End"))
-oceanResistance.pair <- reshape2::melt(as.matrix(oceanResistance),varnames = c("Start","End"))
+oceanResistance.pair <- reshape2::melt(as.matrix(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1))),varnames = c("Start","End"))
 eDNAdistance.pair <-reshape2::melt(as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)),varnames = c("Start","End"))
+eDNAdistance.pair.bray <-reshape2::melt(as.matrix(vegdist(t(fishdatSite),method="bray")),varnames = c("Start","End"))
+
+
 
 
 
@@ -347,9 +350,9 @@ eDNAdistance.pair <-reshape2::melt(as.matrix(vegdist(t(fishdatSite),method="jacc
 eDNAdistance.pair.mod = reshape2::melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
 eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
 eDNAdistance.pair.No0 <- eDNAdistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
+eDNAdistance.pair.bray.No0 <- eDNAdistance.pair.bray[-which(eDNAdistance.pair.mod$value == 0),]
 geographicDistance.pair.No0 <- geographicDistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
 oceanResistance.pair.No0 <- oceanResistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
-
 
 
 myjac = function (datamat) {
@@ -383,15 +386,31 @@ model1 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value)
 model2 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
 model3 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
 model4 = lm (eDNAdistance.pair.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
+model5 = lm (eDNAdistance.pair.bray.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
 
 
 abline(model1, col="firebrick", lwd=2)
+
+"dodgerblue4"
 
 summary(model1)
 summary(model2)
 summary(model3)
 summary(model4)
 
+
+##Predictions based from the model 
+
+y.eDNA <- eDNAdistance.pair.mod.No0$value
+x.GeoG <- geographicDistance.pair.No0$value
+z.OceR <- oceanResistance.pair.No0$value
+modelPredict = lm(y.eDNA~x.GeoG + z.OceR)
+
+predictedData <- data.frame("x.GeoG"=rep(seq(0,320000,1000),2),"z.OceR"= c(rep(0.38,321),rep(-0.38,321)))
+
+predictedData <- cbind(predictedData,predict(modelPredict,predictedData,se.fit = TRUE))
+predictedData$lwr <- predictedData$fit-1.96*predictedData$se.fit
+predictedData$upr <- predictedData$fit+1.96*predictedData$se.fit
 
 
 #Plot this model
@@ -400,14 +419,50 @@ summary(model4)
 my_palette <- colorRampPalette(colors = c("red", "white","blue"))
 my_colours <- my_palette(100)
 
-plot(geographicDistance.pair.No0$value,
-     eDNAdistance.pair.mod.No0$value,
-     pch=16, cex=0.95)
+pdf("figures/DistDecayV2.pdf",width = 9,height = 6.5)
+par(mar=c(4.1, 4.1, 2.1, 6.1))
 
-points(geographicDistance.pair.No0$value,
+
+plot(geographicDistance.pair.No0$value/1000,
+     eDNAdistance.pair.mod.No0$value,
+     pch=16, cex=0.95, 
+     xlab="Geographic Distance (km)",
+     ylab="Jaccard Dissimilarity")
+
+
+polygon(x = c(predictedData$x.GeoG[predictedData$z.OceR==0.38],
+              rev(predictedData$x.GeoG[predictedData$z.OceR==0.38]))/1000,
+        y = c(predictedData$lwr[predictedData$z.OceR==0.38], 
+              rev(predictedData$upr[predictedData$z.OceR==0.38])),
+        col =  adjustcolor("blue", alpha.f = 0.10), border = NA)
+
+points(predictedData$x.GeoG[predictedData$z.OceR==0.38]/1000,
+       predictedData$fit[predictedData$z.OceR==0.38],
+       type="l",col=adjustcolor("blue", alpha.f = 0.30),lwd=2)
+
+polygon(x = c(predictedData$x.GeoG[predictedData$z.OceR==-0.38],
+              rev(predictedData$x.GeoG[predictedData$z.OceR==-0.38]))/1000,
+        y = c(predictedData$lwr[predictedData$z.OceR==-0.38], 
+              rev(predictedData$upr[predictedData$z.OceR==-0.38])),
+        col =  adjustcolor("red", alpha.f = 0.10), border = NA)
+
+
+points(predictedData$x.GeoG[predictedData$z.OceR==-0.38]/1000,
+       predictedData$fit[predictedData$z.OceR==-0.38],
+       type="l",col=adjustcolor("red", alpha.f = 0.30),lwd=2)
+
+points(geographicDistance.pair.No0$value/1000,
        eDNAdistance.pair.mod.No0$value,
        col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],
        pch=16,cex=0.8)
+
+
+legend_image <- as.raster(matrix(rev(my_palette(100)), ncol=1))
+rasterImage(legend_image, 330, 0.40, 340,0.6,xpd=T)
+text(x=333, y = seq(0.4,0.6,l=5), labels = paste0("-  ",seq(-0.38,0.38,l=5)),xpd=T,pos = 4,cex=0.7)
+
+
+dev.off()
 
 pdf("figures/DistDecayV1.pdf",width = 7,height = 5)
 par(mar=c(4.1, 4.1, 2.1, 6.1))
