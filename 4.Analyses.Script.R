@@ -86,7 +86,124 @@ ColIndex <- data.frame("EcoIsland"=sort(unique(paste0(metadatSites$EcoRegion,"-"
                        "Colour"=AllCols)
 metadatSites$col <- ColIndex$Colour[match(paste0(metadatSites$EcoRegion,"-",metadatSites$island),ColIndex$EcoIsland)]
 
+####====2.0 Taxonomy ====####
 
+sum(table(fishAll$Assign.BestLevel))
+table(fishAll$Assign.BestLevel)
+table(fishAll$Assign.Assigment[fishAll$Assign.BestLevel=="Species"])
+barplot(table(fishAll$Assign.Assigment[fishAll$Assign.BestLevel=="Genus"]))
+
+####====3.0 Alpha Diversity ====####
+
+# Set up a richness dataset
+fishdatB <- fishdatSite 
+fishdatB[fishdatB>0] <- 1
+fishAlpha <- data.frame("ID"=names(fishdatB),"Richness"= colSums(fishdatB))
+
+## test for sig difference between ecoregions
+
+#build the model
+lm1 <- lm(fishAlpha$Richness~as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)]))
+
+# are residuals norm distributed?
+shapiro.test(residuals(lm1))
+
+#any sig differences? (no)
+TukeyHSD(aov(lm1))
+
+#mean values
+unlist(by(fishAlpha$Richness,as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)]),FUN=mean))
+
+
+##Plots
+
+##by island
+
+pdf("figures/FishRichness.pdf",height = 5,width = 6)
+par(mar=c(6.1, 4.1, 2.1, 2.1))
+plot(as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),fishAlpha$Richness,
+     col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],
+     pch=16,
+     cex=2.5,
+     ylab="ASV Richness",
+     xlab="",
+     xaxt='n'
+)
+axis(1,at=1:12,labels=levels(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2)
+dev.off()
+
+
+#by ecoregion
+
+pdf("figures/FishRichness.ecoregion.pdf",height = 5,width = 3)
+par(mar=c(7.1, 5.1, 2.1, 2.1))
+plot(as.numeric(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),fishAlpha$Richness,
+     col=adjustcolor(metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],alpha.f = 0.5),
+     pch=16,
+     cex=1.5,
+     ylab="ASV Richness",
+     xlab="",
+     xaxt='n',xlim=c(0,5),
+)
+points(1:4,unlist(by(fishAlpha$Richness,as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)]),FUN=mean)),
+       col=c(SEasternCols(3)[1],
+             ElizCols(3)[1],
+             NorthernCols(3)[1],
+             WesternCols(3)[1]),pch="-",cex=3)
+axis(1,at=1:4,labels=levels(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2)
+dev.off()
+
+
+####====4.0 Beta Diversity ====####
+
+
+
+
+# plots
+
+pdf("figures/FishBetaDiv.pdf",height = 5,width = 6)
+par(mar=c(2.1, 2.1, 2.1, 2.1))
+nMDS <- metaMDS(vegdist(t(fishdat),method="jaccard",binary=TRUE),trymax=500)
+
+plot(nMDS$points[,1],nMDS$points[,2],
+     pch=16,
+     cex=1.5,
+     col=metadatSites$col[match(sites,metadatSites$SiteID)],
+     main="",
+     ylab="",xlab="")
+
+ordihull(nMDS,groups = sites,col = "grey71",draw = "polygon",lty=0)
+points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
+       col=metadatSites$col[match(sites,metadatSites$SiteID)])
+text(-0.8,-0.6,labels = paste0("Stress = ",round(nMDS$stress,2)))
+dev.off()
+
+## add in the text to see sites
+
+par(mar=c(2.1, 2.1, 2.1, 2.1))
+nMDS <- metaMDS(vegdist(t(fishdat),method="jaccard",binary=TRUE),trymax=500)
+
+plot(nMDS$points[,1],nMDS$points[,2],
+     pch=16,
+     cex=1.5,
+     col=metadatSites$col[match(sites,metadatSites$SiteID)],
+     main="",
+     ylab="",xlab="")
+
+ordihull(nMDS,groups = sites,col = "grey71",draw = "polygon",lty=0)
+points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
+       col=metadatSites$col[match(sites,metadatSites$SiteID)])
+
+text(nMDS$points[,1],nMDS$points[,2]+0.05,labels=colnames(fishdat),cex=0.3)
+
+
+
+
+####====5.0 Linking to Oceanogrphy ====####
+
+
+
+########################CODE BASEMENT ###########
 
 
 ####====2.0 Plotting basic alpha /beta metrics ====####
@@ -150,6 +267,9 @@ points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
        col=metadatSites$col[match(sites,metadatSites$SiteID)])
 
 dev.off()
+
+
+text(nMDS$points[,1],nMDS$points[,2]+0.05,labels=colnames(fishdat),cex=0.3)
 
 
 pdf("figures/FishBetaDivEcoRegions1.pdf",height = 5,width = 6)
