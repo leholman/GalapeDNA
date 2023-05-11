@@ -1,5 +1,5 @@
 
-########££#####################################
+###############################################
 ####====Analysis of Galapagos eDNA Data====####
 ####==== Luke E. Holman ==== 20.09.2022====####
 ###############################################
@@ -9,6 +9,8 @@ library("vegan")
 library("ade4")
 library("RColorBrewer")
 library("reshape2")
+library("EcolUtils")
+
 #Set the seed 
 set.seed("123456")
 palette(brewer.pal(12, "Set3"))
@@ -156,6 +158,31 @@ dev.off()
 
 ####====4.0 Beta Diversity ====####
 
+
+### What are the previously described ecoregions from 
+
+groups0 <- sapply(strsplit(colnames(fishdatSite),"\\."),"[",1)
+#Groups 1 as ecoregions
+groups1 <- metadatSites$EcoRegion[match(groups0,metadatSites$SiteID)]
+#Groups 2 w/ RED as Northern 
+groups2 <- groups1
+groups2[groups0=="RED"]<-"Western"
+
+#ius the variance between ecoregions similar? -  lets run a PERMdisp 
+fishbetadisp <- betadisper(vegdist(t(fishdatSite), "jaccard",binary=TRUE),groups1)
+anova(fishbetadisp)
+#Sig difference in multivariate homogeneity - probably due to different numbers of samples
+
+
+#Is there a sig diff in PERMANOVA between ecoregions?
+adonis2(vegdist(t(fishdatSite), "jaccard",binary=TRUE)~groups1,permutations = 1000)
+
+## quite uneven samples so lets test individually 
+
+adonis.pair(vegdist(t(fishdatSite), "jaccard",binary=TRUE),as.factor(groups1),nper = 1000)
+
+
+## Elizabeth ecoreigon sinply doesnt have enough observations.......
 
 
 
