@@ -1,0 +1,19 @@
+Permutation test for adonis under reduced model
+Terms added sequentially (first to last)
+Permutation: free
+Number of permutations: 1000
+
+adonis2(formula = vegdist(t(fishdatSite), "jaccard", binary = TRUE) ~ groups1, permutations = 1000)
+         Df SumOfSqs      R2     F   Pr(>F)    
+groups1   3   1.2916 0.24705 2.078 0.000999 ***
+Residual 19   3.9366 0.75295                   
+Total    22   5.2282 1.00000                   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+                  combination SumsOfSqs   MeanSqs  F.Model        R2     P.value P.value.corrected
+1 CSouthEastern <-> Elizabeth 0.4538791 0.4538791 2.287146 0.1861413 0.021978022       0.032967033
+2  CSouthEastern <-> Northern 0.3228144 0.3228144 1.605272 0.1179890 0.001998002       0.003996004
+3   CSouthEastern <-> Western 0.5146647 0.5146647 2.428214 0.1393266 0.000999001       0.003996004
+4      Elizabeth <-> Northern 0.4814028 0.4814028 2.542760 0.3886372 0.066666667       0.080000000
+5       Elizabeth <-> Western 0.2823101 0.2823101 1.297198 0.1563416 0.086913087       0.086913087
+6        Northern <-> Western 0.5056828 0.5056828 2.331418 0.2057481 0.001998002       0.003996004

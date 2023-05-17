@@ -169,20 +169,24 @@ groups2[groups0=="RED"]<-"Western"
 
 #ius the variance between ecoregions similar? -  lets run a PERMdisp 
 fishbetadisp <- betadisper(vegdist(t(fishdatSite), "jaccard",binary=TRUE),groups1)
-fishbetadisp <- betadisper(vegdist(t(fishdatSite), "bray"),groups1)
+#fishbetadisp <- betadisper(vegdist(t(fishdatSite), "bray"),groups1)
 anova(fishbetadisp)
+sink("statisticsReports/betadisp.txt")
 TukeyHSD(fishbetadisp)
+sink()
 
 #Sig difference in multivariate homogeneity - probably due to different numbers of samples
 
 
 #Is there a sig diff in PERMANOVA between ecoregions?
+sink("statisticsReports/PERMANOVA.txt")
 adonis2(vegdist(t(fishdatSite), "jaccard",binary=TRUE)~groups1,permutations = 1000)
 
 ## quite uneven samples so lets test individually 
-
 adonis.pair(vegdist(t(fishdatSite), "jaccard",binary=TRUE),as.factor(groups1),nper = 1000)
 #adonis.pair(vegdist(t(fishdatSite), "bray"),as.factor(groups1),nper = 1000)
+sink()
+
 
 ## Elizabeth bio region simply doesnt have enough observations....... here we run again with reps not averaged
 adonis.pair(vegdist(t(fishdat), "jaccard",binary=TRUE),

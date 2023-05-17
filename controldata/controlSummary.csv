@@ -1,0 +1,58 @@
+﻿Dataset,ASV,C2,C3,C4,C5,C6,CDOU.C,CHAM.C,CMAR.C,CORA.C,CUEV.C,DAPH.C,EGAS.C,ELI.C,GARD.C,PCAL.C,PCR1.NTC.1,PCR1.NTC.2,PESP.C,PIN.C,PLAZ.C,PMAN.C,PMOR.C,PROJ.C,PVIC.C,RED.C,SOMB.C,STAFE.C,SUAR.C,TOR.C,OTU,assignmentQual,taxID,superkingdom,phylum,class,order,family,genus,species
+Universal,ASV_1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1,Low,334913,Eukaryota,Chordata,Actinopteri,Perciformes,Serranidae,Cephalopholis,Cephalopholis sexmaculata
+Universal,ASV_118,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_118,High,880958,Eukaryota,Chordata,Actinopteri,Myctophiformes,Myctophidae,Diogenichthys,Diogenichthys laternatus
+Universal,ASV_1284,0,0,0,0,0,28,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1284,High-MH,None,Eukaryota,Chordata,Actinopteri,Gadiformes,Gadidae,NA,NA
+Universal,ASV_13,0,0,0,0,0,0,0,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_13,High,317475,Eukaryota,Chordata,Actinopteri,Labriformes,Labridae,Halichoeres,Halichoeres dispilus
+Universal,ASV_1363,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1363,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Universal,ASV_1390,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1390,High-MH,None,Eukaryota,Chordata,Mammalia,Artiodactyla,Bovidae,Ovis,NA
+Universal,ASV_252,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,ASV_252,High,9704,Eukaryota,Chordata,Mammalia,Carnivora,Otariidae,Zalophus,Zalophus californianus
+Universal,ASV_40,7,122,0,0,0,0,0,0,0,0,0,0,5,0,2,0,0,0,0,0,0,4,22,22,0,23,0,19,0,ASV_40,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Universal,ASV_491,0,0,0,0,0,0,0,49,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_491,High-MH,None,Eukaryota,Chordata,Actinopteri,Scombriformes,Centrolophidae,NA,NA
+Universal,ASV_512,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,59,0,0,0,0,53,0,0,0,ASV_512,High,1347777,Eukaryota,Chordata,Actinopteri,Cypriniformes,Leuciscidae,Phoxinus,Phoxinus phoxinus
+Universal,ASV_518,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_518,High-MH,None,Eukaryota,Chordata,Mammalia,Primates,Hominidae,NA,NA
+Universal,ASV_681,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_681,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Universal,ASV_705,0,0,0,0,0,0,0,0,0,0,0,0,0,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_705,High-MH,None,Eukaryota,Chordata,Mammalia,Artiodactyla,Suidae,Sus,NA
+Universal,ASV_870,0,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_870,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Universal,ASV_9,0,0,0,0,0,0,66,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_9,Low,1738800,Eukaryota,Chordata,Actinopteri,Stomiiformes,Phosichthyidae,Vinciguerria,Vinciguerria sp. CBM:ZF:14736
+Elasmobrach,ASV_1035,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,27,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1052,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24,0,0,0,0,ASV_1052,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1065,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,ASV_1065,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Elasmobrach,ASV_1069,0,0,0,0,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1069,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1074,0,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1074,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1082,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,ASV_1082,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1124,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1128,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1128,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,0,0,0,0,0,0,0,0,0,0,ASV_113,High-MH,None,Eukaryota,Chordata,Mammalia,Artiodactyla,Suidae,Sus,NA
+Elasmobrach,ASV_1135,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1135,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1150,0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1150,High-MH,None,Eukaryota,Chordata,Actinopteri,Perciformes,Cottidae,NA,NA
+Elasmobrach,ASV_1157,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1157,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1172,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1172,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1182,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1182,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_12,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_12,High-MH,None,Eukaryota,Chordata,Actinopteri,Labriformes,Labridae,Scarus,NA
+Elasmobrach,ASV_1206,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1206,High,180282,Bacteria,Proteobacteria,Betaproteobacteria,Burkholderiales,Comamonadaceae,Delftia,Delftia tsuruhatensis
+Elasmobrach,ASV_1213,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,ASV_1213,High-MH,None,Bacteria,Proteobacteria,Betaproteobacteria,Burkholderiales,Comamonadaceae,Delftia,NA
+Elasmobrach,ASV_1214,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1223,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1235,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1239,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1242,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1243,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_1250,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_1250,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Elasmobrach,ASV_127,50,241,0,0,0,0,3,0,0,0,0,0,0,10,0,0,0,61,8,0,0,117,0,0,0,0,0,6,0,ASV_127,High-MH,None,Eukaryota,Chordata,Mammalia,Primates,Hominidae,NA,NA
+Elasmobrach,ASV_129,0,639,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26,0,23,0,0,0,13,0,ASV_129,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Elasmobrach,ASV_18,0,0,0,0,0,0,0,0,0,309,0,0,0,494,0,0,0,0,0,698,24,93,0,0,0,0,0,223,0,ASV_18,High-MH,None,Eukaryota,Chordata,Aves,Galliformes,Phasianidae,NA,NA
+Elasmobrach,ASV_268,0,0,0,0,0,0,0,0,0,0,0,0,0,427,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_268,High-MH,None,Eukaryota,Chordata,Mammalia,Artiodactyla,Suidae,Sus,NA
+Elasmobrach,ASV_279,9,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,72,0,ASV_279,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Elasmobrach,ASV_372,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24,0,24,3,0,0,0,0,6,0,ASV_372,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Elasmobrach,ASV_4,44,8933,6,606,108,502,94,552,6,63,174,7,206,181,0,21,0,440,50,192,154,626,1433,143,479,647,0,1102,860,ASV_4,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Elasmobrach,ASV_451,0,0,0,0,0,0,0,0,224,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_451,High,13677,Eukaryota,Chordata,Actinopteri,Scombriformes,Scombridae,Scomber,Scomber scombrus
+Elasmobrach,ASV_5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,98,0,0,0,0,0,0,0,0,0,ASV_5,High-MH,None,Eukaryota,Chordata,Mammalia,Carnivora,Otariidae,Arctocephalus,NA
+Elasmobrach,ASV_579,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,ASV_579,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Elasmobrach,ASV_623,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,122,0,0,0,0,ASV_623,None,None,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_7,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_7,High,357811,Eukaryota,Chordata,Actinopteri,Kurtiformes,Apogonidae,Apogon,Apogon imberbis
+Elasmobrach,ASV_708,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_740,0,0,0,0,84,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_740,High-MH,None,Eukaryota,Chordata,Actinopteri,Cypriniformes,Cyprinidae,NA,NA
+Elasmobrach,ASV_801,0,70,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_801,High,9606,Eukaryota,Chordata,Mammalia,Primates,Hominidae,Homo,Homo sapiens
+Elasmobrach,ASV_802,0,0,0,0,70,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_931,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,44,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Elasmobrach,ASV_99,0,0,0,0,0,0,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ASV_99,None,None,NA,NA,NA,NA,NA,NA,NA
