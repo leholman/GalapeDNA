@@ -4,16 +4,16 @@ Permutation: free
 Number of permutations: 1000
 
 adonis2(formula = vegdist(t(fishdatSite), "jaccard", binary = TRUE) ~ groups1, permutations = 1000)
-         Df SumOfSqs      R2     F   Pr(>F)    
-groups1   3   1.2916 0.24705 2.078 0.000999 ***
-Residual 19   3.9366 0.75295                   
-Total    22   5.2282 1.00000                   
+         Df SumOfSqs      R2      F   Pr(>F)    
+groups1   3   1.2906 0.24707 2.0783 0.000999 ***
+Residual 19   3.9328 0.75293                    
+Total    22   5.2234 1.00000                    
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
                   combination SumsOfSqs   MeanSqs  F.Model        R2     P.value P.value.corrected
-1 CSouthEastern <-> Elizabeth 0.4538791 0.4538791 2.287146 0.1861413 0.017982018       0.026973027
-2  CSouthEastern <-> Northern 0.3228144 0.3228144 1.605272 0.1179890 0.001998002       0.005994006
+1 CSouthEastern <-> Elizabeth 0.4533220 0.4533220 2.286141 0.1860748 0.017982018       0.026973027
+2  CSouthEastern <-> Northern 0.3222633 0.3222633 1.603967 0.1179044 0.001998002       0.005994006
 3   CSouthEastern <-> Western 0.5146647 0.5146647 2.428214 0.1393266 0.000999001       0.005994006
-4      Elizabeth <-> Northern 0.4814028 0.4814028 2.542760 0.3886372 0.066666667       0.079920080
-5       Elizabeth <-> Western 0.2823101 0.2823101 1.297198 0.1563416 0.079920080       0.079920080
-6        Northern <-> Western 0.5056828 0.5056828 2.331418 0.2057481 0.004995005       0.009990010
+4      Elizabeth <-> Northern 0.4813197 0.4813197 2.554885 0.3897681 0.066666667       0.080000000
+5       Elizabeth <-> Western 0.2814509 0.2814509 1.294579 0.1560753 0.109890110       0.109890110
+6        Northern <-> Western 0.5055848 0.5055848 2.333547 0.2058973 0.004995005       0.009990010

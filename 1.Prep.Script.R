@@ -178,7 +178,7 @@ fishdat_p_collapsed_wTAX_1 <- fishdat_p_collapsed_wTAX_raw[fishdat_p_collapsed_w
 
 #get rid of the below domestic animals & humans
 
-domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Felis catus","Gallus gallus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens")
+domestics <-c("Bos","Bos taurus","Canis lupus familiaris","Capra hircus","Equus","Felis catus","Gallus gallus","Gallus","Meleagris gallopavo","Sus scrofa","Homo sapiens","Salmo trutta","Dicentrarchus labrax")
 
 fishdat_p_collapsed_wTAX_2 <- fishdat_p_collapsed_wTAX_1[!(fishdat_p_collapsed_wTAX_1$Assign.Assigment %in% domestics),]
 fishdat_p_collapsed_wTAX_2.dom <- fishdat_p_collapsed_wTAX_1[(fishdat_p_collapsed_wTAX_1$Assign.Assigment %in% domestics),]

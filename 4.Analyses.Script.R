@@ -138,21 +138,24 @@ dev.off()
 #by ecoregion
 
 pdf("figures/FishRichness.ecoregion.pdf",height = 5,width = 3)
-par(mar=c(7.1, 5.1, 2.1, 2.1))
+par(mar=c(7.1, 2.1, 2.1, 5.1))
 plot(as.numeric(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),fishAlpha$Richness,
      col=adjustcolor(metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],alpha.f = 0.5),
      pch=16,
      cex=1.5,
      ylab="ASV Richness",
      xlab="",
-     xaxt='n',xlim=c(0,5),
+     xaxt='n',xlim=c(0,5),yaxt='n',
+     bty="n"
 )
+box(lwd=0.5)
 points(1:4,unlist(by(fishAlpha$Richness,as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)]),FUN=mean)),
        col=c(SEasternCols(3)[1],
              ElizCols(3)[1],
              NorthernCols(3)[1],
              WesternCols(3)[1]),pch="-",cex=3)
-axis(1,at=1:4,labels=levels(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2)
+axis(1,at=1:4,labels=levels(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2,lwd=0.5)
+axis(4,lwd=0.5)
 dev.off()
 
 
@@ -200,7 +203,7 @@ adonis.pair(vegdist(t(fishdat), "jaccard",binary=TRUE),
 pdf("figures/FishBetaDiv.pdf",height = 5,width = 6)
 par(mar=c(2.1, 2.1, 2.1, 2.1))
 nMDS <- metaMDS(vegdist(t(fishdat),method="jaccard",binary=TRUE),trymax=500)
-nMDS <- metaMDS(vegdist(t(fishdat),method="bray"),trymax=500)
+#nMDS <- metaMDS(vegdist(t(fishdat),method="bray"),trymax=500)
 
 plot(nMDS$points[,1],nMDS$points[,2],
      pch=16,
@@ -241,7 +244,7 @@ text(nMDS$points[,1],nMDS$points[,2]+0.05,labels=colnames(fishdat),cex=0.3)
 ## Can we link biodiversity patterns to particle release parameters?
 
 # Let's subset the data to take only the -3 day data & match it up with the correct order of sites  
-particle3 <- particle[particle$day=="-3",]
+particle3 <- particle[particle$day=="-2",]
 particle3o <- particle3[match(fishAlpha$ID,particle3$site),]
 
 # Lets run linear models to test for individual effects
@@ -276,28 +279,28 @@ par(mfrow=c(2,2))
 par(mar=c(4.1, 4.1, 2.1, 1.1))
 plot(particle3o$mean_spread,
      fishAlpha$Richness,
-     ylab="Fish Richness",
-     xlab="Average Spread of Particles from Mean (Km)",
+     ylab="ASV Richness",
+     xlab="Average Spread of Particles from Mean (km)",
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 
 
 plot(particle3o$mean_dist,
      fishAlpha$Richness,
-     ylab="Fish Richness",
-     xlab="Distance of Particle Centroid from Sampling Site (Km)",
+     ylab="ASV Richness",
+     xlab="Distance of Particle Centroid from Sampling Site (km)",
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 
 plot(particle3o$area..km.,
      fishAlpha$Richness,
-     ylab="Fish Richness",
-     xlab="Surface Area of Particles (Km)",
+     ylab="ASV Richness",
+     xlab="Surface Area of Particles (km)",
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 
 
 plot(particle3o$ave_dist,
      fishAlpha$Richness,
-     ylab="Fish Richness",
-     xlab="Average Distance of Particles From Sampling Point (Km)",
+     ylab="ASV Richness",
+     xlab="Average Distance of Particles From Sampling Point (km)",
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 
 dev.off()
@@ -342,6 +345,17 @@ predictedData$lwr <- predictedData$fit-1.96*predictedData$se.fit
 predictedData$upr <- predictedData$fit+1.96*predictedData$se.fit
 
 #Plot this model
+
+#First a black and whigte simple version 
+
+pdf("figures/DistDecayBW.V2.pdf",width = 9,height = 6.5)
+par(mar=c(4.1, 4.1, 2.1, 6.1))
+plot(geographicDistance.pair.No0$value/1000,
+     eDNAdistance.pair.mod.No0$value,
+     pch=16, cex=0.95, 
+     xlab="Geographic Distance (km)",
+     ylab="Jaccard Dissimilarity")
+dev.off()
 
 #RED = negative BLUE = positive 
 my_palette <- colorRampPalette(colors = c("red", "white","blue"))
