@@ -1,0 +1,78 @@
+
+Call:
+lm(formula = eDNAdistance.pair.mod.No0$value ~ geographicDistance.pair.No0$value)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.232927 -0.060557  0.000763  0.063631  0.205997 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                       4.588e-01  8.594e-03  53.384  < 2e-16 ***
+geographicDistance.pair.No0$value 4.167e-07  5.311e-08   7.847 2.58e-14 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.08466 on 504 degrees of freedom
+Multiple R-squared:  0.1089,	Adjusted R-squared:  0.1071 
+F-statistic: 61.57 on 1 and 504 DF,  p-value: 2.579e-14
+
+
+Call:
+lm(formula = eDNAdistance.pair.mod.No0$value ~ oceanResistance.pair.No0$value)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.278497 -0.061676  0.003344  0.058352  0.209253 
+
+Coefficients:
+                                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                     0.519483   0.003925 132.343  < 2e-16 ***
+oceanResistance.pair.No0$value -0.114589   0.028730  -3.989 7.63e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.0883 on 504 degrees of freedom
+Multiple R-squared:  0.0306,	Adjusted R-squared:  0.02867 
+F-statistic: 15.91 on 1 and 504 DF,  p-value: 7.634e-05
+
+
+Call:
+lm(formula = model1$residuals ~ oceanResistance.pair.No0$value)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.239180 -0.057688  0.004862  0.059377  0.196985 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                     5.723e-05  3.698e-03   0.015    0.988    
+oceanResistance.pair.No0$value -1.144e-01  2.707e-02  -4.227 2.81e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.0832 on 504 degrees of freedom
+Multiple R-squared:  0.03424,	Adjusted R-squared:  0.03232 
+F-statistic: 17.87 on 1 and 504 DF,  p-value: 2.81e-05
+
+
+Call:
+lm(formula = eDNAdistance.pair.mod.No0$value ~ geographicDistance.pair.No0$value + 
+    oceanResistance.pair.No0$value)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.239195 -0.057687  0.004862  0.059369  0.196966 
+
+Coefficients:
+                                    Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                        4.589e-01  8.454e-03  54.277  < 2e-16 ***
+geographicDistance.pair.No0$value  4.166e-07  5.225e-08   7.973 1.05e-14 ***
+oceanResistance.pair.No0$value    -1.144e-01  2.710e-02  -4.223 2.86e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.08328 on 503 degrees of freedom
+Multiple R-squared:  0.1394,	Adjusted R-squared:  0.136 
+F-statistic: 40.73 on 2 and 503 DF,  p-value: < 2.2e-16
+

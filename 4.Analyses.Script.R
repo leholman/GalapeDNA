@@ -278,27 +278,27 @@ plot(particle3o$mean_spread,
      fishAlpha$Richness,
      ylab="Fish Richness",
      xlab="Average Spread of Particles from Mean (Km)",
-     col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),pch=16,cex=2.5)
+     col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 
 
 plot(particle3o$mean_dist,
      fishAlpha$Richness,
      ylab="Fish Richness",
      xlab="Distance of Particle Centroid from Sampling Site (Km)",
-     col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),pch=16,cex=2.5)
+     col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 
 plot(particle3o$area..km.,
      fishAlpha$Richness,
      ylab="Fish Richness",
      xlab="Surface Area of Particles (Km)",
-     col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),pch=16,cex=2.5)
+     col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 
 
 plot(particle3o$ave_dist,
      fishAlpha$Richness,
      ylab="Fish Richness",
      xlab="Average Distance of Particles From Sampling Point (Km)",
-     col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),pch=16,cex=2.5)
+     col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 
 dev.off()
 
@@ -306,89 +306,29 @@ dev.off()
 
 ### Now beta dissimilarity 
 
-
-geographicDistance <- as.dist(as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),upper = T)
-oceanResistance <- as.dist(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),upper = T)
-
-nMDS.eDNA <- metaMDS(vegdist(t(fishdatSite),method="jaccard",binary=TRUE),trymax=500)
-nMDS.dist <- metaMDS(geographicDistance,trymax=500)
-nMDS.resist <- metaMDS(oceanResistance,trymax=500)
-
-par(mfrow=c(1,3))
-plot(nMDS.eDNA,type = "t",main="eDNA")
-plot(nMDS.dist,type = "t",main="Distance")
-plot(nMDS.resist,type = "t",main="Resistance")
-
-par(mfrow=c(2,2))
-
-plot(geographicDistance,vegdist(t(fishdatSite),method="jaccard",binary=TRUE),pch=16,ylim=c(0,1))
-plot(oceanResistance,vegdist(t(fishdatSite),method="jaccard",binary=TRUE),pch=16)
-
-
-test <- myjac_mod(fishdatSite)
-test[test==0] <- NA
-
-plot(as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),test,ylim=c(0,1),pch=16)
-plot(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),test,pch=16)
-
-
-plot(test,as.matrix(vegdist(t(fishdatSite),method="jaccard",binary=TRUE)))
-
-
-
+#first lets pull in the data and melt it into pairwise observations
+geographicDistance.pair <- reshape2::melt(as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),varnames = c("Start","End"))
+oceanResistance.pair <- reshape2::melt(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),varnames = c("Start","End"))
+geographicDistance.pair.No0 <- geographicDistance.pair[-which(geographicDistance.pair$value == 0),]
+oceanResistance.pair.No0 <- oceanResistance.pair[-which(geographicDistance.pair$value == 0),]
 eDNAdistance.pair.mod = reshape2::melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
 eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
-eDNAdistance.pair.No0 <- eDNAdistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
-eDNAdistance.pair.bray.No0 <- eDNAdistance.pair.bray[-which(eDNAdistance.pair.mod$value == 0),]
-geographicDistance.pair.No0 <- geographicDistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
-oceanResistance.pair.No0 <- oceanResistance.pair[-which(eDNAdistance.pair.mod$value == 0),]
 
-
-myjac = function (datamat) {
-  datamat = datamat>0
-  mj = apply(datamat, 2, function(x) {
-    apply(datamat, 2, function(y) {
-      return(sum(x&y)/sum(x|y))
-    })
-  })
-  return(1-mj)
-}
-
-myjac_mod = function (datamat) {
-  datamat = datamat>0
-  mj = apply(datamat, 2, function(x) {
-    apply(datamat, 2, function(y) {
-      return(sum(x&y)/sum(x))
-    })
-  })
-  return(1-mj)
-}
-
-
-
-plot(eDNAdistance.pair.mod.No0$value,eDNAdistance.pair.No0$value)
-
-plot(eDNAdistance.pair.mod.No0$value,geographicDistance.pair.No0$value)
-plot(eDNAdistance.pair.No0$value,geographicDistance.pair.No0$value)
+#now lets build some models 
 
 model1 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value)
-model2 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
-model3 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
-model4 = lm (eDNAdistance.pair.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
-model5 = lm (eDNAdistance.pair.bray.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
+model2 = lm (eDNAdistance.pair.mod.No0$value~oceanResistance.pair.No0$value)
+model3 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
+model4 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
 
-
-abline(model1, col="firebrick", lwd=2)
-
-"dodgerblue4"
-
+sink("statisticsReports/lmOceanGeo.txt")
 summary(model1)
 summary(model2)
 summary(model3)
 summary(model4)
+sink()
 
-
-##Predictions based from the model 
+##Predictions based from the full model (model 4) 
 
 y.eDNA <- eDNAdistance.pair.mod.No0$value
 x.GeoG <- geographicDistance.pair.No0$value
@@ -400,7 +340,6 @@ predictedData <- data.frame("x.GeoG"=rep(seq(0,320000,1000),2),"z.OceR"= c(rep(0
 predictedData <- cbind(predictedData,predict(modelPredict,predictedData,se.fit = TRUE))
 predictedData$lwr <- predictedData$fit-1.96*predictedData$se.fit
 predictedData$upr <- predictedData$fit+1.96*predictedData$se.fit
-
 
 #Plot this model
 
@@ -450,32 +389,7 @@ legend_image <- as.raster(matrix(rev(my_palette(100)), ncol=1))
 rasterImage(legend_image, 330, 0.40, 340,0.6,xpd=T)
 text(x=333, y = seq(0.4,0.6,l=5), labels = paste0("-  ",seq(-0.38,0.38,l=5)),xpd=T,pos = 4,cex=0.7)
 
-
 dev.off()
-
-pdf("figures/DistDecayV1.pdf",width = 7,height = 5)
-par(mar=c(4.1, 4.1, 2.1, 6.1))
-
-plot((geographicDistance.pair.No0$value)/1000,
-     eDNAdistance.pair.No0$value,
-     pch=16, cex=0.95,
-     xlab="Geographic Distance (km)",
-     ylab="Jaccard Dissimilarity")
-
-
-points((geographicDistance.pair.No0$value)/1000,
-       eDNAdistance.pair.No0$value,
-       col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],
-       pch=16,cex=0.8)
-
-legend_image <- as.raster(matrix(my_palette(100), ncol=1))
-rasterImage(legend_image, 350, 0.60, 360,0.75,xpd=T)
-text(x=353, y = seq(0.6,0.75,l=5), labels = paste0("-  ",seq(-0.38,0.38,l=5)),xpd=T,pos = 4,cex=0.7)
-
-dev.off()
-
-legend_image <- as.raster(matrix(my_palette(100), ncol=1))
-rasterImage(legend_image, 0, 0, 1,1,add=TRUE,xpd=T)
 
 
 
