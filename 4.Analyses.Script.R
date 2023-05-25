@@ -10,6 +10,7 @@ library("ade4")
 library("RColorBrewer")
 library("reshape2")
 library("EcolUtils")
+library("heplots")
 
 #Set the seed 
 set.seed("123456")
@@ -330,6 +331,12 @@ summary(model2)
 summary(model3)
 summary(model4)
 sink()
+
+etasq(model4)
+
+hist(oceanResistance.pair.No0$value,breaks=100)
+
+
 
 ##Predictions based from the full model (model 4) 
 
