@@ -144,7 +144,7 @@ species <- "Spheniscus"
 
 
 #dataset <- read.csv("cleandata/Cleaned_Fish_wTAX.csv",row.names = 1)
-dataset <- read.csv("cleandata/Cleaned_Fish_wTAX.csv",row.names = 1)
+dataset <- read.csv("cleandata/Cleaned_SelectedSpp.csv",row.names = 1)
 
 
 dataset <- dataset[dataset$Assign.Category=="G",]
@@ -170,7 +170,8 @@ for (species in dataset$Assign.Assigment){
 speciesplottingdata <- plottingdata[match(species,dataset$Assign.Assigment),]
 
 pdf(width = 8,height=6.35,file=paste0("mapBuilding/species/map_",species,".pdf"))
-plot(gebco.crop, col=c(rep("white",42), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend = FALSE)
+plot(gebco.crop, col=c(blue.col(galap.br[[1]]+1), grey.colors(0)), breaks=galap.br[[3]],axes = FALSE,box=F,legend=F)
+plot(eq, add=TRUE,border=NA,col="grey34")
 points(metadata$lon2,metadata$lat2,pch=16, col='black',cex=1.5)
 points(metadata$lon2,metadata$lat2,pch=16, col="white")
 axis(1,
