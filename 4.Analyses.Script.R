@@ -78,6 +78,9 @@ oceanResistance <- as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix
 particle <- read.csv("ParticleTracking/ParticleSpread.csv")
 
 # make the colour index
+cols <- c("#80B1D3","#FFFFB3","#FFFFB3","#80B1D3","#FB8072","#BEBADA","#FFED6F","#CCEBC5",
+          "#80B1D3","#8DD3C7","#FDB462","#FFFFB3","#B3DE69","gray85","#FFFFB3","#80B1D3",
+          "#FCCDE5","#80B1D3","#80B1D3","#CCEBC5","#BC80BD","#8DD3C7","#80B1D3")
 
 SEasternCols <- colorRampPalette(c("#D55E00","#E69F00","#faf6c1"))
 NorthernCols <-colorRampPalette(c("#003e60","#56B4E9"))
@@ -210,12 +213,14 @@ plot(nMDS$points[,1],nMDS$points[,2],
      pch=16,
      cex=1.5,
      col=metadatSites$col[match(sites,metadatSites$SiteID)],
+     #col=cols[match(sites,metadatSites$SiteID)],
      main="",
      ylab="",xlab="")
 
 ordihull(nMDS,groups = sites,col = "grey71",draw = "polygon",lty=0)
 points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
        col=metadatSites$col[match(sites,metadatSites$SiteID)])
+       #col=cols[match(sites,metadatSites$SiteID)])
 text(-0.8,-0.6,labels = paste0("Stress = ",round(nMDS$stress,2)))
 dev.off()
 
@@ -244,7 +249,7 @@ text(nMDS$points[,1],nMDS$points[,2]+0.05,labels=colnames(fishdat),cex=0.3)
 
 ## Can we link biodiversity patterns to particle release parameters?
 
-# Let's subset the data to take only the -3 day data & match it up with the correct order of sites  
+# Let's subset the data to take only the -3 day (changed to -2 - 48 hours) data & match it up with the correct order of sites  
 particle3 <- particle[particle$day=="-2",]
 particle3o <- particle3[match(fishAlpha$ID,particle3$site),]
 
@@ -283,27 +288,28 @@ plot(particle3o$mean_spread,
      ylab="ASV Richness",
      xlab="Average Spread of Particles from Mean (km)",
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
-
+     #col=cols,pch=16,cex=2.5)
 
 plot(particle3o$mean_dist,
      fishAlpha$Richness,
      ylab="ASV Richness",
      xlab="Distance of Particle Centroid from Sampling Site (km)",
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
+#col=cols,pch=16,cex=2.5)
 
 plot(particle3o$area..km.,
      fishAlpha$Richness,
      ylab="ASV Richness",
      xlab="Surface Area of Particles (km)",
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
-
+#col=cols,pch=16,cex=2.5)
 
 plot(particle3o$ave_dist,
      fishAlpha$Richness,
      ylab="ASV Richness",
      xlab="Average Distance of Particles From Sampling Point (km)",
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
-
+     #col=cols,pch=16,cex=2.5)
 dev.off()
 
 
@@ -317,6 +323,7 @@ geographicDistance.pair.No0 <- geographicDistance.pair[-which(geographicDistance
 oceanResistance.pair.No0 <- oceanResistance.pair[-which(geographicDistance.pair$value == 0),]
 eDNAdistance.pair.mod = reshape2::melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
 eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
+
 
 #now lets build some models 
 
@@ -335,6 +342,65 @@ sink()
 etasq(model4)
 
 hist(oceanResistance.pair.No0$value,breaks=100)
+
+
+#### WHAT ABOUT each bioregion?
+
+my_palette <- colorRampPalette(colors = c("red", "white","blue"))
+my_colours <- my_palette(100)
+
+par(mfrow=c(1,2))
+
+hot <- c("BAR","TOR","STAFE","PLAZ","DAPH","SOMB","PROJ","EGAS","CMAR","CUEV","SUAR","GARD")
+hot <- c("STAFE","PLAZ","DAPH","SOMB","PROJ","EGAS","CMAR")
+
+cold <- c("PVIC","CDOU","PESP","CHAM","PMAN","ELI","PMOR")
+
+for (loopbioregion in unique(metadatSites$EcoRegion)){
+
+bioregion <- loopbioregion
+#bioregion <- "CSouthEastern"
+bioregion <- "Western"
+
+regionSites <- metadatSites$SiteID[metadatSites$EcoRegion=="Western"|metadatSites$EcoRegion=="CSouthEastern"]
+
+regionSites <- hot
+
+regionSites <- cold
+
+
+eDNAdist2 <- eDNAdistance.pair.mod.No0[eDNAdistance.pair.mod.No0$Start %in% regionSites & eDNAdistance.pair.mod.No0$End %in% regionSites,]
+GEOdist2 <- geographicDistance.pair.No0[geographicDistance.pair.No0$Start %in% regionSites & geographicDistance.pair.No0$End %in% regionSites,]
+Resist2 <- oceanResistance.pair.No0[oceanResistance.pair.No0$Start %in% regionSites & oceanResistance.pair.No0$End %in% regionSites,]
+
+model.both = lm(eDNAdist2$value~ Resist2$value+GEOdist2$value)
+
+plot(GEOdist2$value,eDNAdist2$value,col=my_colours[findInterval(Resist2$value, seq(min(Resist2$value), max(Resist2$value), length.out = 100))],pch=16)
+
+#plot(eDNAdist2$value~ Resist2$value)
+hist(Resist2$value,breaks=100,main=bioregion)
+
+summary(model.CSEast)
+summary(model.West)
+summary(model.both)
+
+#plot(eDNAdist2$value~GEOdist2$value,col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],pch=16,main=bioregion,cex=2)
+
+}
+
+###### playign with particle spread 
+
+hist(particle3$area..km.[match(cold,particle3$site)],breaks=100)
+hist(particle3$area..km.[match(hot,particle3$site)],breaks=100)
+
+hist(particle3$ave_dist[match(cold,particle3$site)],breaks=100)
+hist(particle3$ave_dist[match(hot,particle3$site)],breaks=100)
+
+
+
+
+plot(particle3$mean_dist,col=)
+
 
 
 
@@ -415,6 +481,25 @@ dev.off()
 
 
 ########################CODE BASEMENT ###########
+
+## Proportion of stuff for Marc
+
+
+
+data <-read.csv("cleandata/Cleaned_Master_wTAX.csv",row.names = 1)
+
+
+dataAll <- data[,1:69]
+flatData <- rowSums(dataAll)
+
+by(flatData,sum,INDICES = data$Assign.Category)
+
+flatDataG <- flatData[data$Assign.Category=="G"]
+
+barplot(by(flatData,sum,INDICES=data$B.class),cex.names=0.5)
+
+by(flatData,sum,INDICES=data$B.class)
+
 
 
 ####====2.0 Plotting basic alpha /beta metrics ====####

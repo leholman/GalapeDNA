@@ -105,7 +105,13 @@ ColIndex$Colour[match(paste0(metadata$EcoRegion,"-",metadata$island),ColIndex$Ec
 
 
 
-pdf(width = 8,height=6.35,file="mapBuilding/mapV1.pdf")
+#####
+
+#test <- st_read("mapBuilding/GalapIslands.shp")
+
+
+
+pdf(width = 8,height=6.35,file="mapBuilding/mapV2.pdf")
 
 plot(gebco.crop, col=c(blue.col(galap.br[[1]]+1), grey.colors(0)), breaks=galap.br[[3]],axes = FALSE,box=F,legend=F)
 plot(eq, add=TRUE,border=NA,col="grey34")
@@ -114,12 +120,17 @@ points(metadata$lon2,metadata$lat2,pch=16, col='white',cex=2.5)
 points(metadata$lon2,metadata$lat2,pch=16, col=ColIndex$Colour[match(paste0(metadata$EcoRegion,"-",metadata$island),ColIndex$EcoIsland)]
 ,cex=2)
 
+#points(metadata$lon2,metadata$lat2,pch=16, col=cols,cex=2)
+
+
 axis(1,
      at=pretty(c(-92, -89)),
      labels = parse(text=degreeLabelsEW(pretty(c(-92, -89)))),lwd = 0, lwd.ticks = 1)
 axis(2,
      at=pretty(c(-1.55, 0.68)),
      labels = parse(text=degreeLabelsNS(pretty(c(-1.55, 0.68)))),las=TRUE,lwd = 0, lwd.ticks = 1)
+
+#text(metadata$lon2,metadata$lat2,labels=metadata$SiteID)
 
 #The legend editing for raster layers sucks, the below is a very hacky stupid way to get things to look right, buyer beware.
 gebco.crop.mod <- gebco.crop
@@ -144,7 +155,7 @@ species <- "Spheniscus"
 
 
 #dataset <- read.csv("cleandata/Cleaned_Fish_wTAX.csv",row.names = 1)
-dataset <- read.csv("cleandata/Cleaned_SelectedSpp.csv",row.names = 1)
+dataset <- read.csv("cleandata/Cleaned_Birds_wTAX.csv",row.names = 1)
 
 
 dataset <- dataset[dataset$Assign.Category=="G",]
