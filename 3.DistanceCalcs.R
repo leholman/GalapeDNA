@@ -458,9 +458,21 @@ for (month in list.files(pattern="OceanogrphicResistanceMatrix.*","distanceData/
 }
 
 
+####====3.0 Temperature Distance ====####
+
+temp <- read.csv("Temp_030623.csv",row.names = 1)
+
+sep.temp <- temp$Sep
+names(sep.temp) <- temp$SiteID
+
+#temp.dist <- dist(sep.temp,diag = T,upper = T)
+
+temp.dist <- outer(sep.temp,sep.temp,"-")
+
+write.csv(temp.dist,"distanceData/tempDistance.csv")
 
 
-####====3.0 Code basement ====####
+####====4.0 Code basement ====####
 
 
 

@@ -71,7 +71,7 @@ for (column in colnames(fishdatSite)){
 
 siteDist <- as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1))
 oceanResistance <- as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1))
-
+tempDist <- as.matrix(read.csv("distanceData/tempDistance.csv",row.names = 1))
 
 # pull the data in 
 
@@ -323,6 +323,8 @@ geographicDistance.pair.No0 <- geographicDistance.pair[-which(geographicDistance
 oceanResistance.pair.No0 <- oceanResistance.pair[-which(geographicDistance.pair$value == 0),]
 eDNAdistance.pair.mod = reshape2::melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
 eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
+tempDist.pair <- reshape2::melt(as.matrix(read.csv("distanceData/tempDistance.csv",row.names = 1)),varnames = c("Start","End"))
+tempDist.pair.No0 <- tempDist.pair[-which(eDNAdistance.pair.mod$value == 0),]
 
 
 #now lets build some models 
@@ -331,17 +333,34 @@ model1 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value)
 model2 = lm (eDNAdistance.pair.mod.No0$value~oceanResistance.pair.No0$value)
 model3 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
 model4 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
+model5 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + tempDist.pair.No0$value)
+model6 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + tempDist.pair.No0$value+ oceanResistance.pair.No0$value)
+
+
+index <- geographicDistance.pair.No0$value < 100000
+index <- geographicDistance.pair.No0$value > 100000 & geographicDistance.pair.No0$value < 200000
+index <- geographicDistance.pair.No0$value > 200000
+
+model6.subset = lm (eDNAdistance.pair.mod.No0$value[index]~geographicDistance.pair.No0$value[index] + tempDist.pair.No0$value[index] + oceanResistance.pair.No0$value[index])
+
+summary(model6.subset)
+
+geographicDistance.pair.No0$value
 
 sink("statisticsReports/lmOceanGeo.txt")
 summary(model1)
 summary(model2)
 summary(model3)
 summary(model4)
+summary(model5)
+summary(model6)
 sink()
 
-etasq(model4)
+etasq(model6)
 
 hist(oceanResistance.pair.No0$value,breaks=100)
+
+
 
 
 #### WHAT ABOUT each bioregion?
@@ -477,6 +496,30 @@ rasterImage(legend_image, 330, 0.40, 340,0.6,xpd=T)
 text(x=333, y = seq(0.4,0.6,l=5), labels = paste0("-  ",seq(-0.38,0.38,l=5)),xpd=T,pos = 4,cex=0.7)
 
 dev.off()
+
+
+## Now lets compare to temperature distance
+
+my_palette_temp <- colorRampPalette(colors = c("blue","white","red"))
+my_colours_temp <- my_palette_temp(100)
+
+par(mfrow=c(1,2))
+
+plot(geographicDistance.pair.No0$value,eDNAdistance.pair.mod.No0$value,
+     cex=1.1,pch=16,
+     main="temp")
+
+points(geographicDistance.pair.No0$value,eDNAdistance.pair.mod.No0$value,
+       col=my_colours_temp[findInterval(tempDist.pair.No0$value, seq(min(tempDist.pair.No0$value), max(tempDist.pair.No0$value), length.out = 100))],pch=16)
+
+plot(geographicDistance.pair.No0$value,eDNAdistance.pair.mod.No0$value,
+     cex=1.1,pch=16,
+     main="Oceanography")
+
+points(geographicDistance.pair.No0$value,eDNAdistance.pair.mod.No0$value,
+       col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(min(oceanResistance.pair.No0$value), max(oceanResistance.pair.No0$value), length.out = 100))],pch=16)
+
+
 
 
 
