@@ -19,7 +19,7 @@ palette(brewer.pal(12, "Set3"))
 
 ####====0.1 Functions====####
 
-## A couple of ways to calculate jaccard (the second assymetrically)
+## A couple of ways to calculate jaccard (the second asymmetrically)
 
 myjac = function (datamat) {
   datamat = datamat>0
@@ -40,8 +40,6 @@ myjac_mod = function (datamat) {
   })
   return(1-mj)
 }
-
-
 
 
 ####====1.0 Pull in Data ====####
@@ -337,15 +335,16 @@ model5 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value +
 model6 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + tempDist.pair.No0$value+ oceanResistance.pair.No0$value)
 
 
+# A little exploration of subsetting the data - I havent gone any further with this 
+
 index <- geographicDistance.pair.No0$value < 100000
 index <- geographicDistance.pair.No0$value > 100000 & geographicDistance.pair.No0$value < 200000
 index <- geographicDistance.pair.No0$value > 200000
 
 model6.subset = lm (eDNAdistance.pair.mod.No0$value[index]~geographicDistance.pair.No0$value[index] + tempDist.pair.No0$value[index] + oceanResistance.pair.No0$value[index])
-
 summary(model6.subset)
 
-geographicDistance.pair.No0$value
+#Now we output the models 
 
 sink("statisticsReports/lmOceanGeo.txt")
 summary(model1)
@@ -361,66 +360,44 @@ etasq(model6)
 hist(oceanResistance.pair.No0$value,breaks=100)
 
 
+### Great now let's plot the final model for both temp and oceanography 
+
+######## GOING FROM HERE ######## 11/07/2023
 
 
-#### WHAT ABOUT each bioregion?
+## Ocenaogrphic reisstance with a loess smooth 
 
-my_palette <- colorRampPalette(colors = c("red", "white","blue"))
+## Temperature maybe also with a smooth? 
+
+
+
+##eveyrhting else?
+
+
+
+my_palette <- colorRampPalette(colors = c("red","green"))
 my_colours <- my_palette(100)
 
-par(mfrow=c(1,2))
 
-hot <- c("BAR","TOR","STAFE","PLAZ","DAPH","SOMB","PROJ","EGAS","CMAR","CUEV","SUAR","GARD")
-hot <- c("STAFE","PLAZ","DAPH","SOMB","PROJ","EGAS","CMAR")
-
-cold <- c("PVIC","CDOU","PESP","CHAM","PMAN","ELI","PMOR")
-
-for (loopbioregion in unique(metadatSites$EcoRegion)){
-
-bioregion <- loopbioregion
-#bioregion <- "CSouthEastern"
-bioregion <- "Western"
-
-regionSites <- metadatSites$SiteID[metadatSites$EcoRegion=="Western"|metadatSites$EcoRegion=="CSouthEastern"]
-
-regionSites <- hot
-
-regionSites <- cold
+plot(tempDist.pair.No0$value,geographicDistance.pair.No0$value,pch=16)
+     #ylim=c(-0.3,0),
+     #col=my_colours[findInterval(geographicDistance.pair.No0$value, seq(min(geographicDistance.pair.No0$value), max(geographicDistance.pair.No0$value), length.out = 100))])
+#col=my_colours[findInterval(eDNAdistance.pair.mod.No0$value, seq(min(eDNAdistance.pair.mod.No0$value), max(eDNAdistance.pair.mod.No0$value), length.out = 100))])
 
 
-eDNAdist2 <- eDNAdistance.pair.mod.No0[eDNAdistance.pair.mod.No0$Start %in% regionSites & eDNAdistance.pair.mod.No0$End %in% regionSites,]
-GEOdist2 <- geographicDistance.pair.No0[geographicDistance.pair.No0$Start %in% regionSites & geographicDistance.pair.No0$End %in% regionSites,]
-Resist2 <- oceanResistance.pair.No0[oceanResistance.pair.No0$Start %in% regionSites & oceanResistance.pair.No0$End %in% regionSites,]
+plot(tempDist.pair.No0$value,oceanResistance.pair.No0$value,pch=16,
+    #ylim=c(-0.3,0),
+    col=my_colours[findInterval(geographicDistance.pair.No0$value, seq(min(geographicDistance.pair.No0$value), max(geographicDistance.pair.No0$value), length.out = 100))])
+    #col=my_colours[findInterval(eDNAdistance.pair.mod.No0$value, seq(min(eDNAdistance.pair.mod.No0$value), max(eDNAdistance.pair.mod.No0$value), length.out = 100))])
 
-model.both = lm(eDNAdist2$value~ Resist2$value+GEOdist2$value)
+cor.test(tempDist.pair.No0$value[oceanResistance.pair.No0$value > 0 & tempDist.pair.No0$value >0],
+         oceanResistance.pair.No0$value[oceanResistance.pair.No0$value > 0 & tempDist.pair.No0$value >0])
+plot(tempDist.pair.No0$value[oceanResistance.pair.No0$value > 0 & tempDist.pair.No0$value < 0],
+     oceanResistance.pair.No0$value[oceanResistance.pair.No0$value > 0 & tempDist.pair.No0$value < 0],pch=16,cex=1.1)
 
-plot(GEOdist2$value,eDNAdist2$value,col=my_colours[findInterval(Resist2$value, seq(min(Resist2$value), max(Resist2$value), length.out = 100))],pch=16)
-
-#plot(eDNAdist2$value~ Resist2$value)
-hist(Resist2$value,breaks=100,main=bioregion)
-
-summary(model.CSEast)
-summary(model.West)
-summary(model.both)
-
-#plot(eDNAdist2$value~GEOdist2$value,col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],pch=16,main=bioregion,cex=2)
-
-}
-
-###### playign with particle spread 
-
-hist(particle3$area..km.[match(cold,particle3$site)],breaks=100)
-hist(particle3$area..km.[match(hot,particle3$site)],breaks=100)
-
-hist(particle3$ave_dist[match(cold,particle3$site)],breaks=100)
-hist(particle3$ave_dist[match(hot,particle3$site)],breaks=100)
-
-
-
-
-plot(particle3$mean_dist,col=)
-
-
+points(tempDist.pair.No0$value[oceanResistance.pair.No0$value > 0 & tempDist.pair.No0$value < 0],
+         oceanResistance.pair.No0$value[oceanResistance.pair.No0$value > 0 & tempDist.pair.No0$value < 0],pch=16,
+     col=my_colours[findInterval(geographicDistance.pair.No0$value, seq(min(geographicDistance.pair.No0$value), max(geographicDistance.pair.No0$value), length.out = 100))][oceanResistance.pair.No0$value > 0 & tempDist.pair.No0$value > 0])
 
 
 ##Predictions based from the full model (model 4) 
@@ -523,6 +500,43 @@ points(geographicDistance.pair.No0$value,eDNAdistance.pair.mod.No0$value,
 
 
 
+index <- oceanResistance.pair.No0$value < -0.15 | oceanResistance.pair.No0$value > 0.15 
+index.H <- oceanResistance.pair.No0$value > 0.15 
+index.L <- oceanResistance.pair.No0$value < -0.15 
+
+
+
+plot(geographicDistance.pair.No0$value[index],eDNAdistance.pair.mod.No0$value[index],
+     cex=1.1,pch=16,
+     main="Oceanography")
+
+points(geographicDistance.pair.No0$value[index],eDNAdistance.pair.mod.No0$value[index],
+       col=my_colours[findInterval(oceanResistance.pair.No0$value[index], seq(min(oceanResistance.pair.No0$value), max(oceanResistance.pair.No0$value), length.out = 100))],pch=16)
+
+high <- loess.sd(as.data.frame(cbind(geographicDistance.pair.No0$value[index.H],eDNAdistance.pair.mod.No0$value[index.H])), nsigma = 1.96, span =3/4)
+low <- loess.sd(as.data.frame(cbind(geographicDistance.pair.No0$value[index.L],eDNAdistance.pair.mod.No0$value[index.L])), nsigma = 1.96, span =3/4)
+
+lines(high$x, high$y,col='red',lwd=3)
+lines(high$x, high$upper,col='darkred')
+lines(high$x, high$lower,col='darkred')
+lines(low$x, low$y,col='blue',lwd=3)
+lines(low$x, low$upper,col='darkblue')
+lines(low$x, low$lower,col='darkblue')
+
+
+plot(geographicDistance.pair.No0$value,eDNAdistance.pair.mod.No0$value,
+     cex=1.1,pch=16,
+     main="Oceanography")
+
+points(geographicDistance.pair.No0$value,eDNAdistance.pair.mod.No0$value,
+       col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(min(oceanResistance.pair.No0$value), max(oceanResistance.pair.No0$value), length.out = 100))],pch=16)
+
+
+
+
+
+
+
 ########################CODE BASEMENT ###########
 
 ## Proportion of stuff for Marc
@@ -544,8 +558,77 @@ barplot(by(flatData,sum,INDICES=data$B.class),cex.names=0.5)
 by(flatData,sum,INDICES=data$B.class)
 
 
+# Here we are messing around with the oceanogrphic resistance across different bioregions
 
-####====2.0 Plotting basic alpha /beta metrics ====####
+
+#### WHAT ABOUT each bioregion?
+
+my_palette <- colorRampPalette(colors = c("red", "white","blue"))
+my_colours <- my_palette(100)
+
+par(mfrow=c(1,2))
+
+hot <- c("BAR","TOR","STAFE","PLAZ","DAPH","SOMB","PROJ","EGAS","CMAR","CUEV","SUAR","GARD")
+hot <- c("STAFE","PLAZ","DAPH","SOMB","PROJ","EGAS","CMAR")
+
+cold <- c("PVIC","CDOU","PESP","CHAM","PMAN","ELI","PMOR")
+
+for (loopbioregion in unique(metadatSites$EcoRegion)){
+  
+  bioregion <- loopbioregion
+  #bioregion <- "CSouthEastern"
+  bioregion <- "Western"
+  
+  regionSites <- metadatSites$SiteID[metadatSites$EcoRegion=="Western"|metadatSites$EcoRegion=="CSouthEastern"]
+  
+  regionSites <- hot
+  
+  regionSites <- cold
+  
+  
+  eDNAdist2 <- eDNAdistance.pair.mod.No0[eDNAdistance.pair.mod.No0$Start %in% regionSites & eDNAdistance.pair.mod.No0$End %in% regionSites,]
+  GEOdist2 <- geographicDistance.pair.No0[geographicDistance.pair.No0$Start %in% regionSites & geographicDistance.pair.No0$End %in% regionSites,]
+  Resist2 <- oceanResistance.pair.No0[oceanResistance.pair.No0$Start %in% regionSites & oceanResistance.pair.No0$End %in% regionSites,]
+  
+  model.both = lm(eDNAdist2$value~ Resist2$value+GEOdist2$value)
+  
+  plot(GEOdist2$value,eDNAdist2$value,col=my_colours[findInterval(Resist2$value, seq(min(Resist2$value), max(Resist2$value), length.out = 100))],pch=16)
+  
+  #plot(eDNAdist2$value~ Resist2$value)
+  hist(Resist2$value,breaks=100,main=bioregion)
+  
+  summary(model.CSEast)
+  summary(model.West)
+  summary(model.both)
+  
+  #plot(eDNAdist2$value~GEOdist2$value,col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],pch=16,main=bioregion,cex=2)
+  
+}
+
+###### playign with particle spread 
+
+hist(particle3$area..km.[match(cold,particle3$site)],breaks=100)
+hist(particle3$area..km.[match(hot,particle3$site)],breaks=100)
+
+hist(particle3$ave_dist[match(cold,particle3$site)],breaks=100)
+hist(particle3$ave_dist[match(hot,particle3$site)],breaks=100)
+
+
+
+
+plot(particle3$mean_dist,col=)
+
+
+
+
+
+
+
+
+
+
+
+# Plotting basic alpha /beta metrics
 
 # by isalnds
 fishdatB <- fishdatSite 
