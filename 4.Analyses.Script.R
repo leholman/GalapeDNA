@@ -362,13 +362,149 @@ hist(oceanResistance.pair.No0$value,breaks=100)
 
 ### Great now let's plot the final model for both temp and oceanography 
 
-######## GOING FROM HERE ######## 11/07/2023
+## Oceanographic resistance with a loess smooth 
+
+#Predict using loess across top & bottom 20% percent of data
+
+prop.loess <- 0.20
+
+z.OceR <- oceanResistance.pair.No0$value
+y.eDNA <- eDNAdistance.pair.mod.No0$value[z.OceR>quantile(z.OceR,1-prop.loess)]
+x.GeoG <- geographicDistance.pair.No0$value[z.OceR>quantile(z.OceR,1-prop.loess)]
+modelPredict.H = loess(y.eDNA~x.GeoG,span = 1)
+y.eDNA <- eDNAdistance.pair.mod.No0$value[z.OceR<quantile(z.OceR,prop.loess)]
+x.GeoG <- geographicDistance.pair.No0$value[z.OceR<quantile(z.OceR,prop.loess)]
+modelPredict.L = loess(y.eDNA~x.GeoG,span = 1)
 
 
-## Ocenaogrphic reisstance with a loess smooth 
+predictedData.H <- cbind(data.frame("x.GeoG"=seq(0,320000,1000)),predict(modelPredict.H,data.frame("x.GeoG"=seq(0,320000,1000)),se = TRUE))
+predictedData.H$lwr <- predictedData.H$fit-1.96*predictedData.H$se.fit
+predictedData.H$upr <- predictedData.H$fit+1.96*predictedData.H$se.fit
+
+predictedData.L <- cbind(data.frame("x.GeoG"=seq(0,320000,1000)),predict(modelPredict.L,data.frame("x.GeoG"=seq(0,320000,1000)),se = TRUE))
+predictedData.L$lwr <- predictedData.L$fit-1.96*predictedData.L$se.fit
+predictedData.L$upr <- predictedData.L$fit+1.96*predictedData.L$se.fit
+
+
+#RED = negative BLUE = positive 
+my_palette <- colorRampPalette(colors = c("red", "white","blue"))
+my_colours <- my_palette(100)
+
+pdf("figures/DistDecayV2.pdf",width = 7,height = 5)
+par(mar=c(4.1, 4.1, 2.1, 6.1))
+
+
+plot(geographicDistance.pair.No0$value/1000,
+     eDNAdistance.pair.mod.No0$value,
+     pch=16, cex=0.95, 
+     xlab="Geographic Distance (km)",
+     ylab="Jaccard Dissimilarity")
+
+
+polygon(x = c(predictedData.L$x.GeoG,
+              rev(predictedData.L$x.GeoG))[!is.na(predictedData.L$lwr)]/1000,
+        y = c(predictedData.L$lwr, 
+              rev(predictedData.L$upr))[!is.na(predictedData.L$lwr)],
+        col =  adjustcolor("red", alpha.f = 0.10), border = NA)
+
+points(predictedData.L$x.GeoG[!is.na(predictedData.L$fit)]/1000,
+       predictedData.L$fit[!is.na(predictedData.L$fit)],
+       type="l",col=adjustcolor("red", alpha.f = 0.30),lwd=2)
+
+polygon(x = c(predictedData.H$x.GeoG,
+              rev(predictedData.H$x.GeoG))[!is.na(predictedData.H$lwr)]/1000,
+        y = c(predictedData.H$lwr, 
+              rev(predictedData.H$upr))[!is.na(predictedData.H$lwr)],
+        col =  adjustcolor("blue", alpha.f = 0.10), border = NA)
+
+points(predictedData.H$x.GeoG[!is.na(predictedData.H$fit)]/1000,
+       predictedData.H$fit[!is.na(predictedData.H$fit)],
+       type="l",col=adjustcolor("blue", alpha.f = 0.30),lwd=2)
+
+points(geographicDistance.pair.No0$value/1000,
+       eDNAdistance.pair.mod.No0$value,
+       col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],
+       pch=16,cex=0.8)
+
+
+legend_image <- as.raster(matrix(rev(my_palette(100)), ncol=1))
+rasterImage(legend_image, 330, 0.40, 340,0.6,xpd=T)
+text(x=333, y = seq(0.4,0.6,l=5), labels = paste0("-  ",seq(-0.38,0.38,l=5)),xpd=T,pos = 4,cex=0.7)
+
+dev.off()
+
 
 ## Temperature maybe also with a smooth? 
 
+#Predict using loess across top & bottom 25% percent of data
+
+prop.loess <- 0.25
+
+z.temp <- tempDist.pair.No0$value
+y.eDNA <- eDNAdistance.pair.mod.No0$value[z.temp>quantile(z.temp,1-prop.loess)]
+x.GeoG <- geographicDistance.pair.No0$value[z.temp>quantile(z.temp,1-prop.loess)]
+modelPredict.H = loess(y.eDNA~x.GeoG,span = 1)
+y.eDNA <- eDNAdistance.pair.mod.No0$value[z.temp<quantile(z.temp,prop.loess)]
+x.GeoG <- geographicDistance.pair.No0$value[z.temp<quantile(z.temp,prop.loess)]
+modelPredict.L = loess(y.eDNA~x.GeoG,span = 1)
+
+
+predictedData.H <- cbind(data.frame("x.GeoG"=seq(0,320000,1000)),predict(modelPredict.H,data.frame("x.GeoG"=seq(0,320000,1000)),se = TRUE))
+predictedData.H$lwr <- predictedData.H$fit-1.96*predictedData.H$se.fit
+predictedData.H$upr <- predictedData.H$fit+1.96*predictedData.H$se.fit
+
+predictedData.L <- cbind(data.frame("x.GeoG"=seq(0,320000,1000)),predict(modelPredict.L,data.frame("x.GeoG"=seq(0,320000,1000)),se = TRUE))
+predictedData.L$lwr <- predictedData.L$fit-1.96*predictedData.L$se.fit
+predictedData.L$upr <- predictedData.L$fit+1.96*predictedData.L$se.fit
+
+
+#RED = negative BLUE = positive 
+my_palette <- colorRampPalette(colors = c("blue", "white","red"))
+my_colours_temp <- my_palette(100)
+
+pdf("figures/DistDecayV2.temp.pdf",width = 7,height = 5)
+par(mar=c(4.1, 4.1, 2.1, 6.1))
+
+
+
+plot(geographicDistance.pair.No0$value/1000,
+     eDNAdistance.pair.mod.No0$value,
+     pch=16, cex=0.95, 
+     xlab="Geographic Distance (km)",
+     ylab="Jaccard Dissimilarity")
+
+
+polygon(x = c(predictedData.L$x.GeoG,
+              rev(predictedData.L$x.GeoG))[!is.na(predictedData.L$lwr)]/1000,
+        y = c(predictedData.L$lwr, 
+              rev(predictedData.L$upr))[!is.na(predictedData.L$lwr)],
+        col =  adjustcolor("blue", alpha.f = 0.10), border = NA)
+
+points(predictedData.L$x.GeoG[!is.na(predictedData.L$fit)]/1000,
+       predictedData.L$fit[!is.na(predictedData.L$fit)],
+       type="l",col=adjustcolor("blue", alpha.f = 0.30),lwd=2)
+
+polygon(x = c(predictedData.H$x.GeoG,
+              rev(predictedData.H$x.GeoG))[!is.na(predictedData.H$lwr)]/1000,
+        y = c(predictedData.H$lwr, 
+              rev(predictedData.H$upr))[!is.na(predictedData.H$lwr)],
+        col =  adjustcolor("red", alpha.f = 0.10), border = NA)
+
+points(predictedData.H$x.GeoG[!is.na(predictedData.H$fit)]/1000,
+       predictedData.H$fit[!is.na(predictedData.H$fit)],
+       type="l",col=adjustcolor("red", alpha.f = 0.30),lwd=2)
+
+points(geographicDistance.pair.No0$value/1000,
+       eDNAdistance.pair.mod.No0$value,
+       col=my_colours_temp[findInterval(tempDist.pair.No0$value, seq(min(tempDist.pair.No0$value), max(tempDist.pair.No0$value), length.out = 100))],
+       pch=16,cex=0.8)
+#[findInterval(tempDist.pair.No0$value, seq(min(tempDist.pair.No0$value), max(tempDist.pair.No0$value), length.out = 100))]
+
+legend_image <- as.raster(matrix(rev(my_palette(100)), ncol=1))
+rasterImage(legend_image, 330, 0.40, 340,0.6,xpd=T)
+text(x=333, y = seq(0.4,0.6,l=5), labels = paste0("-  ",seq(-5.128,5.128,l=5)),xpd=T,pos = 4,cex=0.7)
+
+dev.off()
 
 
 ##eveyrhting else?
