@@ -353,9 +353,8 @@ summary(model3)
 summary(model4)
 summary(model5)
 summary(model6)
-sink()
-
 etasq(model6)
+sink()
 
 hist(oceanResistance.pair.No0$value,breaks=100)
 
