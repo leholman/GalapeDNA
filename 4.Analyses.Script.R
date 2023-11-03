@@ -156,7 +156,9 @@ points(1:4,unlist(by(fishAlpha$Richness,as.factor(metadatSites$EcoRegion[match(f
              ElizCols(3)[1],
              NorthernCols(3)[1],
              WesternCols(3)[1]),pch="-",cex=3)
-axis(1,at=1:4,labels=levels(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2,lwd=0.5)
+#axis(1,at=1:4,labels=levels(as.factor(metadatSites$EcoRegion[match(fishAlpha$ID,metadatSites$SiteID)])),cex=0.2,las=2,lwd=0.5)
+axis(1,at=1:4,labels=rep("",4),cex=0.2,las=2,lwd=0.5)
+
 axis(4,lwd=0.5)
 dev.off()
 
