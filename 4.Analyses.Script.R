@@ -406,7 +406,7 @@ polygon(x = c(predictedData.L$x.GeoG,
               rev(predictedData.L$x.GeoG))[!is.na(predictedData.L$lwr)]/1000,
         y = c(predictedData.L$lwr, 
               rev(predictedData.L$upr))[!is.na(predictedData.L$lwr)],
-        col =  adjustcolor("red", alpha.f = 0.10), border = NA)
+        col =  adjustcolor("red", alpha.f = 0.25), border = NA)
 
 points(predictedData.L$x.GeoG[!is.na(predictedData.L$fit)]/1000,
        predictedData.L$fit[!is.na(predictedData.L$fit)],
@@ -416,7 +416,7 @@ polygon(x = c(predictedData.H$x.GeoG,
               rev(predictedData.H$x.GeoG))[!is.na(predictedData.H$lwr)]/1000,
         y = c(predictedData.H$lwr, 
               rev(predictedData.H$upr))[!is.na(predictedData.H$lwr)],
-        col =  adjustcolor("blue", alpha.f = 0.10), border = NA)
+        col =  adjustcolor("blue", alpha.f = 0.25), border = NA)
 
 points(predictedData.H$x.GeoG[!is.na(predictedData.H$fit)]/1000,
        predictedData.H$fit[!is.na(predictedData.H$fit)],
@@ -426,6 +426,14 @@ points(geographicDistance.pair.No0$value/1000,
        eDNAdistance.pair.mod.No0$value,
        col=my_colours[findInterval(oceanResistance.pair.No0$value, seq(-0.38, 0.38, length.out = 100))],
        pch=16,cex=0.8)
+
+points(predictedData.H$x.GeoG[!is.na(predictedData.H$fit)]/1000,
+       predictedData.H$fit[!is.na(predictedData.H$fit)],
+       type="l",col=adjustcolor("blue", alpha.f = 0.50),lwd=2)
+
+points(predictedData.L$x.GeoG[!is.na(predictedData.L$fit)]/1000,
+       predictedData.L$fit[!is.na(predictedData.L$fit)],
+       type="l",col=adjustcolor("red", alpha.f = 0.50),lwd=2)
 
 
 legend_image <- as.raster(matrix(rev(my_palette(100)), ncol=1))
