@@ -136,11 +136,16 @@ masterTAX <- read.csv("taxonomy/MasterAssignments.csv")
 U_fishdat <- read.csv("cleandata/Cleaned.MiFish_U.dada2.lulu.csv",row.names = 1)
 U_masterTAX <-masterTAX[substr(masterTAX$Index,1,1)=="U",]  
 U_ASVs <- U_masterTAX$Sequence[match(row.names(U_fishdat),U_masterTAX$ID)]
+write.csv(cbind(U_fishdat,U_masterTAX,U_ASVs),"GBIFupload/MiFishU.GBIF.csv")
 rownames(U_fishdat) <- U_ASVs
+
+U_masterTAX$Sequence[match(row.names(U_fishdat),U_masterTAX$ID)]
+
 
 E_fishdat <- read.csv("cleandata/Cleaned.MiFish_E.dada2.lulu.csv",row.names = 1)
 E_masterTAX <-masterTAX[substr(masterTAX$Index,1,1)=="E",]  
 E_ASVs <- E_masterTAX$Sequence[match(row.names(E_fishdat),E_masterTAX$ID)]
+write.csv(cbind(E_fishdat,E_masterTAX,E_ASVs),"GBIFupload/MiFishE.GBIF.csv")
 rownames(E_fishdat) <- E_ASVs
 
 #Now as the samples have different numbers of reads between each marker we switch to relative abundance and use the dada2 function collapse no mismatch

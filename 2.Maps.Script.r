@@ -10,6 +10,7 @@
 library(ncdf4)
 library(raster)
 library(sp)
+library(sf)
 
 ##Lots of lines hashed out here, original file is 10GB+ so only subset used ;) 
 #load GEBCO_2022 netcdf downloaded on 110822 - https://www.gebco.net/data_and_products/gridded_bathymetry_data/
@@ -142,6 +143,38 @@ plot(gebco.crop.mod, legend.only=TRUE, col=c(blue.col(galap.br[[1]]+1), grey.col
 
 
 dev.off()
+
+
+### ecoregionPlot
+
+ecoregions <- st_read("mapBuilding/Marine_Bioregions_Edgaretal2004_Moity2019_utm/Marine_Bioregions_Edgaretal2004_Moity2019_utm.shp")
+ecoregions2 <- st_transform(ecoregions, "+proj=longlat +datum=WGS84")
+ecoregions2$BIOREGION
+
+IslandPalette <-c("#762d55","#E69F00","#004935","#003e60")
+
+SEasternCols <- colorRampPalette(c("#D55E00","#E69F00","#faf6c1"))
+NorthernCols <-colorRampPalette(c("#003e60","#56B4E9"))
+ElizCols <- colorRampPalette(c("#CC79A7","#762d55"))
+WesternCols <- colorRampPalette(c("#009E73","#004935"))
+
+
+
+pdf("mapBuilding/test.pdf",width = 8,height=6.35,)
+plot(gebco.crop, col="white",axes = FALSE,box=F,legend=F)
+plot(st_geometry(ecoregions2), col =c("#762d55","#E69F00","#004935","#003e60"),border = "white" ,add=TRUE)
+plot(eq, add=TRUE,border=NA,col="grey34")
+
+
+axis(1,
+     at=pretty(c(-92, -89)),
+     labels = parse(text=degreeLabelsEW(pretty(c(-92, -89)))),lwd = 0, lwd.ticks = 1)
+axis(2,
+     at=pretty(c(-1.55, 0.68)),
+     labels = parse(text=degreeLabelsNS(pretty(c(-1.55, 0.68)))),las=TRUE,lwd = 0, lwd.ticks = 1)
+dev.off()
+
+
 
 ### Plots per species 
 
