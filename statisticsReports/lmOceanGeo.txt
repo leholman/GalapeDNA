@@ -123,7 +123,3 @@ RStudioGD
         2 
 RStudioGD 
         2 
-RStudioGD 
-        2 
-null device 
-          1 

@@ -187,10 +187,10 @@ sink()
 
 #Is there a sig diff in PERMANOVA between ecoregions?
 sink("statisticsReports/PERMANOVA.txt")
-adonis2(vegdist(t(fishdatSite), "jaccard",binary=TRUE)~groups1,permutations = 1000)
+adonis2(vegdist(t(fishdatSite), "jaccard",binary=TRUE)~groups1,permutations = 10000)
 
 ## quite uneven samples so lets test individually 
-adonis.pair(vegdist(t(fishdatSite), "jaccard",binary=TRUE),as.factor(groups1),nper = 1000)
+adonis.pair(vegdist(t(fishdatSite), "jaccard",binary=TRUE),as.factor(groups1),nper = 10000)
 #adonis.pair(vegdist(t(fishdatSite), "bray"),as.factor(groups1),nper = 1000)
 sink()
 
@@ -198,7 +198,7 @@ sink()
 ## Elizabeth bio region simply doesnt have enough observations....... here we run again with reps not averaged
 adonis.pair(vegdist(t(fishdat), "jaccard",binary=TRUE),
             as.factor(metadatSites$EcoRegion[match(sapply(strsplit(colnames(fishdat),"\\."),"[",1),metadatSites$SiteID)]),
-            nper = 1000)
+            nper = 10000)
 
 
 
