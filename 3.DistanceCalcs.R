@@ -460,7 +460,7 @@ for (month in list.files(pattern="OceanogrphicResistanceMatrix.*","distanceData/
 
 ####====3.0 Temperature Distance ====####
 
-temp <- read.csv("Temp_030623.csv",row.names = 1)
+temp <- read.csv("distanceData/Temp_030623.csv",row.names = 1)
 
 sep.temp <- temp$Sep
 names(sep.temp) <- temp$SiteID
