@@ -10,7 +10,7 @@ library("ade4")
 library("RColorBrewer")
 library("reshape2")
 library("EcolUtils")
-library("heplots")
+#library("heplots")
 
 #Set the seed 
 set.seed("123456")
@@ -246,6 +246,232 @@ text(nMDS$points[,1],nMDS$points[,2]+0.05,labels=colnames(fishdat),cex=0.3)
 
 ####====5.0 Linking to Oceanography ====####
 
+### first let's pull in the data for Lagrangian measures of distance
+
+drift.days <- as.matrix(read.csv("ParticleTracking/AlexData071222/sites_in_range_named.csv",row.names = 1))
+drift.days.long <- reshape2::melt(drift.days,varnames = c("Start","End"))
+
+drift.frac <- as.matrix(read.csv("ParticleTracking/AlexData071222/fract_in_range_named.csv",row.names = 1))
+drift.frac.long <- reshape2::melt(drift.frac,varnames = c("Start","End"))
+
+#Do these values contain the ame information?
+index <- which(!is.na(drift.days.long$value) & !is.na(drift.frac.long$value))
+plot(log10(drift.frac.long$value[index]),log10(drift.days.long$value[index]))
+# roughly yes - R2 of 0.67, we will just use the drift days metric
+summary(lm(log10(drift.frac.long$value[index])~log10(drift.days.long$value[index])))
+
+
+##let's pull in other distances
+geographicDistance.pair <- reshape2::melt(as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1)),varnames = c("Start","End"))
+geographicDistance.pair.No0 <- geographicDistance.pair[-which(geographicDistance.pair$value == 0),]
+oceanResistance.pair <- reshape2::melt(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),varnames = c("Start","End"))
+oceanResistance.pair.No0 <- oceanResistance.pair[-which(geographicDistance.pair$value == 0),]
+
+
+## now let's compare days drift dist to oceanographic resistance  
+comparisons <- paste0(drift.days.long$Start[!is.na(drift.days.long$value)],drift.days.long$End[!is.na(drift.days.long$value)])
+oc.resis.subset <- oceanResistance.pair.No0[match(comparisons,paste0(oceanResistance.pair.No0$Start,oceanResistance.pair.No0$End)),]
+drift.days.long.subset <- drift.days.long[!is.na(drift.days.long$value),]
+
+## there seems to be a relationship with poor R2 0.086
+plot(oc.resis.subset$value,drift.days.long.subset$value,pch=16)
+summary(lm(drift.days.long.subset$value~oc.resis.subset$value))
+abline(lm(drift.days.long.subset$value~oc.resis.subset$value),col="red")
+
+#However it is all driven by the values with low (<-0.1) Oceanresist
+plot(oc.resis.subset$value[oc.resis.subset$value>-0.1],drift.days.long.subset$value[oc.resis.subset$value>-0.1],pch=16)
+summary(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]))
+abline(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]),col="red")
+
+
+## what about geographic distance? lets compare that  
+geo.resis.subset <- geographicDistance.pair.No0[match(comparisons,paste0(geographicDistance.pair.No0$Start,geographicDistance.pair.No0$End)),]
+
+## there seems to be a relationship with R2 0.28
+plot(geo.resis.subset$value,drift.days.long.subset$value,pch=16)
+summary(lm(drift.days.long.subset$value~geo.resis.subset$value))
+abline(lm(drift.days.long.subset$value~geo.resis.subset$value),col="red")
+## if we log10 transform the days R2 = 0.333
+plot(geo.resis.subset$value,log10(drift.days.long.subset$value),pch=16)
+summary(lm(log10(drift.days.long.subset$value)~geo.resis.subset$value))
+abline(lm(log10(drift.days.long.subset$value)~geo.resis.subset$value),col="red")
+
+
+## an interesting linear model 
+summary(lm(log10(drift.days.long.subset$value)~geo.resis.subset$value+oc.resis.subset$value))
+
+
+## 5.1 Describe Lagrangian results 
+#Overview
+drift.days <- as.matrix(read.csv("ParticleTracking/AlexData071222/sites_in_range_named.csv",row.names = 1))
+drift.days.long <- reshape2::melt(drift.days,varnames = c("Start","End"))
+
+drift.frac <- as.matrix(read.csv("ParticleTracking/AlexData071222/fract_in_range_named.csv",row.names = 1))
+drift.frac.long <- reshape2::melt(drift.frac,varnames = c("Start","End"))
+
+#Do these values contain the same information?
+index <- which(!is.na(drift.days.long$value) & !is.na(drift.frac.long$value))
+plot(log10(drift.frac.long$value[index]),log10(drift.days.long$value[index]))
+# roughly yes - R2 of 0.67, we will just use the drift days metric
+summary(lm(log10(drift.frac.long$value[index])~log10(drift.days.long$value[index])))
+
+#Summary statistics
+drift.days.long.naomit <- drift.days.long[!is.na(drift.days.long$value),]
+min(drift.days.long.naomit$value)
+max(drift.days.long.naomit$value)
+mean(drift.days.long.naomit$value)
+sd(drift.days.long.naomit$value)
+
+#proportion of journeys 
+length(drift.days.long.naomit$value)/506
+
+
+## 5.2 Describe Oceanographic resistance 
+#-Summary statistics
+oceanResistance.pair <- reshape2::melt(as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1)),varnames = c("Start","End"))
+oceanResistance.pair.No0 <- oceanResistance.pair[!is.na(oceanResistance.pair$value),]
+
+min(oceanResistance.pair.No0$value)
+max(oceanResistance.pair.No0$value)
+mean(oceanResistance.pair.No0$value)
+sd(oceanResistance.pair.No0$value)
+#proportion of journeys 
+length(oceanResistance.pair.No0$value)/506
+
+
+## 5.3 compare Lag to Ocr
+comparisons <- paste0(drift.days.long.naomit$Start,drift.days.long.naomit$End)
+oc.resis.subset <- oceanResistance.pair.No0[match(comparisons,paste0(oceanResistance.pair.No0$Start,oceanResistance.pair.No0$End)),]
+oc.resis.others <- oceanResistance.pair.No0[-match(comparisons,paste0(oceanResistance.pair.No0$Start,oceanResistance.pair.No0$End)),]
+
+
+## there seems to be a relationship with poor R2 0.086
+plot(oc.resis.subset$value,drift.days.long.naomit$value,pch=16,ylim=c(-5,55))
+points(oc.resis.others$value,jitter(rep(-3,length(oc.resis.others$value)),40),col="darkred",pch=16)
+summary(lm(drift.days.long.naomit$value~oc.resis.subset$value))
+abline(lm(drift.days.long.naomit$value~oc.resis.subset$value),col="red")
+plot(density(oc.resis.others$value))
+
+#However it is all driven by the values with low (<-0.1) Oceanresist
+plot(oc.resis.subset$value[oc.resis.subset$value>-0.1],drift.days.long.subset$value[oc.resis.subset$value>-0.1],pch=16)
+summary(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]))
+abline(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]),col="red")
+
+
+#-Statistics 
+
+## 5.4 First lets run a lm with the limited size lagragian datasets 
+## pull in the eDNA data 
+eDNAdistance.pair.mod = reshape2::melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
+eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
+tempDist.pair <- reshape2::melt(as.matrix(read.csv("distanceData/tempDistance.csv",row.names = 1)),varnames = c("Start","End"))
+tempDist.pair.No0 <- tempDist.pair[-which(eDNAdistance.pair.mod$value == 0),]
+
+eDNAdistance.pair.mod.L <- eDNAdistance.pair.mod.No0[match(comparisons,paste0(eDNAdistance.pair.mod.No0$Start,eDNAdistance.pair.mod.No0$End)),]
+tempDist.pair.L <- tempDist.pair.No0[match(comparisons,paste0(tempDist.pair.No0$Start,tempDist.pair.No0$End)),]
+
+lag.data <- data.frame("eDNAjacc"=eDNAdistance.pair.mod.L$value,
+                       "OceanRes"=oc.resis.subset$value,
+                       "Lagran"= drift.days.long.subset$value,
+                       "GeoDist"=geo.resis.subset$value,
+                       "TempDist"=tempDist.pair.L$value)
+
+
+model1 = lm(eDNAjacc~GeoDist,data=lag.data)
+model2 = lm(eDNAjacc~GeoDist+OceanRes+Lagran+TempDist,data=lag.data)
+model3 = lm(eDNAjacc~GeoDist+Lagran,data=lag.data)
+model4 = lm(eDNAjacc~GeoDist+OceanRes,data=lag.data)
+model5 = lm(eDNAjacc~GeoDist+TempDist,data=lag.data)
+
+summary(model1)
+crPlots(model1)
+summary(model2)
+crPlots(model2)
+summary(model3)
+crPlots(model3)
+summary(model4)
+crPlots(model4)
+summary(model5)
+crPlots(model5)
+
+
+## 5.5 mantel tests
+mantel_pearson_full <- function(x, y, n.iter=999) {
+  # Function to permute matrix y
+  permute <- function(z) {
+    i <- sample.int(nrow(z), nrow(z))
+    return (z[i, i])
+  }
+  
+  # Flatten matrices excluding the diagonal
+  flatten_matrix_full <- function(mat) {
+    return(as.vector(mat[row(mat) != col(mat)]))
+  }
+  
+  # Calculate Pearson correlation as the test statistic
+  pearson_stat <- function(a, b) {
+    cor(flatten_matrix_full(a), flatten_matrix_full(b), method = "pearson")
+  }
+  
+  # Calculate the observed Pearson correlation
+  observed_stat <- pearson_stat(x, y)
+  
+  # Generate the null distribution by permuting y
+  permuted_stats <- sapply(1:n.iter, function(i) pearson_stat(x, permute(y)))
+  
+  # Calculate the p-value (two-tailed test)
+  p_value <- (sum(abs(permuted_stats) >= abs(observed_stat)) + 1) / (n.iter + 1)
+  
+  # Calculate upper quantiles of the null distribution
+  quantiles <- quantile(permuted_stats, probs = c(0.90, 0.95, 0.975, 0.99))
+  
+  # Return the result
+  result <- list(
+    Mantel_statistic_r = observed_stat,
+    Significance = p_value,
+    Upper_quantiles = quantiles
+  )
+  
+  # Print a formatted output for the user
+  cat(sprintf("Mantel statistic r: %.4f\n", result$Mantel_statistic_r))
+  cat(sprintf("      Significance: %.4g\n\n", result$Significance))
+  cat("Upper quantiles of permutations (null model):\n")
+  print(result$Upper_quantiles)
+  
+  # Optionally, you can return the full result object if you want to store it for further use
+  return(result)
+}
+
+# Create example asymmetric matrices
+X <- matrix(rnorm(100), 10, 10)
+Y <- matrix(rnorm(100), 10, 10)
+Y2 <- X*100
+Y3 <- X*100+rnorm(100)
+Y4 <- X+5*rnorm(100)
+
+
+# Run the Mantel test with Pearson correlation using the entire matrix (excluding diagonal) - seems to act correct...
+mantel_pearson_full(X, Y, n.iter=9999)
+mantel_pearson_full(X, Y2, n.iter=9999)
+mantel_pearson_full(X, Y3, n.iter=9999)
+mantel_pearson_full(X, Y4, n.iter=9999)
+
+## now with real data
+eDNAjacc.fish <- myjac_mod(fishdatSite)
+geographicDistance <- as.matrix(read.csv("distanceData/SiteDistanceMatrix.csv",row.names = 1))
+oceanResistance <- as.matrix(read.csv("distanceData/OceanogrphicResistanceMatrix.csv",row.names = 1))
+tempdist <- as.matrix(read.csv("distanceData/tempDistance.csv",row.names = 1))
+
+
+mantel_pearson_full(eDNAjacc.fish, geographicDistance, n.iter=999)
+mantel_pearson_full(eDNAjacc.fish, oceanResistance, n.iter=999)
+mantel_pearson_full(eDNAjacc.fish, tempdist, n.iter=999)
+
+
+
+  
+
+
 
 ## Can we link biodiversity patterns to particle release parameters?
 
@@ -337,11 +563,19 @@ model5 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value +
 model6 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + tempDist.pair.No0$value+ oceanResistance.pair.No0$value)
 
 
+crPlots(model1)
+crPlots(model2)
+crPlots(model3)
+crPlots(model4)
+crPlots(model5)
+crPlots(model6.subset)
+
 # A little exploration of subsetting the data - I havent gone any further with this 
 
 index <- geographicDistance.pair.No0$value < 100000
 index <- geographicDistance.pair.No0$value > 100000 & geographicDistance.pair.No0$value < 200000
 index <- geographicDistance.pair.No0$value > 200000
+index <- oceanResistance.pair.No0$value >-0.1
 
 model6.subset = lm (eDNAdistance.pair.mod.No0$value[index]~geographicDistance.pair.No0$value[index] + tempDist.pair.No0$value[index] + oceanResistance.pair.No0$value[index])
 summary(model6.subset)
