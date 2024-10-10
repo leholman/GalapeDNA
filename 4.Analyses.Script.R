@@ -10,6 +10,7 @@ library("ade4")
 library("RColorBrewer")
 library("reshape2")
 library("EcolUtils")
+library("car")
 #library("heplots")
 
 #Set the seed 
@@ -256,9 +257,14 @@ drift.frac.long <- reshape2::melt(drift.frac,varnames = c("Start","End"))
 
 #Do these values contain the ame information?
 index <- which(!is.na(drift.days.long$value) & !is.na(drift.frac.long$value))
-plot(log10(drift.frac.long$value[index]),log10(drift.days.long$value[index]))
+plot(drift.frac.long$value[index],drift.days.long$value[index])
 # roughly yes - R2 of 0.67, we will just use the drift days metric
-summary(lm(log10(drift.frac.long$value[index])~log10(drift.days.long$value[index])))
+summary(lm(log10(drift.days.long$value[index])~log10(drift.frac.long$value[index])))
+
+pdf("figures/Suppl/particleTrackingComp.pdf",width = 5,height = 5)
+plot(log10(drift.frac.long$value[index]),log10(drift.days.long$value[index]),xlab = expression(log[10]~"Particle Drift Fraction"), ylab = expression(log[10]~"Particle Minimum Drift Days"),pch=16)
+abline(lm(log10(drift.days.long$value[index])~log10(drift.frac.long$value[index])),col="darkred",lwd=2)
+dev.off()
 
 
 ##let's pull in other distances
@@ -268,52 +274,7 @@ oceanResistance.pair <- reshape2::melt(as.matrix(read.csv("distanceData/Oceanogr
 oceanResistance.pair.No0 <- oceanResistance.pair[-which(geographicDistance.pair$value == 0),]
 
 
-## now let's compare days drift dist to oceanographic resistance  
-comparisons <- paste0(drift.days.long$Start[!is.na(drift.days.long$value)],drift.days.long$End[!is.na(drift.days.long$value)])
-oc.resis.subset <- oceanResistance.pair.No0[match(comparisons,paste0(oceanResistance.pair.No0$Start,oceanResistance.pair.No0$End)),]
-drift.days.long.subset <- drift.days.long[!is.na(drift.days.long$value),]
-
-## there seems to be a relationship with poor R2 0.086
-plot(oc.resis.subset$value,drift.days.long.subset$value,pch=16)
-summary(lm(drift.days.long.subset$value~oc.resis.subset$value))
-abline(lm(drift.days.long.subset$value~oc.resis.subset$value),col="red")
-
-#However it is all driven by the values with low (<-0.1) Oceanresist
-plot(oc.resis.subset$value[oc.resis.subset$value>-0.1],drift.days.long.subset$value[oc.resis.subset$value>-0.1],pch=16)
-summary(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]))
-abline(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]),col="red")
-
-
-## what about geographic distance? lets compare that  
-geo.resis.subset <- geographicDistance.pair.No0[match(comparisons,paste0(geographicDistance.pair.No0$Start,geographicDistance.pair.No0$End)),]
-
-## there seems to be a relationship with R2 0.28
-plot(geo.resis.subset$value,drift.days.long.subset$value,pch=16)
-summary(lm(drift.days.long.subset$value~geo.resis.subset$value))
-abline(lm(drift.days.long.subset$value~geo.resis.subset$value),col="red")
-## if we log10 transform the days R2 = 0.333
-plot(geo.resis.subset$value,log10(drift.days.long.subset$value),pch=16)
-summary(lm(log10(drift.days.long.subset$value)~geo.resis.subset$value))
-abline(lm(log10(drift.days.long.subset$value)~geo.resis.subset$value),col="red")
-
-
-## an interesting linear model 
-summary(lm(log10(drift.days.long.subset$value)~geo.resis.subset$value+oc.resis.subset$value))
-
-
 ## 5.1 Describe Lagrangian results 
-#Overview
-drift.days <- as.matrix(read.csv("ParticleTracking/AlexData071222/sites_in_range_named.csv",row.names = 1))
-drift.days.long <- reshape2::melt(drift.days,varnames = c("Start","End"))
-
-drift.frac <- as.matrix(read.csv("ParticleTracking/AlexData071222/fract_in_range_named.csv",row.names = 1))
-drift.frac.long <- reshape2::melt(drift.frac,varnames = c("Start","End"))
-
-#Do these values contain the same information?
-index <- which(!is.na(drift.days.long$value) & !is.na(drift.frac.long$value))
-plot(log10(drift.frac.long$value[index]),log10(drift.days.long$value[index]))
-# roughly yes - R2 of 0.67, we will just use the drift days metric
-summary(lm(log10(drift.frac.long$value[index])~log10(drift.days.long$value[index])))
 
 #Summary statistics
 drift.days.long.naomit <- drift.days.long[!is.na(drift.days.long$value),]
@@ -347,9 +308,10 @@ oc.resis.others <- oceanResistance.pair.No0[-match(comparisons,paste0(oceanResis
 
 ## there seems to be a relationship with poor R2 0.086
 plot(oc.resis.subset$value,drift.days.long.naomit$value,pch=16,ylim=c(-5,55))
-points(oc.resis.others$value,jitter(rep(-3,length(oc.resis.others$value)),40),col="darkred",pch=16)
-summary(lm(drift.days.long.naomit$value~oc.resis.subset$value))
+abline(h=0)
+points(oc.resis.others$value,jitter(rep(-3.5,length(oc.resis.others$value)),40),col="darkred",pch=16)
 abline(lm(drift.days.long.naomit$value~oc.resis.subset$value),col="red")
+summary(lm(drift.days.long.naomit$value~oc.resis.subset$value))
 plot(density(oc.resis.others$value))
 
 #However it is all driven by the values with low (<-0.1) Oceanresist
@@ -382,6 +344,7 @@ model2 = lm(eDNAjacc~GeoDist+OceanRes+Lagran+TempDist,data=lag.data)
 model3 = lm(eDNAjacc~GeoDist+Lagran,data=lag.data)
 model4 = lm(eDNAjacc~GeoDist+OceanRes,data=lag.data)
 model5 = lm(eDNAjacc~GeoDist+TempDist,data=lag.data)
+model6 = lm(eDNAjacc~GeoDist+OceanRes+Lagran,data=lag.data)
 
 summary(model1)
 crPlots(model1)
@@ -393,6 +356,10 @@ summary(model4)
 crPlots(model4)
 summary(model5)
 crPlots(model5)
+summary(model6)
+crPlots(model6)
+
+AIC(model1,model2,model3,model4,model5)
 
 
 ## 5.5 mantel tests
@@ -466,10 +433,6 @@ tempdist <- as.matrix(read.csv("distanceData/tempDistance.csv",row.names = 1))
 mantel_pearson_full(eDNAjacc.fish, geographicDistance, n.iter=999)
 mantel_pearson_full(eDNAjacc.fish, oceanResistance, n.iter=999)
 mantel_pearson_full(eDNAjacc.fish, tempdist, n.iter=999)
-
-
-
-  
 
 
 
@@ -568,7 +531,7 @@ crPlots(model2)
 crPlots(model3)
 crPlots(model4)
 crPlots(model5)
-crPlots(model6.subset)
+crPlots(model6)
 
 # A little exploration of subsetting the data - I havent gone any further with this 
 
