@@ -11,6 +11,8 @@ library("RColorBrewer")
 library("reshape2")
 library("EcolUtils")
 library("car")
+library("corMLPE")
+library("nlme")
 #library("heplots")
 
 #Set the seed 
@@ -277,14 +279,14 @@ oceanResistance.pair.No0 <- oceanResistance.pair[-which(geographicDistance.pair$
 ## 5.1 Describe Lagrangian results 
 
 #Summary statistics
-drift.days.long.naomit <- drift.days.long[!is.na(drift.days.long$value),]
-min(drift.days.long.naomit$value)
-max(drift.days.long.naomit$value)
-mean(drift.days.long.naomit$value)
-sd(drift.days.long.naomit$value)
+drift.days.long.subset <- drift.days.long[!is.na(drift.days.long$value),]
+min(drift.days.long.subset$value)
+max(drift.days.long.subset$value)
+mean(drift.days.long.subset$value)
+sd(drift.days.long.subset$value)
 
 #proportion of journeys 
-length(drift.days.long.naomit$value)/506
+length(drift.days.long.subset$value)/506
 
 
 ## 5.2 Describe Oceanographic resistance 
@@ -301,29 +303,44 @@ length(oceanResistance.pair.No0$value)/506
 
 
 ## 5.3 compare Lag to Ocr
-comparisons <- paste0(drift.days.long.naomit$Start,drift.days.long.naomit$End)
+comparisons <- paste0(drift.days.long.subset$Start,drift.days.long.subset$End)
 oc.resis.subset <- oceanResistance.pair.No0[match(comparisons,paste0(oceanResistance.pair.No0$Start,oceanResistance.pair.No0$End)),]
 oc.resis.others <- oceanResistance.pair.No0[-match(comparisons,paste0(oceanResistance.pair.No0$Start,oceanResistance.pair.No0$End)),]
 
 
 ## there seems to be a relationship with poor R2 0.086
-plot(oc.resis.subset$value,drift.days.long.naomit$value,pch=16,ylim=c(-5,55))
+pdf("figures/Suppl/drift.oceanresis.comp.pdf",height=6,width = 7)
+par(mar=c(5,4,1,1))
+plot(oc.resis.subset$value[!oc.resis.subset$value>-0.1],drift.days.long.subset$value[!oc.resis.subset$value>-0.1],pch=16,xlim=c(-0.3,0.3),ylim=c(-5,55),ylab="Minimum drift time (days)",xlab=expression("oceanographic resistance (m s"^{-1}*")"),col="darkred")
+points(oc.resis.subset$value[oc.resis.subset$value>-0.1],drift.days.long.subset$value[oc.resis.subset$value>-0.1],pch=16,col="dodgerblue")
+
 abline(h=0)
-points(oc.resis.others$value,jitter(rep(-3.5,length(oc.resis.others$value)),40),col="darkred",pch=16)
-abline(lm(drift.days.long.naomit$value~oc.resis.subset$value),col="red")
-summary(lm(drift.days.long.naomit$value~oc.resis.subset$value))
+points(oc.resis.others$value,jitter(rep(-3.5,length(oc.resis.others$value)),40),col="grey33",pch=16,cex=0.8)
+abline(lm(drift.days.long.subset$value~oc.resis.subset$value),col="orchid4",lwd=2)
+abline(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]),col="blue4",lwd=2)
+legend("topright",                         # Position of the legend
+       legend = c("> -0.1", "< -0.1", "All linear fit", "< -0.1 linear fit","No drift data"),  # Labels
+       col = c("dodgerblue", "darkred", "darkorchid", "blue4","grey33"),  # Colors for points/lines
+       pch = c(16, 16, NA, NA,16),          # Dots for first two, no dots for lines
+       lty = c(NA, NA, 1, 1,NA),            # No lines for dots, lines for third and fourth
+       lwd = c(NA, NA, 2, 2,NA),            # Line width for lines
+       pt.cex = 1.5)                     
+       #bty = "n") 
+dev.off()
+summary(lm(drift.days.long.subset$value~oc.resis.subset$value))
 plot(density(oc.resis.others$value))
 
 #However it is all driven by the values with low (<-0.1) Oceanresist
+
+
 plot(oc.resis.subset$value[oc.resis.subset$value>-0.1],drift.days.long.subset$value[oc.resis.subset$value>-0.1],pch=16)
 summary(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]))
-abline(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]),col="red")
+abline(lm(drift.days.long.subset$value[oc.resis.subset$value>-0.1]~oc.resis.subset$value[oc.resis.subset$value>-0.1]),col="blue4",lwd=2)
 
 
 #-Statistics 
+### 5.4 the data set subset for lagrangian analysis 
 
-## 5.4 First lets run a lm with the limited size lagragian datasets 
-## pull in the eDNA data 
 eDNAdistance.pair.mod = reshape2::melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
 eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
 tempDist.pair <- reshape2::melt(as.matrix(read.csv("distanceData/tempDistance.csv",row.names = 1)),varnames = c("Start","End"))
@@ -331,35 +348,133 @@ tempDist.pair.No0 <- tempDist.pair[-which(eDNAdistance.pair.mod$value == 0),]
 
 eDNAdistance.pair.mod.L <- eDNAdistance.pair.mod.No0[match(comparisons,paste0(eDNAdistance.pair.mod.No0$Start,eDNAdistance.pair.mod.No0$End)),]
 tempDist.pair.L <- tempDist.pair.No0[match(comparisons,paste0(tempDist.pair.No0$Start,tempDist.pair.No0$End)),]
+geo.resis.subset <- geographicDistance.pair.No0[match(comparisons,paste0(geographicDistance.pair.No0$Start,geographicDistance.pair.No0$End)),]
 
-lag.data <- data.frame("eDNAjacc"=eDNAdistance.pair.mod.L$value,
-                       "OceanRes"=oc.resis.subset$value,
-                       "Lagran"= drift.days.long.subset$value,
-                       "GeoDist"=geo.resis.subset$value,
-                       "TempDist"=tempDist.pair.L$value)
+#data
+# Select relevant columns
+eDNA_data <- eDNAdistance.pair.mod.L
+geo_dist_data <- geo.resis.subset
+temp_dist_data <- tempDist.pair.L 
+ocean_res_data <- oc.resis.subset
+lag_data <- drift.days.long.subset
 
 
-model1 = lm(eDNAjacc~GeoDist,data=lag.data)
-model2 = lm(eDNAjacc~GeoDist+OceanRes+Lagran+TempDist,data=lag.data)
-model3 = lm(eDNAjacc~GeoDist+Lagran,data=lag.data)
-model4 = lm(eDNAjacc~GeoDist+OceanRes,data=lag.data)
-model5 = lm(eDNAjacc~GeoDist+TempDist,data=lag.data)
-model6 = lm(eDNAjacc~GeoDist+OceanRes+Lagran,data=lag.data)
+# Rename the 'value' column in each data frame
+names(eDNA_data)[names(eDNA_data) == "value"] <- "eDNA_Distance"
+names(geo_dist_data)[names(geo_dist_data) == "value"] <- "GeographicDistance"
+names(temp_dist_data)[names(temp_dist_data) == "value"] <- "TempDistance"
+names(ocean_res_data)[names(ocean_res_data) == "value"] <- "OceanResistance"
+names(lag_data)[names(lag_data) == "value"] <- "LagranMinimum"
 
-summary(model1)
-crPlots(model1)
-summary(model2)
-crPlots(model2)
-summary(model3)
-crPlots(model3)
-summary(model4)
-crPlots(model4)
-summary(model5)
-crPlots(model5)
-summary(model6)
-crPlots(model6)
+# Merge the data frames in a single step
+data_list <- list(eDNA_data, geo_dist_data, temp_dist_data, ocean_res_data,lag_data)
+data_corMLPE <- Reduce(function(x, y) merge(x, y, by = c("Start", "End")), data_list)
 
-AIC(model1,model2,model3,model4,model5)
+
+# Ensure 'Start' and 'End' are factors
+data_corMLPE$Start <- as.factor(data_corMLPE$Start)
+data_corMLPE$End <- as.factor(data_corMLPE$End)
+
+# Scale predictors
+data_corMLPE$GeographicDistance_scaled <- scale(data_corMLPE$GeographicDistance)
+data_corMLPE$TempDistance_scaled <- scale(data_corMLPE$TempDistance)
+data_corMLPE$OceanResistance_scaled <- scale(data_corMLPE$OceanResistance)
+data_corMLPE$LagranMinimum_scaled <- scale(data_corMLPE$LagranMinimum)
+
+# Define the corMLPE correlation structure without a grouping factor
+cor_mlpe <- corMLPE(form = ~ Start + End)
+
+
+# Fit the model using gls
+model_corMLPE <- gls(
+  eDNA_Distance ~ GeographicDistance + TempDistance + OceanResistance + LagranMinimum,
+  data = data_corMLPE,
+  correlation = corMLPE(form = ~ Start + End),
+  method = "REML"
+)
+
+# Fit the model using gls (scaled)
+model_corMLPE_scaled <- gls(
+  eDNA_Distance ~ GeographicDistance_scaled + TempDistance_scaled + OceanResistance_scaled+ LagranMinimum_scaled,
+  data = data_corMLPE,
+  correlation = corMLPE(form = ~ Start + End),
+  method = "REML"
+)
+
+
+#assess sig
+
+sink("statisticsReports/GLSincLang.txt")
+summary(model_corMLPE)
+summary(model_corMLPE_scaled)
+sink()
+
+pdf("figures/Suppl/GLSincLang.pdf",height = 7,width = 8)
+par(mfrow=c(2,2))
+par(mar=c(5.1,4.1,2.1,2.1))
+# Extract the residuals from the GLS model
+residuals_gls <- residuals(model_corMLPE)
+
+# Calculate the partial residuals for each predictor
+partial_resid_geo_dist <- residuals_gls + coef(model_corMLPE)["GeographicDistance"] * data_corMLPE$GeographicDistance
+partial_resid_temp_dist <- residuals_gls + coef(model_corMLPE)["TempDistance"] * data_corMLPE$TempDistance
+partial_resid_ocean_res <- residuals_gls + coef(model_corMLPE)["OceanResistance"] * data_corMLPE$OceanResistance
+partial_resid_lagr_min <- residuals_gls + coef(model_corMLPE)["LagranMinimum"] * data_corMLPE$LagranMinimum
+
+# Plot partial residuals for GeographicDistance with model fit (red, dashed) and LOESS curve (green)
+plot(data_corMLPE$GeographicDistance, partial_resid_geo_dist, 
+     xlab = "Geographic Distance (m)", ylab = "Component + Residual", pch = 16)
+
+# Add the model fit line (red, dashed)
+abline(lm(partial_resid_geo_dist ~ data_corMLPE$GeographicDistance), col = "red", lty = 2, lwd = 2)
+
+# Add the LOESS curve (green) using sorted values for a smooth line
+order_geo <- order(data_corMLPE$GeographicDistance)
+loess_fit_geo <- loess(partial_resid_geo_dist ~ data_corMLPE$GeographicDistance)
+lines(data_corMLPE$GeographicDistance[order_geo], predict(loess_fit_geo)[order_geo], col = "green", lwd = 2)
+
+# Plot partial residuals for TempDistance with model fit (red, dashed) and LOESS curve (green)
+plot(data_corMLPE$TempDistance, partial_resid_temp_dist, 
+     xlab = expression(Temperature~(degree*C)), ylab = "Component + Residual", pch = 16)
+
+# Add the model fit line (red, dashed)
+abline(lm(partial_resid_temp_dist ~ data_corMLPE$TempDistance), col = "red", lty = 2, lwd = 2)
+
+# Add the LOESS curve (green) using sorted values for a smooth line
+order_temp <- order(data_corMLPE$TempDistance)
+loess_fit_temp <- loess(partial_resid_temp_dist ~ data_corMLPE$TempDistance)
+lines(data_corMLPE$TempDistance[order_temp], predict(loess_fit_temp)[order_temp], col = "green", lwd = 2)
+
+# Plot partial residuals for OceanResistance with model fit (red, dashed) and LOESS curve (green)
+plot(data_corMLPE$OceanResistance, partial_resid_ocean_res, 
+     xlab = expression(Ocean~Resistance~(ms^{-1})), ylab = "Component + Residual", pch = 16)
+
+# Add the model fit line (red, dashed)
+abline(lm(partial_resid_ocean_res ~ data_corMLPE$OceanResistance), col = "red", lty = 2, lwd = 2)
+
+# Add the LOESS curve (green) using sorted values for a smooth line
+order_ocean <- order(data_corMLPE$OceanResistance)
+loess_fit_ocean <- loess(partial_resid_ocean_res ~ data_corMLPE$OceanResistance)
+lines(data_corMLPE$OceanResistance[order_ocean], predict(loess_fit_ocean)[order_ocean], col = "green", lwd = 2)
+
+# Plot partial residuals for Lagrangian Minimum with model fit (red, dashed) and LOESS curve (green)
+plot(data_corMLPE$LagranMinimum, partial_resid_geo_dist, 
+     xlab = "Minimum Particle Travel Time (days)", ylab = "Component + Residual", pch = 16)
+
+# Add the model fit line (red, dashed)
+abline(lm(partial_resid_geo_dist ~ data_corMLPE$LagranMinimum), col = "red", lty = 2, lwd = 2)
+
+# Add the LOESS curve (green) using sorted values for a smooth line
+order_lang <- order(data_corMLPE$LagranMinimum)
+loess_fit_lang <- loess(partial_resid_lagr_min ~ data_corMLPE$LagranMinimum)
+lines(data_corMLPE$LagranMinimum[order_lang], predict(loess_fit_lang)[order_lang], col = "green", lwd = 2)
+
+
+dev.off()
+
+
+
+
 
 
 ## 5.5 mantel tests
@@ -489,7 +604,7 @@ plot(particle3o$mean_dist,
 plot(particle3o$area..km.,
      fishAlpha$Richness,
      ylab="ASV Richness",
-     xlab="Surface Area of Particles (km)",
+     xlab=expression("Surface Area of Particles (km"^2*")"),
      col=metadatSites$col[match(fishAlpha$ID,metadatSites$SiteID)],pch=16,cex=2.5)
 #col=cols,pch=16,cex=2.5)
 
@@ -516,46 +631,113 @@ tempDist.pair <- reshape2::melt(as.matrix(read.csv("distanceData/tempDistance.cs
 tempDist.pair.No0 <- tempDist.pair[-which(eDNAdistance.pair.mod$value == 0),]
 
 
-#now lets build some models 
+#data
+# Select relevant columns
+eDNA_data <- eDNAdistance.pair.mod.No0
+geo_dist_data <- geographicDistance.pair.No0
+temp_dist_data <- tempDist.pair.No0
+ocean_res_data <- oceanResistance.pair.No0
 
-model1 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value)
-model2 = lm (eDNAdistance.pair.mod.No0$value~oceanResistance.pair.No0$value)
-model3 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
-model4 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
-model5 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + tempDist.pair.No0$value)
-model6 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + tempDist.pair.No0$value+ oceanResistance.pair.No0$value)
+# Rename the 'value' column in each data frame
+names(eDNA_data)[names(eDNA_data) == "value"] <- "eDNA_Distance"
+names(geo_dist_data)[names(geo_dist_data) == "value"] <- "GeographicDistance"
+names(temp_dist_data)[names(temp_dist_data) == "value"] <- "TempDistance"
+names(ocean_res_data)[names(ocean_res_data) == "value"] <- "OceanResistance"
+
+# Merge the data frames in a single step
+data_list <- list(eDNA_data, geo_dist_data, temp_dist_data, ocean_res_data)
+data_corMLPE <- Reduce(function(x, y) merge(x, y, by = c("Start", "End")), data_list)
 
 
-crPlots(model1)
-crPlots(model2)
-crPlots(model3)
-crPlots(model4)
-crPlots(model5)
-crPlots(model6)
+# Ensure 'Start' and 'End' are factors
+data_corMLPE$Start <- as.factor(data_corMLPE$Start)
+data_corMLPE$End <- as.factor(data_corMLPE$End)
 
-# A little exploration of subsetting the data - I havent gone any further with this 
+# Scale predictors
+data_corMLPE$GeographicDistance_scaled <- scale(data_corMLPE$GeographicDistance)
+data_corMLPE$TempDistance_scaled <- scale(data_corMLPE$TempDistance)
+data_corMLPE$OceanResistance_scaled <- scale(data_corMLPE$OceanResistance)
 
-index <- geographicDistance.pair.No0$value < 100000
-index <- geographicDistance.pair.No0$value > 100000 & geographicDistance.pair.No0$value < 200000
-index <- geographicDistance.pair.No0$value > 200000
-index <- oceanResistance.pair.No0$value >-0.1
+# Define the corMLPE correlation structure without a grouping factor
+cor_mlpe <- corMLPE(form = ~ Start + End)
 
-model6.subset = lm (eDNAdistance.pair.mod.No0$value[index]~geographicDistance.pair.No0$value[index] + tempDist.pair.No0$value[index] + oceanResistance.pair.No0$value[index])
-summary(model6.subset)
 
-#Now we output the models 
+# Fit the model using gls
+model_corMLPE <- gls(
+  eDNA_Distance ~ GeographicDistance + TempDistance + OceanResistance,
+  data = data_corMLPE,
+  correlation = corMLPE(form = ~ Start + End),
+  method = "REML"
+)
 
-sink("statisticsReports/lmOceanGeo.txt")
-summary(model1)
-summary(model2)
-summary(model3)
-summary(model4)
-summary(model5)
-summary(model6)
-etasq(model6)
+# Fit the model using gls (scaled)
+model_corMLPE_scaled <- gls(
+  eDNA_Distance ~ GeographicDistance_scaled + TempDistance_scaled + OceanResistance_scaled,
+  data = data_corMLPE,
+  correlation = corMLPE(form = ~ Start + End),
+  method = "REML"
+)
+
+
+#assess sig
+
+sink("statisticsReports/GLS.txt")
+summary(model_corMLPE)
+summary(model_corMLPE_scaled)
 sink()
 
-hist(oceanResistance.pair.No0$value,breaks=100)
+
+
+## lets plot some partial residuals! 
+
+pdf("figures/Suppl/GLS.pdf",height = 7,width = 8)
+par(mfrow=c(2,2))
+par(mar=c(5.1,4.1,2.1,2.1))
+# Extract the residuals from the GLS model
+residuals_gls <- residuals(model_corMLPE)
+
+# Calculate the partial residuals for each predictor
+partial_resid_geo_dist <- residuals_gls + coef(model_corMLPE)["GeographicDistance"] * data_corMLPE$GeographicDistance
+partial_resid_temp_dist <- residuals_gls + coef(model_corMLPE)["TempDistance"] * data_corMLPE$TempDistance
+partial_resid_ocean_res <- residuals_gls + coef(model_corMLPE)["OceanResistance"] * data_corMLPE$OceanResistance
+
+# Plot partial residuals for GeographicDistance with model fit (red, dashed) and LOESS curve (green)
+plot(data_corMLPE$GeographicDistance, partial_resid_geo_dist, 
+     xlab = "Geographic Distance (m)", ylab = "Component + Residual", pch = 16)
+
+# Add the model fit line (red, dashed)
+abline(lm(partial_resid_geo_dist ~ data_corMLPE$GeographicDistance), col = "red", lty = 2, lwd = 2)
+
+# Add the LOESS curve (green) using sorted values for a smooth line
+order_geo <- order(data_corMLPE$GeographicDistance)
+loess_fit_geo <- loess(partial_resid_geo_dist ~ data_corMLPE$GeographicDistance)
+lines(data_corMLPE$GeographicDistance[order_geo], predict(loess_fit_geo)[order_geo], col = "green", lwd = 2)
+
+# Plot partial residuals for TempDistance with model fit (red, dashed) and LOESS curve (green)
+plot(data_corMLPE$TempDistance, partial_resid_temp_dist, 
+     xlab = expression(Temperature~(degree*C)), ylab = "Component + Residual", pch = 16)
+
+# Add the model fit line (red, dashed)
+abline(lm(partial_resid_temp_dist ~ data_corMLPE$TempDistance), col = "red", lty = 2, lwd = 2)
+
+# Add the LOESS curve (green) using sorted values for a smooth line
+order_temp <- order(data_corMLPE$TempDistance)
+loess_fit_temp <- loess(partial_resid_temp_dist ~ data_corMLPE$TempDistance)
+lines(data_corMLPE$TempDistance[order_temp], predict(loess_fit_temp)[order_temp], col = "green", lwd = 2)
+
+# Plot partial residuals for OceanResistance with model fit (red, dashed) and LOESS curve (green)
+plot(data_corMLPE$OceanResistance, partial_resid_ocean_res, 
+     xlab = expression(Ocean~Resistance~(ms^{-1})), ylab = "Component + Residual", pch = 16)
+
+# Add the model fit line (red, dashed)
+abline(lm(partial_resid_ocean_res ~ data_corMLPE$OceanResistance), col = "red", lty = 2, lwd = 2)
+
+# Add the LOESS curve (green) using sorted values for a smooth line
+order_ocean <- order(data_corMLPE$OceanResistance)
+loess_fit_ocean <- loess(partial_resid_ocean_res ~ data_corMLPE$OceanResistance)
+lines(data_corMLPE$OceanResistance[order_ocean], predict(loess_fit_ocean)[order_ocean], col = "green", lwd = 2)
+
+dev.off()
 
 
 ### Great now let's plot the final model for both temp and oceanography 
@@ -1106,36 +1288,36 @@ particle3o <- particle3[match(fishAlpha$ID,particle3$site),]
 
 # Let's start with alpha diversity 
 
-pdf("figures/FishRichnessToOceanography.pdf",width =9,height=7)
+#pdf("figures/FishRichnessToOceanography.pdf",width =9,height=7)
 par(mfrow=c(2,2))
 par(mar=c(4.1, 4.1, 2.1, 1.1))
 plot(particle3o$mean_spread,
      fishAlpha$Richness,
      ylab="Fish Richness",
-     xlab="Average Spread of Particles from Mean (Km)",
+     xlab="Average Spread of Particles from Mean (km)",
      col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),pch=16,cex=2.5)
 
 
 plot(particle3o$mean_dist,
      fishAlpha$Richness,
      ylab="Fish Richness",
-     xlab="Distance of Particle Centroid from Sampling Site (Km)",
+     xlab="Distance of Particle Centroid from Sampling Site (km)",
      col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),pch=16,cex=2.5)
 
 plot(particle3o$area..km.,
      fishAlpha$Richness,
      ylab="Fish Richness",
-     xlab="Surface Area of Particles (Km)",
+     xlab=expression("Surface Area of Particles (km"^2*")"),
      col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),pch=16,cex=2.5)
 
 
 plot(particle3o$ave_dist,
      fishAlpha$Richness,
      ylab="Fish Richness",
-     xlab="Average Distance of Particles From Sampling Point (Km)",
+     xlab="Average Distance of Particles From Sampling Point (km)",
      col=as.numeric(as.factor(metadatSites$island[match(fishAlpha$ID,metadatSites$SiteID)])),pch=16,cex=2.5)
 
-dev.off()
+#dev.off()
 
 #stats (none sig)
 summary(lm(fishAlpha$Richness~particle3o$mean_spread))
@@ -1154,6 +1336,109 @@ plot(m1)
 anova(m1,permutations = 10000)
 anova(m1,by="margin",permutations = 10000)
 RsquareAdj(m1)
+
+
+### Multivariate linear regression used in original manuscript
+##
+## 5.4 First lets run a lm with the limited size lagragian datasets 
+## pull in the eDNA data 
+eDNAdistance.pair.mod = reshape2::melt(myjac_mod(fishdatSite), varnames=c("Start","End"))
+eDNAdistance.pair.mod.No0 <- eDNAdistance.pair.mod[-which(eDNAdistance.pair.mod$value == 0),]
+tempDist.pair <- reshape2::melt(as.matrix(read.csv("distanceData/tempDistance.csv",row.names = 1)),varnames = c("Start","End"))
+tempDist.pair.No0 <- tempDist.pair[-which(eDNAdistance.pair.mod$value == 0),]
+
+eDNAdistance.pair.mod.L <- eDNAdistance.pair.mod.No0[match(comparisons,paste0(eDNAdistance.pair.mod.No0$Start,eDNAdistance.pair.mod.No0$End)),]
+tempDist.pair.L <- tempDist.pair.No0[match(comparisons,paste0(tempDist.pair.No0$Start,tempDist.pair.No0$End)),]
+geo.resis.subset <- geographicDistance.pair.No0[match(comparisons,paste0(geographicDistance.pair.No0$Start,geographicDistance.pair.No0$End)),]
+
+
+
+lag.data <- data.frame("eDNAjacc"=eDNAdistance.pair.mod.L$value,
+                       "OceanRes"=oc.resis.subset$value,
+                       "Lagran"= drift.days.long.subset$value,
+                       "GeoDist"=geo.resis.subset$value,
+                       "TempDist"=tempDist.pair.L$value)
+
+
+model1 = lm(eDNAjacc~GeoDist,data=lag.data)
+model2 = lm(eDNAjacc~GeoDist+OceanRes+Lagran+TempDist,data=lag.data)
+model3 = lm(eDNAjacc~GeoDist+Lagran,data=lag.data)
+model4 = lm(eDNAjacc~GeoDist+OceanRes,data=lag.data)
+model5 = lm(eDNAjacc~GeoDist+TempDist,data=lag.data)
+model6 = lm(eDNAjacc~GeoDist+OceanRes+Lagran,data=lag.data)
+
+summary(model1)
+crPlots(model1)
+summary(model2)
+crPlots(model2)
+summary(model3)
+crPlots(model3)
+summary(model4)
+crPlots(model4)
+summary(model5)
+crPlots(model5)
+summary(model6)
+crPlots(model6)
+
+AIC(model1,model2,model3,model4,model5)
+
+pdf("figures/Suppl/LM.lang.pdf",height=6,width = 6)
+crPlots(model2,pch=16,ylab="Component+Residual",main="")
+dev.off()
+
+
+### Now with the larger dataset with no Lagrangian data 
+
+
+#now lets build some models 
+
+model1 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value)
+model2 = lm (eDNAdistance.pair.mod.No0$value~oceanResistance.pair.No0$value)
+model3 = lm (model1$residuals ~ oceanResistance.pair.No0$value)
+model4 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + oceanResistance.pair.No0$value)
+model5 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + tempDist.pair.No0$value)
+model6 = lm (eDNAdistance.pair.mod.No0$value~geographicDistance.pair.No0$value + tempDist.pair.No0$value+ oceanResistance.pair.No0$value)
+
+
+crPlots(model1)
+crPlots(model2)
+crPlots(model3)
+crPlots(model4)
+crPlots(model5)
+crPlots(model6)
+
+
+summary(model6)
+
+pdf("figures/Suppl/LM.all.pdf",height=6,width = 6)
+crPlots(model6,pch=16,ylab="Component+Residual",main="",xlab="")
+dev.off()
+
+# A little exploration of subsetting the data - I havent gone any further with this 
+
+index <- geographicDistance.pair.No0$value < 100000
+index <- geographicDistance.pair.No0$value > 100000 & geographicDistance.pair.No0$value < 200000
+index <- geographicDistance.pair.No0$value > 200000
+index <- oceanResistance.pair.No0$value >-0.1
+
+model6.subset = lm (eDNAdistance.pair.mod.No0$value[index]~geographicDistance.pair.No0$value[index] + tempDist.pair.No0$value[index] + oceanResistance.pair.No0$value[index])
+summary(model6.subset)
+
+#Now we output the models 
+
+sink("statisticsReports/lmOceanGeo.txt")
+summary(model1)
+summary(model2)
+summary(model3)
+summary(model4)
+summary(model5)
+summary(model6)
+#etasq(model6)
+sink()
+
+hist(oceanResistance.pair.No0$value,breaks=100)
+
+
 
 
 # Overall little to no variation in fish communities can be explained by particle spread statistics 
