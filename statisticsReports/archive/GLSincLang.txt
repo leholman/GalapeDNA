@@ -1,0 +1,66 @@
+Generalized least squares fit by REML
+  Model: eDNA_Distance ~ GeographicDistance + TempDistance + OceanResistance +      LagranMinimum 
+  Data: data_corMLPE 
+        AIC       BIC   logLik
+  -514.9722 -490.6663 264.4861
+
+Correlation Structure: corMLPE
+ Formula: ~Start + End 
+ Parameter estimate(s):
+      rho 
+0.1422763 
+
+Coefficients:
+                        Value  Std.Error   t-value p-value
+(Intercept)         0.4663642 0.01583880 29.444409  0.0000
+GeographicDistance  0.0000002 0.00000009  2.364411  0.0189
+TempDistance        0.0145419 0.00272552  5.335464  0.0000
+OceanResistance    -0.0633290 0.03603917 -1.757227  0.0802
+LagranMinimum       0.0009499 0.00049352  1.924772  0.0555
+
+ Correlation: 
+                   (Intr) GgrphD TmpDst OcnRss
+GeographicDistance -0.354                     
+TempDistance        0.001  0.229              
+OceanResistance     0.028 -0.125  0.332       
+LagranMinimum      -0.128 -0.579 -0.110  0.287
+
+Standardized residuals:
+        Min          Q1         Med          Q3         Max 
+-2.73406381 -0.67146661 -0.01029801  0.69890207  2.35206934 
+
+Residual standard error: 0.07869967 
+Degrees of freedom: 243 total; 238 residual
+Generalized least squares fit by REML
+  Model: eDNA_Distance ~ GeographicDistance_scaled + TempDistance_scaled +      OceanResistance_scaled + LagranMinimum_scaled 
+  Data: data_corMLPE 
+        AIC       BIC   logLik
+  -539.4205 -515.1146 276.7102
+
+Correlation Structure: corMLPE
+ Formula: ~Start + End 
+ Parameter estimate(s):
+      rho 
+0.1422763 
+
+Coefficients:
+                               Value   Std.Error  t-value p-value
+(Intercept)                0.5031377 0.013205536 38.10051  0.0000
+GeographicDistance_scaled  0.0136613 0.005777906  2.36441  0.0189
+TempDistance_scaled        0.0268296 0.005028546  5.33546  0.0000
+OceanResistance_scaled    -0.0092214 0.005247672 -1.75723  0.0802
+LagranMinimum_scaled       0.0111216 0.005778141  1.92477  0.0555
+
+ Correlation: 
+                          (Intr) GgrpD_ TmpDs_ OcnRs_
+GeographicDistance_scaled -0.002                     
+TempDistance_scaled        0.019  0.229              
+OceanResistance_scaled     0.034 -0.125  0.332       
+LagranMinimum_scaled       0.006 -0.579 -0.110  0.287
+
+Standardized residuals:
+        Min          Q1         Med          Q3         Max 
+-2.73406382 -0.67146661 -0.01029801  0.69890208  2.35206935 
+
+Residual standard error: 0.07869967 
+Degrees of freedom: 243 total; 238 residual

@@ -1,0 +1,14 @@
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = distances ~ group, data = df)
+
+$group
+                               diff         lwr         upr     p adj
+Elizabeth-CSouthEastern -0.14065123 -0.24237816 -0.03892429 0.0050122
+Northern-CSouthEastern  -0.04554294 -0.12323817  0.03215229 0.3769783
+Western-CSouthEastern    0.01256204 -0.05215755  0.07728164 0.9465552
+Northern-Elizabeth       0.09510829 -0.01862589  0.20884246 0.1214369
+Western-Elizabeth        0.15321327  0.04791588  0.25851065 0.0031913
+Western-Northern         0.05810498 -0.02420977  0.14041973 0.2283226
+

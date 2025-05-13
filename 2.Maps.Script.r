@@ -55,7 +55,8 @@ galap.br[[3]][43] <- 10
 
 
 # Get country shapefiles
-eq <- getData("GADM", country="ECU", level=0)
+eq <- geodata::gadm(country = "ECU", level = 0, path = "data/")
+
 
 # Colour palette
 blue.col <- colorRampPalette(c("darkblue", "lightblue"))
@@ -104,7 +105,7 @@ ColIndex <- data.frame("EcoIsland"=sort(unique(paste0(metadata$EcoRegion,"-",met
 
 ColIndex$Colour[match(paste0(metadata$EcoRegion,"-",metadata$island),ColIndex$EcoIsland)]
 
-
+metadata2 <- read.csv(file = "metadata.site.cols.csv",row.names = 1)
 
 #####
 
@@ -112,17 +113,16 @@ ColIndex$Colour[match(paste0(metadata$EcoRegion,"-",metadata$island),ColIndex$Ec
 
 
 
-pdf(width = 8,height=6.35,file="mapBuilding/mapV2.pdf")
+pdf(width = 8,height=6.35,file="figures/Fig1/mapV2.pdf")
 
 plot(gebco.crop, col=c(blue.col(galap.br[[1]]+1), grey.colors(0)), breaks=galap.br[[3]],axes = FALSE,box=F,legend=F)
 plot(eq, add=TRUE,border=NA,col="grey34")
 #plot(gebco.crop, col=c(blue.col(galap.br[[1]]), grey.colors(galap.br[[2]])), breaks=galap.br[[3]],axes = FALSE,box=F,legend=F)
-points(metadata$lon2,metadata$lat2,pch=16, col='white',cex=2.5)
-points(metadata$lon2,metadata$lat2,pch=16, col=ColIndex$Colour[match(paste0(metadata$EcoRegion,"-",metadata$island),ColIndex$EcoIsland)]
+points(metadata2$lon2,metadata2$lat2,pch=16, col='white',cex=2.5)
+points(metadata2$lon2,metadata2$lat2,pch=16, col=metadata2$col
 ,cex=2)
 
 #points(metadata$lon2,metadata$lat2,pch=16, col=cols,cex=2)
-
 
 axis(1,
      at=pretty(c(-92, -89)),

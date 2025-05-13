@@ -1,62 +1,62 @@
 Generalized least squares fit by REML
   Model: eDNA_Distance ~ GeographicDistance + TempDistance + OceanResistance 
   Data: data_corMLPE 
-        AIC      BIC   logLik
-  -1132.221 -1106.91 572.1106
+        AIC       BIC   logLik
+  -1157.279 -1131.968 584.6397
 
 Correlation Structure: corMLPE
  Formula: ~Start + End 
  Parameter estimate(s):
       rho 
-0.1402854 
+0.1422429 
 
 Coefficients:
-                        Value   Std.Error   t-value p-value
-(Intercept)         0.4537249 0.015116927 30.014358   0e+00
-GeographicDistance  0.0000004 0.000000049  9.239987   0e+00
-TempDistance        0.0060691 0.001352736  4.486552   0e+00
-OceanResistance    -0.0883384 0.023642891 -3.736362   2e-04
+                       Value  Std.Error   t-value p-value
+(Intercept)        0.4538660 0.01507029 30.116618  0.0000
+GeographicDistance 0.0004476 0.00004798  9.330665  0.0000
+TempDistance       0.0077525 0.00144801  5.353930  0.0000
+OceanResistance    0.1866121 0.05814817  3.209252  0.0014
 
  Correlation: 
                    (Intr) GgrphD TmpDst
-GeographicDistance -0.468              
-TempDistance        0.000  0.000       
-OceanResistance    -0.001  0.001  0.241
+GeographicDistance -0.464              
+TempDistance        0.000  0.001       
+OceanResistance     0.001 -0.002 -0.311
 
 Standardized residuals:
         Min          Q1         Med          Q3         Max 
--2.78278561 -0.64735658  0.01855928  0.70798314  2.53084704 
+-2.69499650 -0.64349130  0.02758251  0.70723423  2.67116673 
 
-Residual standard error: 0.08314803 
+Residual standard error: 0.08257385 
 Degrees of freedom: 506 total; 502 residual
 Generalized least squares fit by REML
   Model: eDNA_Distance ~ GeographicDistance_scaled + TempDistance_scaled +      OceanResistance_scaled 
   Data: data_corMLPE 
         AIC       BIC   logLik
-  -1152.324 -1127.012 582.1619
+  -1161.681 -1136.369 586.8404
 
 Correlation Structure: corMLPE
  Formula: ~Start + End 
  Parameter estimate(s):
       rho 
-0.1402854 
+0.1422429 
 
 Coefficients:
-                               Value   Std.Error  t-value p-value
-(Intercept)                0.5190285 0.013360535 38.84788   0e+00
-GeographicDistance_scaled  0.0318613 0.003448194  9.23999   0e+00
-TempDistance_scaled        0.0145070 0.003233432  4.48655   0e+00
-OceanResistance_scaled    -0.0120814 0.003233458 -3.73636   2e-04
+                              Value   Std.Error  t-value p-value
+(Intercept)               0.5190285 0.013353482 38.86840  0.0000
+GeographicDistance_scaled 0.0318218 0.003410448  9.33067  0.0000
+TempDistance_scaled       0.0175112 0.003270718  5.35393  0.0000
+OceanResistance_scaled    0.0104968 0.003270804  3.20925  0.0014
 
  Correlation: 
                           (Intr) GgrpD_ TmpDs_
-GeographicDistance_scaled 0.000               
-TempDistance_scaled       0.000  0.000        
-OceanResistance_scaled    0.000  0.001  0.241 
+GeographicDistance_scaled  0.000              
+TempDistance_scaled        0.000  0.001       
+OceanResistance_scaled     0.000 -0.002 -0.311
 
 Standardized residuals:
         Min          Q1         Med          Q3         Max 
--2.78278561 -0.64735658  0.01855928  0.70798314  2.53084704 
+-2.69499650 -0.64349130  0.02758251  0.70723423  2.67116673 
 
-Residual standard error: 0.08314803 
+Residual standard error: 0.08257385 
 Degrees of freedom: 506 total; 502 residual

@@ -2,65 +2,65 @@ Generalized least squares fit by REML
   Model: eDNA_Distance ~ GeographicDistance + TempDistance + OceanResistance +      LagranMinimum 
   Data: data_corMLPE 
         AIC       BIC   logLik
-  -514.9722 -490.6663 264.4861
+  -531.5082 -507.2023 272.7541
 
 Correlation Structure: corMLPE
  Formula: ~Start + End 
  Parameter estimate(s):
-      rho 
-0.1422763 
+     rho 
+0.137359 
 
 Coefficients:
-                        Value  Std.Error   t-value p-value
-(Intercept)         0.4663642 0.01583880 29.444409  0.0000
-GeographicDistance  0.0000002 0.00000009  2.364411  0.0189
-TempDistance        0.0145419 0.00272552  5.335464  0.0000
-OceanResistance    -0.0633290 0.03603917 -1.757227  0.0802
-LagranMinimum       0.0009499 0.00049352  1.924772  0.0555
+                       Value  Std.Error   t-value p-value
+(Intercept)        0.4634179 0.01569884 29.519241  0.0000
+GeographicDistance 0.0002055 0.00008904  2.307953  0.0219
+TempDistance       0.0144531 0.00294057  4.915083  0.0000
+OceanResistance    0.1417116 0.08895493  1.593072  0.1125
+LagranMinimum      0.0009738 0.00048317  2.015551  0.0450
 
  Correlation: 
                    (Intr) GgrphD TmpDst OcnRss
-GeographicDistance -0.354                     
-TempDistance        0.001  0.229              
-OceanResistance     0.028 -0.125  0.332       
-LagranMinimum      -0.128 -0.579 -0.110  0.287
+GeographicDistance -0.347                     
+TempDistance        0.044  0.300              
+OceanResistance    -0.124 -0.043 -0.466       
+LagranMinimum      -0.143 -0.588 -0.284  0.041
 
 Standardized residuals:
         Min          Q1         Med          Q3         Max 
--2.73406381 -0.67146661 -0.01029801  0.69890207  2.35206934 
+-2.73993405 -0.65495820  0.02267275  0.71409911  2.33900947 
 
-Residual standard error: 0.07869967 
+Residual standard error: 0.07815471 
 Degrees of freedom: 243 total; 238 residual
 Generalized least squares fit by REML
   Model: eDNA_Distance ~ GeographicDistance_scaled + TempDistance_scaled +      OceanResistance_scaled + LagranMinimum_scaled 
   Data: data_corMLPE 
-        AIC       BIC   logLik
-  -539.4205 -515.1146 276.7102
+       AIC       BIC  logLik
+  -540.314 -516.0081 277.157
 
 Correlation Structure: corMLPE
  Formula: ~Start + End 
  Parameter estimate(s):
-      rho 
-0.1422763 
+     rho 
+0.137359 
 
 Coefficients:
-                               Value   Std.Error  t-value p-value
-(Intercept)                0.5031377 0.013205536 38.10051  0.0000
-GeographicDistance_scaled  0.0136613 0.005777906  2.36441  0.0189
-TempDistance_scaled        0.0268296 0.005028546  5.33546  0.0000
-OceanResistance_scaled    -0.0092214 0.005247672 -1.75723  0.0802
-LagranMinimum_scaled       0.0111216 0.005778141  1.92477  0.0555
+                              Value   Std.Error  t-value p-value
+(Intercept)               0.5025851 0.012918875 38.90316  0.0000
+GeographicDistance_scaled 0.0133611 0.005789133  2.30795  0.0219
+TempDistance_scaled       0.0267111 0.005434511  4.91508  0.0000
+OceanResistance_scaled    0.0082290 0.005165470  1.59307  0.1125
+LagranMinimum_scaled      0.0114019 0.005656978  2.01555  0.0450
 
  Correlation: 
                           (Intr) GgrpD_ TmpDs_ OcnRs_
-GeographicDistance_scaled -0.002                     
-TempDistance_scaled        0.019  0.229              
-OceanResistance_scaled     0.034 -0.125  0.332       
-LagranMinimum_scaled       0.006 -0.579 -0.110  0.287
+GeographicDistance_scaled  0.001                     
+TempDistance_scaled        0.011  0.300              
+OceanResistance_scaled    -0.025 -0.043 -0.466       
+LagranMinimum_scaled      -0.003 -0.588 -0.284  0.041
 
 Standardized residuals:
         Min          Q1         Med          Q3         Max 
--2.73406382 -0.67146661 -0.01029801  0.69890208  2.35206935 
+-2.73993405 -0.65495820  0.02267275  0.71409911  2.33900947 
 
-Residual standard error: 0.07869967 
+Residual standard error: 0.07815471 
 Degrees of freedom: 243 total; 238 residual

@@ -1,0 +1,33 @@
+Unnamed: 0,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9,Unnamed: 10,Unnamed: 11
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,Model Summary (unscaled variables),,,,,,Model Summary (unscaled variables),,,,
+,AIC,-1157.279,,,,,AIC,-531.5082,,,
+,BIC,-1131.968,,,,,BIC,-507.2023,,,
+,LogLik,584.6397,,,,,LogLik,272.7541,,,
+,rho,0.1422429,,,,,rho,0.137359,,,
+,,,,,,,,,,,
+,Variable,Value,Std.Error,t-value,p-value,,Variable,Value,Std.Error,t-value,p-value
+,(Intercept),0.453866,0.01507029,30.116618,<0.0001,,(Intercept),0.4634179,0.01569884,29.519241,<0.0001
+,GeographicDistance,0.0004476,4.798e-05,9.330665,<0.0001,,GeographicDistance,0.0002055,8.904e-05,2.307953,0.0219
+,TempDistance,0.0077525,0.00144801,5.35393,<0.0001,,TempDistance,0.0144531,0.00294057,4.915083,<0.0001
+,OceanResistance,0.1866121,0.05814817,3.209252,0.0014,,OceanResistance,0.1417116,0.08895493,1.593072,0.1125
+,,,,,,,LagranMinimum,0.0009738,0.00048317,2.015551,0.045
+,,,,,,,,,,,
+,Model Summary (scaled variables),,,,,,Model Summary (scaled variables),,,,
+,AIC,-1161.681,,,,,AIC,-540.314,,,
+,BIC,-1136.369,,,,,BIC,-516.0081,,,
+,LogLik,586.8404,,,,,LogLik,277.157,,,
+,rho,0.1422429,,,,,rho,0.137359,,,
+,,,,,,,,,,,
+,Variable,Value,Std.Error,t-value,p-value,,,,,,
+,(Intercept),0.5190285,0.013353482,38.8684,<0.0001,,Variable,Value,Std.Error,t-value,p-value
+,GeographicDistance_scaled,0.0318218,0.003410448,9.33067,<0.0001,,(Intercept),0.5025851,0.012918875,38.90316,<0.0001
+,TempDistance_scaled,0.0175112,0.003270718,5.35393,<0.0001,,GeographicDistance_scaled,0.0133611,0.005789133,2.30795,0.0219
+,OceanResistance_scaled,0.0104968,0.003270804,3.20925,0.0014,,TempDistance_scaled,0.0267111,0.005434511,4.91508,<0.0001
+,,,,,,,OceanResistance_scaled,0.008229,0.00516547,1.59307,0.1125
+,,,,,,,LagranMinimum_scaled,0.0114019,0.005656978,2.01555,0.045
+,,,,,,,,,,,
+,,,,,,,,,,,
