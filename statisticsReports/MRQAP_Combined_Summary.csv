@@ -1,0 +1,29 @@
+Section: MRQAP Unscaled Coefficients (99999 permutations),,,,
+Predictor,Estimate,p_high,p_low,p_two_tail
+Intercept,0.3708,1.0000,0.0000,0.0000
+Geographic distance,0.0009,1.0000,0.0000,0.0000
+Temperature distance,0.0077,0.9321,0.0679,0.1382
+Ocean resistance,0.1883,0.9657,0.0343,0.0735
+,,,,
+Section: MRQAP Unscaled Model Fit,,,,
+Metric,Value,,,
+Residual Std. Error,0.1175,,,
+R-squared,0.2734,,,
+Adjusted R-squared,0.2692,,,
+"F-statistic (df = 3,525)",65.85,,,
+F p-value,0,,,
+,,,,
+Section: MRQAP Scaled Coefficients (99999 permutations),,,,
+Predictor,Estimate,p_high,p_low,p_two_tail
+Intercept,0.49646,1,0,0
+Geographic distance,0.06921,0.99996,4e-05,4e-05
+Temperature distance,0.00919,0.6695,0.3305,0.4988
+Ocean resistance,0.00943,0.9801,0.0199,0.0358
+,,,,
+Section: MRQAP Scaled Model Fit,,,,
+Metric,Value,,,
+Residual Std. Error,0.1199,,,
+R-squared,0.2443,,,
+Adjusted R-squared,0.24,,,
+"F-statistic (df = 3,525)",56.57,,,
+F p-value,0,,,

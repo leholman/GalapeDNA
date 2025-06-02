@@ -13,6 +13,7 @@ library("EcolUtils")
 library("car")
 library("corMLPE")
 library("nlme")
+library("sna")      
 #library("heplots")
 
 #Set the seed 
@@ -94,9 +95,8 @@ metadatSites$col <- ColIndex$Colour[match(paste0(metadatSites$EcoRegion,"-",meta
 
 #a couple of custom colours! 
 metadatSites$col[18] <- "#007A54"
-metadatSites$col[19] <- "#00545C"
+metadatSites$col[19] <- "#66BFC5"
 write.csv(metadatSites,"metadata.site.cols.csv")
-
 
 ####====2.0 Taxonomy ====####
 sum(table(fishAll$Assign.BestLevel))
@@ -284,7 +284,7 @@ text(-0.8,-0.6,labels = paste0("Stress = ",round(nMDS$stress,2)))
 dev.off()
 
 ## add in the text to see sites
-
+pdf("figures/FishBetaDivSiteNames.pdf",height = 7,width = 8)
 par(mar=c(2.1, 2.1, 2.1, 2.1))
 nMDS <- metaMDS(vegdist(t(fishdat),method="jaccard",binary=TRUE),trymax=500)
 
@@ -299,9 +299,21 @@ ordihull(nMDS,groups = sites,col = "grey71",draw = "polygon",lty=0)
 points(nMDS$points[,1],nMDS$points[,2],pch=16,cex=1.5,
        col=metadatSites$col[match(sites,metadatSites$SiteID)])
 
-text(nMDS$points[,1],nMDS$points[,2]+0.05,labels=colnames(fishdat),cex=0.3)
+# Extract the MDS coordinates
+mds_coords <- nMDS$points
 
+# Get base site names by removing the ".1", ".2", ".3" part
+site_names <- gsub("\\.\\d+$", "", rownames(mds_coords))
 
+# Compute mean coordinates for each site
+site_means <- aggregate(mds_coords, by = list(Site = site_names), FUN = mean)
+
+# Plot site names at mean coordinates (with vertical offset)
+text(site_means$MDS1,
+     site_means$MDS2 ,
+     labels = site_means$Site,
+     cex = 0.6)
+dev.off()
 
 ####====5.0 Linking to Oceanography ====####
 
@@ -725,6 +737,55 @@ oceanResistance <- acast(oceanResistance.pair, Start ~ End, value.var = "pathPoi
 mantel_pearson_full(eDNAjacc.fish, geographicDistance, n.iter=9999)
 mantel_pearson_full(eDNAjacc.fish, tempdist, n.iter=9999)
 mantel_pearson_full(eDNAjacc.fish, oceanResistance, n.iter=9999)
+
+# Now MRM but accounting for dyiads and scaled
+oceanResistance[is.na(oceanResistance)] <- 0
+
+set.seed("12345")
+### MRQAP via netlm
+nlm <- netlm(
+  y        = eDNAjacc.fish,                  # NxN matrix
+  x        = list(geographicDistance,
+                  tempdist,
+                  oceanResistance),               # list of NxN predictors
+  mode     = "digraph",                      # keep direction
+  nullhyp  = "qapspp",
+  diag     = TRUE,
+  reps     = 99999                             # # of permutations
+)
+sink("statisticsReports/MRQAP.out")
+summary(nlm)
+
+
+## scaled variables 
+geo.z   <- scale(geographicDistance)
+temp.z  <- scale(tempdist)
+curr.z  <- scale(oceanResistance)
+
+
+nlm2 <- netlm(
+  y        = eDNAjacc.fish,
+  x        = list(geo.z, temp.z, curr.z),
+  mode     = "digraph",      # keeps both triangles
+  nullhyp  = "qapspp",
+  diag     = TRUE,           # silences the NA diagonal warning
+  reps     = 99999
+)
+summary(nlm2)
+sink()
+## here we dont adjust for the dyad nature of the data 
+
+nlm3 <- netlm(
+  y        = eDNAjacc.fish,
+  x        = list(geo.z, temp.z, curr.z),
+  mode     = "digraph",      # keeps both triangles
+  nullhyp  = "classical",
+  diag     = TRUE,           # silences the NA diagonal warning
+  reps     = 99999
+)
+summary(nlm3)
+
+
 
 
 ## Can we link biodiversity patterns to particle release parameters?

@@ -1,0 +1,66 @@
+
+OLS Network Model
+
+Residuals:
+        0%        25%        50%        75%       100% 
+-0.3707818 -0.0581056  0.0148944  0.0762786  0.2732793 
+
+Coefficients:
+            Estimate     Pr(<=b)   Pr(>=b)    Pr(>=|b|) 
+(intercept) 0.3707817650 1.0000000 0.00000000 0.00000000
+x1          0.0009024957 1.0000000 0.00000000 0.00000000
+x2          0.0077398666 0.9321193 0.06788068 0.13820138
+x3          0.1882466723 0.9656997 0.03430034 0.07350074
+
+Residual standard error: 0.1175 on 525 degrees of freedom
+Multiple R-squared: 0.2734 	Adjusted R-squared: 0.2692 
+F-statistic: 65.85 on 3 and 525 degrees of freedom, p-value:     0 
+
+
+Test Diagnostics:
+
+	Null Hypothesis: qapspp 
+	Replications: 99999 
+	Coefficient Distribution Summary:
+
+       (intercept)        x1        x2        x3
+Min       0.468262  4.740121 -7.988110 -4.037925
+1stQ      3.131376  6.758429 -1.444901 -0.758462
+Median    3.861503  7.342653  0.025685 -0.008088
+Mean      3.992924  7.416548  0.004244 -0.012897
+3rdQ      4.696261  7.982504  1.480176  0.743777
+Max      14.976871 13.165891  7.769972  3.887525
+
+
+OLS Network Model
+
+Residuals:
+         0%         25%         50%         75%        100% 
+-0.38549139 -0.06094953  0.01865065  0.07926773  0.29435940 
+
+Coefficients:
+            Estimate    Pr(<=b)   Pr(>=b)      Pr(>=|b|)   
+(intercept) 0.496462061 1.0000000 0.0000000000 0.0000000000
+x1          0.069213571 0.9999600 0.0000400004 0.0000400004
+x2          0.009185175 0.6694767 0.3305233052 0.4987749877
+x3          0.009425660 0.9800798 0.0199201992 0.0357803578
+
+Residual standard error: 0.1199 on 525 degrees of freedom
+Multiple R-squared: 0.2443 	Adjusted R-squared: 0.24 
+F-statistic: 56.57 on 3 and 525 degrees of freedom, p-value:     0 
+
+
+Test Diagnostics:
+
+	Null Hypothesis: qapspp 
+	Replications: 99999 
+	Coefficient Distribution Summary:
+
+       (intercept)       x1       x2       x3
+Min       95.26848  4.85464 -9.41201 -3.08247
+1stQ      95.26848  7.37536 -0.99832 -0.53337
+Median    95.26848  7.96933  0.63581  0.04548
+Mean      95.26848  8.01742  0.62357  0.04567
+3rdQ      95.26848  8.60421  2.27581  0.62927
+Max       95.26848 13.08888 10.06771  3.18256
+

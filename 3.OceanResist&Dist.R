@@ -136,8 +136,35 @@ for (i in bad_idx) {
 # -----------------------------------------------
 # 9) Visualize: Plot paths from site 1 to others
 # -----------------------------------------------
+
+#function to calculate break points for colours from https://www.benjaminbell.co.uk/2019/08/bathymetric-maps-in-r-colour-palettes.html
+## x = raster, b1 & b2 = number of divisions for each sequence, r1 & r2 = rounding value
+colbr <- function(x, b1=50, b2=50, r1=-2, r2=-2) {
+  # Min/max values of the raster (x)
+  mi <- cellStats(x, stat="min")-100
+  ma <- cellStats(x, stat="max")+100
+  # Create sequences, but only use unique numbers
+  s1 <- unique(round(seq(mi, 0, 0-mi/b1),r1))
+  s2 <- unique(round(seq(0, ma, ma/b2),r2))
+  # Combine sequence for our break points, removing duplicate 0
+  s3 <- c(s1, s2[-1])
+  # Create a list with the outputs
+  # [[1]] = length of the first sequence minus 1 (water)
+  # [[2]] = length of the second sequence minus 1 (land)
+  # [[3]] = The break points
+  x <- list(length(s1)-1, length(s2)-1, s3)
+}
+
+galap.br <- colbr(gebco.crop,b2=1)
+
+galap.br[[3]][43] <- 10
+
+blue.col <- colorRampPalette(c("darkblue", "lightblue"))
+
+
 plot(gebco.crop2, 
-     main   = "Shortest Paths: Simple (red) vs. Depth-based (blue)",
+     main   = "",
+     col=c(blue.col(galap.br[[1]]+1), grey.colors(0)), breaks=galap.br[[3]],
      axes   = FALSE, 
      box    = FALSE,
      legend = FALSE)
@@ -151,7 +178,7 @@ plot(ecuador_gadm_sp_crop,
 # Example: For each site (2..23), draw:
 #  - Simple water path in red (solid) & pink (dashed reverse)
 #  - Depth-based path in darkblue (solid) & lightblue (dashed reverse)
-for (site in 3:6) {
+for (site in c(2,6,7)) {
   # Simple water-only path
   lines(shortestPath(tr_corrected, places2[1,], places2[site,],
                      output = "SpatialLines"),
@@ -176,6 +203,112 @@ for (site in 3:6) {
         lty = 2,
         lwd = 2)
 }
+par(mfrow=c(1,1))
+par(mar=c(0.1,0.1,0.1,0.1))
+for (site in c(2,6,10,20)){
+
+pdf(paste0("figures/Pathdemo/",site,".pdf"),height = 4,width = 5)
+plot(gebco.crop2,
+     col=c(blue.col(galap.br[[1]]+1), grey.colors(0)), breaks=galap.br[[3]],
+     main   = "",
+     axes   = FALSE, 
+     box    = FALSE,
+     legend = FALSE)
+
+# Overlay the land polygon in gray
+plot(ecuador_gadm_sp_crop, 
+     add    = TRUE, 
+     border = NA, 
+     col    = "grey34")
+
+# Example: For each site (2..23), draw:
+#  - Simple water path in red (solid) & pink (dashed reverse)
+#  - Depth-based path in darkblue (solid) & lightblue (dashed reverse)
+
+  # Simple water-only path
+  lines(shortestPath(tr_corrected, places2[1,], places2[site,],
+                     output = "SpatialLines"),
+        col = "darkred", 
+        lwd = 2)
+  
+  lines(shortestPath(tr_corrected, places2[site,], places2[1,],
+                     output = "SpatialLines"),
+        col = "pink",
+        lty = 2,
+        lwd = 2)
+  
+  # Depth-based path
+  lines(shortestPath(tr_depth_corrected, places2[1,], places2[site,],
+                     output = "SpatialLines"),
+        col = "darkblue", 
+        lwd = 2)
+  
+  lines(shortestPath(tr_depth_corrected, places2[site,], places2[1,],
+                     output = "SpatialLines"),
+        col = "lightblue",
+        lty = 2,
+        lwd = 2)
+  
+  dev.off()
+  
+  }
+
+# Zoom in to see coast hugging 
+
+pdf("figures/Pathdemo/coast1-2.pdf",height = 4,width = 5)
+
+e <- extent(-91.7, -91, -1.22, -0.22)
+
+# Crop the raster
+gebco.cropped <- crop(gebco.crop2, e)
+
+
+plot(gebco.cropped,
+     col=c(blue.col(galap.br[[1]]+1), grey.colors(0)), breaks=galap.br[[3]],
+     main   = "",
+     axes   = FALSE, 
+     box    = FALSE,
+     legend = FALSE)
+
+# Overlay the land polygon in gray
+plot( crop(ecuador_gadm_sp_crop, e),
+     add    = TRUE, 
+     border = NA, 
+     col    = "grey34")
+
+# Example: For each site (2..23), draw:
+#  - Simple water path in red (solid) & pink (dashed reverse)
+#  - Depth-based path in darkblue (solid) & lightblue (dashed reverse)
+
+# Simple water-only path
+lines(shortestPath(tr_corrected, places2[1,], places2[2,],
+                   output = "SpatialLines"),
+      col = "darkred", 
+      lwd = 2)
+
+lines(shortestPath(tr_corrected, places2[2,], places2[1,],
+                   output = "SpatialLines"),
+      col = "pink",
+      lty = 2,
+      lwd = 2)
+
+# Depth-based path
+lines(shortestPath(tr_depth_corrected, places2[1,], places2[2,],
+                   output = "SpatialLines"),
+      col = "darkblue", 
+      lwd = 2)
+
+lines(shortestPath(tr_depth_corrected, places2[2,], places2[1,],
+                   output = "SpatialLines"),
+      col = "lightblue",
+      lty = 2,
+      lwd = 2)
+
+dev.off()
+
+
+
+
 
 
 ###Now lets generate the distance between sites and points along the path
