@@ -1007,6 +1007,353 @@ text(x=333, y = seq(0.4,0.6,l=5), labels = paste0("-  ",seq(-5,5,l=5)),xpd=T,pos
 dev.off()
 
 
+###### Experimental area 
+
+## make by rep dataset
+eDNAdistance.pair.unmod = reshape2::melt(myjac_mod(fishdat), varnames=c("Start","End"))
+eDNAdistance.pair.unmod.No0 <- eDNAdistance.pair.unmod[-which(eDNAdistance.pair.unmod$value == 0),]
+
+geographicDistance.pair <- read.csv("distanceData/SiteDistance.csv",row.names = 1)
+geographicDistance.pair.No0 <- geographicDistance.pair[-which(geographicDistance.pair$dist == 0),]
+geographicDistance.pair.No0$value <- geographicDistance.pair.No0$dist
+
+oceanResistance.pair <- read.csv("distanceData/OceanographicResistance.csv",row.names = 1)
+oceanResistance.pair$Start <- sapply(strsplit(oceanResistance.pair$journeyID,"_"), `[`, 1)
+oceanResistance.pair$End <- sapply(strsplit(oceanResistance.pair$journeyID,"_"), `[`, 2)
+oceanResistance.pair.No0 <- oceanResistance.pair[match(paste0(geographicDistance.pair.No0$Start,"_",geographicDistance.pair.No0$End),oceanResistance.pair$journeyID),]
+oceanResistance.pair.No0$value <- oceanResistance.pair.No0$pathPoints2_year_50
+
+tempDist.pair <- read.csv("distanceData/Temp.csv")
+tempDist.pair.No0 <- tempDist.pair[-which(eDNAdistance.pair.mod$value == 0),]
+
+
+index <- gsub("\\.[1-3]","",paste(eDNAdistance.pair.unmod.No0$Start,eDNAdistance.pair.unmod.No0$End))
+
+
+geo_dist_data <- geographicDistance.pair$dist[match(index,paste(geographicDistance.pair$Start,geographicDistance.pair$End))]
+temp_dist_data <- tempDist.pair$TempDiff[match(index,paste(tempDist.pair$Start,tempDist.pair$End))]
+ocean_res_data <- oceanResistance.pair$pathPoints2_year_50[match(index,paste(oceanResistance.pair$Start,oceanResistance.pair$End))]
+startSample <- eDNAdistance.pair.unmod.No0$Start
+endSample <- eDNAdistance.pair.unmod.No0$End
+startSite <-  gsub("\\.[1-3]","",eDNAdistance.pair.unmod.No0$Start)
+endSite <-  gsub("\\.[1-3]","",eDNAdistance.pair.unmod.No0$End)
+
+dyad_df <- data.frame(
+  eDNA_Distance = eDNAdistance.pair.unmod.No0$value,
+  StartSample = eDNAdistance.pair.unmod.No0$Start,
+  EndSample   = eDNAdistance.pair.unmod.No0$End,
+  StartSite   = gsub("\\.[1-3]","",eDNAdistance.pair.unmod.No0$Start),
+  EndSite     = gsub("\\.[1-3]","",eDNAdistance.pair.unmod.No0$End),
+  GeoDistance = geographicDistance.pair$dist[match(index,paste(geographicDistance.pair$Start,geographicDistance.pair$End))],
+  TempDiff    = tempDist.pair$TempDiff[match(index,paste(tempDist.pair$Start,tempDist.pair$End))],
+  OceanResYr  = oceanResistance.pair$pathPoints2_year_50[match(index,paste(oceanResistance.pair$Start,oceanResistance.pair$End))],
+  OceanResOct = oceanResistance.pair$pathPoints2_oct_50[match(index,paste(oceanResistance.pair$Start,oceanResistance.pair$End))],
+  OceanResYrMag = abs(oceanResistance.pair$pathPoints2_year_50[match(index,paste(oceanResistance.pair$Start,oceanResistance.pair$End))]),
+  OceanResYrSign =ifelse(oceanResistance.pair$pathPoints2_year_50[match(index,paste(oceanResistance.pair$Start,oceanResistance.pair$End))]>0,"+","-")
+)
+
+dyad_df[is.na(dyad_df)] <- 0
+dyad_dfn0 <- dyad_df[!dyad_df$StartSite==dyad_df$EndSite,]
+
+
+library(dplyr)
+library(brms)
+
+data_brms <- dyad_dfn0 |>
+  dplyr::mutate(
+    # make sure IDs are factors
+    StartSite = factor(StartSite),
+    EndSite   = factor(EndSite),
+StartSample = factor(StartSample),
+EndSample   = factor(EndSample),
+OceanResYrSign=factor(OceanResYrSign)
+)
+
+# scale the three predictors to 0-1 for comparable effect sizes
+range01 <- function(x) (x - min(x)) / (max(x) - min(x))
+data_brms <- data_brms |>
+  mutate(across(
+    c(GeoDistance, TempDiff, OceanResYr,OceanResYrMag),
+    range01,
+    .names = "{.col}_01"
+  ))
+
+family_used <- Beta(link = "logit")          # good if eDNA_Distance never equals 0 or 1
+# family_used <- zero_one_inflated_beta()    # use this if exact 0/1 are present
+
+form1 <- bf(
+  eDNA_Distance ~ GeoDistance_01 +
+    TempDiff_01 +
+    OceanResYr_01 +
+    (1 | StartSite) + (1 | EndSite)+
+    (1 | mm(StartSample,  EndSample))
+)
+
+form2 <- bf(
+  eDNA_Distance ~ GeoDistance_01 +
+    TempDiff_01 +
+    OceanResYr_01 +
+    (1 | mm(StartSite, EndSite))+
+    (1 | mm(StartSample,  EndSample))         
+)
+
+form3 <- bf(
+  eDNA_Distance ~ GeoDistance_01 +
+    TempDiff_01 +
+    OceanResYrMag + OceanResYrSign +
+    (1 | StartSite) + (1 | EndSite)+
+    (1 | mm(StartSample,  EndSample))         
+)
+
+priors <- c(
+  prior(normal(0, 1),  class = "b"),
+  prior(exponential(1), class = "sd")
+)
+fit_brms <- brm(
+  form1,
+  data    = data_brms,
+  family  = family_used,
+  prior   = priors,
+  backend = "cmdstanr",
+  chains  = 8, cores = 8, iter = 2000,
+  control = list(adapt_delta = 0.95)
+)
+fit_brms2 <- brm(
+  form2,
+  data    = data_brms,
+  family  = family_used,
+  prior   = priors,
+  backend = "cmdstanr",
+  chains  = 8, cores = 8, iter = 2000,
+  control = list(adapt_delta = 0.95)
+)
+
+fit_brms3 <- brm(
+  form3,
+  data    = data_brms,
+  family  = family_used,
+  prior   = priors,
+  backend = "cmdstanr",
+  chains  = 8, cores = 8, iter = 2000,
+  control = list(adapt_delta = 0.95)
+)
+
+###extra form 
+
+# ------------------------------------------------------------
+# Re-create the two temperature columns ----------------------
+# ------------------------------------------------------------
+data_brms <- data_brms %>%
+  mutate(
+    TempDiffMag       = abs(TempDiff),                        # magnitude
+    TempDiffSign      = factor(ifelse(TempDiff >= 0,          # direction (+/–)
+                                      "ReceiverWarmer",
+                                      "ReceiverCooler")),
+    TempDiffMag_01    = range01(TempDiffMag)                  # scaled 0–1
+  )
+
+# ------------------------------------------------------------
+#  Re-declare form4 ------------------------------------------
+# ------------------------------------------------------------
+form4 <- bf(
+  eDNA_Distance ~ GeoDistance_01 +
+    TempDiffMag_01 + TempDiffSign +
+    OceanResYrMag   + OceanResYrSign +
+    (1 | StartSite) + (1 | EndSite) +
+    (1 | mm(StartSample, EndSample))
+)
+
+# ------------------------------------------------------------
+#  Fit (or refit) the model ----------------------------------
+# ------------------------------------------------------------
+fit_brms4 <- brm(
+  form4,
+  data    = data_brms,
+  family  = family_used,
+  prior   = priors,
+  backend = "cmdstanr",
+  chains  = 4, cores = 4, iter = 2000,
+  control = list(adapt_delta = 0.95)
+)
+
+# Optional: store LOO so you can compare again later
+fit_brms4 <- add_criterion(fit_brms4, "loo")
+
+# Quick check it matches the old output
+print(summary(fit_brms4))
+
+
+
+loo_compare(fit_brms, fit_brms2, fit_brms3,fit_brms4)
+
+
+summary(fit_brms4)      # posterior means, 95 % CrI, R-hat
+pp_check(fit_brms)     # predictive fit
+loo(fit_brms)          # model comparison
+bayes_R2(fit_brms)     # Bayesian R-squared
+
+# quick caterpillar plot of fixed effects
+plot(fit_brms, pars = "^b_")
+
+## make symmetric dataset  
+
+
+## ------------------------------------------------------------
+## NEW CODE for symmetric Jaccard test
+## ------------------------------------------------------------
+library(dplyr)
+
+## 1.  Keep only the lower-triangle (unordered) site pairs -----
+data_sym <- dyad_df %>%
+  filter(StartSite < EndSite)            # alphabetical filter keeps one copy
+
+## 2.  Replace TempDiff and OceanResYr by their ABSOLUTE values
+data_sym <- data_sym %>%
+  mutate(
+    TempMag        = abs(TempDiff),
+    CurrentMag     = abs(OceanResYr)
+  )
+
+
+eDNAdist <- myjac(fishdat)
+get_jacc <- function(a, b) eDNAdist[a, b]      # simple matrix lookup
+
+data_sym <- data_sym %>%
+  mutate(
+    eDNA_Distance = mapply(get_jacc, StartSample, EndSample)   # replace!
+  )
+
+## 3.  Prepare for brms: factors + 0-1 scaling -----------------
+range01 <- function(x) (x - min(x)) / (max(x) - min(x))
+
+data_brms_sym <- data_sym %>%
+  mutate(
+    StartSite   = factor(StartSite),
+    EndSite     = factor(EndSite),
+    StartSample = factor(StartSample),
+    EndSample   = factor(EndSample),
+    GeoDist_01  = range01(GeoDistance),
+    TempMag_01  = range01(TempMag),
+    CurrMag_01  = range01(CurrentMag)
+  )
+
+## 4.  Symmetric multi-membership model ------------------------
+library(brms)
+
+form_sym <- bf(
+  eDNA_Distance ~ GeoDist_01 + TempMag_01 + CurrMag_01 +
+    (1 | mm(StartSite, EndSite)) +          # symmetric RE
+    (1 | mm(StartSample, EndSample))        # bottle RE
+)
+
+fit_sym <- brm(
+  form_sym, data = data_brms_sym,
+  family  = Beta(link = "logit"),
+  prior   = c(prior(normal(0,1), class = "b"),
+              prior(exponential(1), class = "sd")),
+  backend = "cmdstanr",
+  chains  = 4, cores = 4, iter = 4000,
+  control = list(adapt_delta = 0.95)
+)
+
+## 5.  Inspect results ----------------------------------------
+fit_sym <- add_criterion(fit_sym, "loo")
+summary(fit_sym)         # compare to best directional model
+
+
+
+
+summary(fit_brms) 
+summary(fit_brms2) 
+summary(fit_brms3) 
+summary(fit_brms4) 
+
+
+
+
+
+
+###### an attempt with brms again
+
+library(dplyr)
+library(brms)
+
+data_brms <- data_corMLPE |>
+  # drop within-site rows if they exist
+  filter(Start != End) |>
+  mutate(
+    # make sure IDs are factors
+    Start = factor(Start),
+    End   = factor(End),
+    
+  )
+
+# scale the three predictors to 0-1 for comparable effect sizes
+range01 <- function(x) (x - min(x)) / (max(x) - min(x))
+data_brms <- data_brms |>
+  mutate(across(
+    c(GeographicDistance, TempDistance, OceanResistance),
+    range01,
+    .names = "{.col}_01"
+  ))
+
+family_used <- Beta(link = "logit")          # good if eDNA_Distance never equals 0 or 1
+# family_used <- zero_one_inflated_beta()    # use this if exact 0/1 are present
+
+form <- bf(
+  eDNA_Distance ~ GeographicDistance_01 +
+    TempDistance_01 +
+    OceanResistance_01 +
+    (1 | Start) + (1 | End)             # random intercepts for both sites
+)
+
+form <- bf(
+  eDNA_Distance ~ GeographicDistance_01 +
+    TempDistance_01 +
+    OceanResistance_01 +
+    (1 | mm(Start, End))          # random intercepts for both sites
+)
+
+
+
+
+priors <- c(
+  prior(normal(0, 1),  class = "b"),
+  prior(exponential(1), class = "sd")
+)
+
+fit_brms <- brm(
+  form,
+  data    = data_brms,
+  family  = family_used,
+  prior   = priors,
+  backend = "cmdstanr",
+  chains  = 4, cores = 8, iter = 4000,
+  control = list(adapt_delta = 0.95)
+)
+
+summary(fit_brms)      # posterior means, 95 % CrI, R-hat
+pp_check(fit_brms)     # predictive fit
+loo(fit_brms)          # model comparison
+bayes_R2(fit_brms)     # Bayesian R-squared
+
+# quick caterpillar plot of fixed effects
+plot(fit_brms, pars = "^b_")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #######BASEMENT
