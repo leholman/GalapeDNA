@@ -1008,6 +1008,15 @@ dev.off()
 
 
 ###### Experimental area 
+myjac_mod = function (datamat) {
+  datamat = datamat>0
+  mj = apply(datamat, 2, function(x) {
+    apply(datamat, 2, function(y) {
+      return(sum(x&y)/sum(x))
+    })
+  })
+  return(1-mj)
+}
 
 ## make by rep dataset
 eDNAdistance.pair.unmod = reshape2::melt(myjac_mod(fishdat), varnames=c("Start","End"))
@@ -1176,17 +1185,20 @@ fit_brms4 <- brm(
   control = list(adapt_delta = 0.95)
 )
 
-# Optional: store LOO so you can compare again later
-fit_brms4 <- add_criterion(fit_brms4, "loo")
 
 # Quick check it matches the old output
-print(summary(fit_brms4))
 
 
+fit_brms   <- add_criterion(fit_brms, "loo")
+fit_brms2  <- add_criterion(fit_brms2, "loo")
+fit_brms3  <- add_criterion(fit_brms3, "loo")
+fit_brms4  <- add_criterion(fit_brms4, "loo")
 
-loo_compare(fit_brms, fit_brms2, fit_brms3,fit_brms4)
-
-
+# Now compare them
+loo_compare(fit_brms, fit_brms2, fit_brms3, fit_brms4)
+summary(fit_brms)     
+summary(fit_brms2)     
+summary(fit_brms3)     
 summary(fit_brms4)      # posterior means, 95 % CrI, R-hat
 pp_check(fit_brms)     # predictive fit
 loo(fit_brms)          # model comparison
